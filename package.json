@@ -1,6 +1,6 @@
 {
-  "name": "opdrachtfrontback",
-  "version": "0.0.1",
+  "name": "georgescape",
+  "version": "0.0.2",
   "description": "MMORPG game",
   "main": "server.js",
   "scripts": {
