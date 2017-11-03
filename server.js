@@ -12,7 +12,7 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-server.listen(4000, function () { // Listens to port 8081
+server.listen(process.env.PORT || 3000, function () { // Listens to port 8081
     console.log('Listening on ' + server.address().port);
 });
 
