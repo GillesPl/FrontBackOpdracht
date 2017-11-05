@@ -16,7 +16,7 @@ server.listen(process.env.PORT || 3000, function () { // Listens to port 8081
     console.log('Listening on ' + server.address().port);
 });
 
-
+/*
 server.lastPlayderID = 0;
 
 
@@ -59,4 +59,4 @@ io.on('connection',function(socket){
     
     function randomInt (low, high) {
         return Math.floor(Math.random() * (high - low) + low);
-    }
+    }*/

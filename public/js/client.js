@@ -1,4 +1,4 @@
-var Client = {};
+/*var Client = {};
 Client.socket = io.connect();
 
 Client.sendTest = function(){
@@ -31,3 +31,4 @@ Client.socket.on('allplayers',function(data){
         Game.removePlayer(id);
     });
 });
+*/
