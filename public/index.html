@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/css/main.css">
+    <title>Awesome game</title>
+    <link rel="stylesheet" href="./css/main.css">
 
-    <script src="//cdn.jsdelivr.net/phaser/2.6.2/phaser.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>   
-    <script src="/js/boot.js"></script>
-    <script src="/js/preload.js"></script>
-    <script src="/js/game.js"></script> 
-    <script src="/js/main.js"></script> 
-    <title>Game</title>
+    <script src="./js/Loader.js" defer></script>
+    <script src="./js/GameObjects/Camera.js" defer></script>
+    <script src="./js/GameObjects/Hero.js" defer></script>
+    <script src="./js/Map/Map.js" defer></script>
+    <script src="./js/Map/LoadTiled.js" defer></script>
+    <script src="./js/Game/Init.js" defer></script>
+    <script src="./js/Game/Load.js" defer></script>
+    <script src="./js/Game/Render.js" defer></script>
+    <script src="./js/Game/Update.js" defer></script>
 </head>
-<body>
-    <div id="game">
-    </div>
-</body>
 
+<body>
+    <canvas id="game" width="512" height="512"></canvas>
+</body>
 
 </html>
