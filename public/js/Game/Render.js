@@ -4,8 +4,11 @@ Game.render = function () {
     canvas.height = window.innerHeight;
     canvas.style.width = window.innerWidth;
     canvas.style.height = window.innerHeight;
-    this.ctx.width = window.innerWidth;
+
+    this.ctx.width = window.innerWidth;    
     this.ctx.height = window.innerHeight;
+    this.camera.width = window.innerWidth;
+    this.camera.height = window.innerHeight;
 
     this.ctx.globalAlpha = 1;
     this.ctx.imageSmoothingEnabled = false;

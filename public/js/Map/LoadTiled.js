@@ -1,4 +1,4 @@
-map.loadMap = function (src) {
+map.loadMap = function (src, camera, hero) {
     loadJSON(src, function (data) {
         console.log(data);
         map.cols = data.width;
@@ -6,9 +6,11 @@ map.loadMap = function (src) {
         map.tsize = data.tilewidth;
         map.twidth = data.tilesets[0].columns;
         map.layers = [];
-        data.layers.forEach(function(layer) {
+        data.layers.forEach(function (layer) {
             map.layers.push(layer.data);
         }, this);
+        
+        camera.follow(hero);
         console.log('#layers:' + map.layers.length);
         console.log('#tiles horizontally in tileset:' + map.twidth);
     });

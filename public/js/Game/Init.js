@@ -4,9 +4,13 @@ Game.init = function () {
     this.tileAtlas = Loader.getImage('tiles');
 
     this.hero = new Hero(map, 50 * map.drawSize, 50 * map.drawSize);
-    this.camera = new Camera(map, 512, 512);
-    this.camera.follow(this.hero);
-    map.loadMap('../../assets/map/map.json');
+    this.camera = new Camera(map, window.innerWidth, window.innerHeight);
+
+    map.loadMap('../../assets/map/map.json', this.camera, this.hero);
+    events();
+};
+
+function events() {
     document.addEventListener("keypress", function (event) {
         if (event.key === 'f') {
             Game.fullscreen();
@@ -27,4 +31,4 @@ Game.init = function () {
     document.addEventListener("msfullscreenchange", function () {
         Game.fullscreenState = document.msFullscreenElement;
     }, false);
-};
+}
