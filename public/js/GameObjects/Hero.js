@@ -7,6 +7,16 @@ function Hero(map, x, y) {
     this.maskWidth = 24;
     this.maskHeight = 26;
 
+    this.STATE = {
+        RUNNINGNORTH :  1,
+        RUNNINGEAST : 2,
+        RUNNINGSOUTH : 3,
+        RUNNINGWEST : 4,
+        STOP : 5
+    }
+
+    this.action = this.STATE.STOP;
+
     this.image = Loader.getImage('hero');
 }
 

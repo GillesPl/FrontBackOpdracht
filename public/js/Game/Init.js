@@ -1,6 +1,8 @@
 Game.init = function () {
-    Keyboard.listenForEvents(
-        [Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN, Keyboard.A, Keyboard.D, Keyboard.W, Keyboard.S, Keyboard.F]);
+    this.Keyboard = new Keyboard();
+    this.Keyboard.listenForEvents([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN, Keyboard.A, Keyboard.D, Keyboard.W, Keyboard.S, Keyboard.F]);
+
+    
     this.tileAtlas = Loader.getImage('tiles');
 
     this.hero = new Hero(map, 1600, 1600);
