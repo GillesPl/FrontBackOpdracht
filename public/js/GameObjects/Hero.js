@@ -2,10 +2,10 @@ function Hero(map, x, y) {
     this.map = map;
     this.x = x;
     this.y = y;
-    this.width = 32;
-    this.height = 32;
-    this.maskWidth = 24;
-    this.maskHeight = 26;
+    this.width = map.drawSize;
+    this.height = map.drawSize;
+    this.maskWidth = map.drawSize * 0.75;
+    this.maskHeight = map.drawSize * 0.8;
 
     this.image = Loader.getImage('hero');
 }

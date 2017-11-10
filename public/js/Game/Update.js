@@ -1,12 +1,4 @@
 Game.update = function (delta) {
-    if (Keyboard.isDown(Keyboard.F)) {
-        if (!this.fullscreenPressed) {
-            //this.fullscreen();
-            this.fullscreenPressed = true;
-        }
-    } else {
-        this.fullscreenPressed = false;
-    }
     // handle hero movement with arrow keys
     var dirx = 0;
     var diry = 0;

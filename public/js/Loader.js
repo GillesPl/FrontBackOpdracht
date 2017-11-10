@@ -123,12 +123,29 @@ Game.update = function (delta) {
 Game.render = function () {
     console.error('INIT NOT IMPLEMENTED');
 };
-Game.fullscreenPressed = false;
+Game.fullscreenState = false;
 Game.fullscreen = function () {
-    if (this.ctx.webkitRequestFullScreen) {
-        this.ctx.webkitRequestFullScreen();
+    var canvas = document.querySelector("canvas");
+    if (this.fullscreenState) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else {
+            console.log('exitFullScreen not supported');
+        }
     } else {
-        this.ctx.requestFullScreen();
+        if (canvas.requestFullscreen) {
+            canvas.requestFullscreen();
+        } else if (canvas.webkitRequestFullscreen) {
+            canvas.webkitRequestFullscreen();
+        } else if (canvas.mozRequestFullScreen) {
+            canvas.mozRequestFullScreen();
+        } else {
+            console.log('goFullScreen not supported');
+        }
     }
 };
 

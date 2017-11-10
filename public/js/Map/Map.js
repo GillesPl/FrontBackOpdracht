@@ -4,7 +4,7 @@ var map = {
     cols: 12,
     rows: 12,
     tsize: 64,
-    drawSize: 32,
+    drawSize: 64,
     twidth: 1,
     layers: [
         [
