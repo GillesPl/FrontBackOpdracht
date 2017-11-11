@@ -16,11 +16,11 @@ Game.render = function () {
     var layersUnderPlayer = 12;
     var totalLayers = map.layers.length;
     if (this.hero.tileLevel === 0)
-        layersUnderPlayer = 9;
-    else if (this.hero.tileLevel === 1)
-        layersUnderPlayer = 10;
+        layersUnderPlayer = 11;
     else if (this.hero.tileLevel === 1)
         layersUnderPlayer = 12;
+    else if (this.hero.tileLevel === 1)
+        layersUnderPlayer = 14;
 
     for (var i = 0; i < layersUnderPlayer; i++)
         this._drawLayer(i);

@@ -44,14 +44,14 @@ var map = {
         var col = Math.floor(x / this.drawSize);
         var row = Math.floor(y / this.drawSize);
 
-        var solidLayers, unSolidLayers = [10]; // Layers/tiles that the player always is allowed on
+        var solidLayers, unSolidLayers = [12]; // Layers/tiles that the player always is allowed on
 
         if (level === 0) {
-            solidLayers = [3, 4, 5, 6, 9, 11, 12];
+            solidLayers = [3, 4, 5, 6, 8, 11, 13];
         } else if (level === 1) {
-            solidLayers = [3, 4, 5, 6, 11, 12];
+            solidLayers = [3, 4, 5, 6, 8, 13];
         } else if (level === 2) {
-            solidLayers = [5, 6, 11, 12, 14];
+            solidLayers = [5, 6, 8, 13, 14];
         } else {
             //console.log('Unknown level');
             return false;
@@ -76,10 +76,10 @@ var map = {
         var layers = [];
 
         layers.push([2]); // 0
-        layers.push([8]); // 1
-        layers.push([9]); // 2
+        layers.push([10]); // 1
+        layers.push([11]); // 2
 
-        var unLeveledLayers = [10]; // Layers that block conversion
+        var unLeveledLayers = [12]; // Layers that block conversion
 
         for (var layerHeight = 0; layerHeight < layers.length; layerHeight++) {
             for (var i = 0; i < layers[layerHeight].length; i++) {
