@@ -39,29 +39,68 @@ var map = {
     getTile: function (layer, col, row) {
         return this.layers[layer][row * map.cols + col];
     },
-    isSolidTileAtXY: function (x, y) {
+    isSolidTileAtXY: function (x, y, level) {
         var collision = false;
         var col = Math.floor(x / this.drawSize);
         var row = Math.floor(y / this.drawSize);
 
-        solidLayers = [3, 4, 5, 6, 8, 9];
-        solidLayers.forEach(function (solidLayer) {
-            if (this.getTile([solidLayer], col, row) !== 0)
-            {
-                console.log('solid');
+        var solidLayers, unSolidLayers = [10]; // Layers/tiles that the player always is allowed on
+
+        if (level === 0) {
+            solidLayers = [3, 4, 5, 6, 9, 11, 12];
+        } else if (level === 1) {
+            solidLayers = [3, 4, 5, 6, 11, 12];
+        } else if (level === 2) {
+            solidLayers = [5, 6, 11, 12, 14];
+        } else {
+            //console.log('Unknown level');
+            return false;
+        }
+        solidLayers.forEach(function (layer) {
+            if (this.getTile([layer], col, row) !== 0) {
                 collision = true;
             }
         }, this);
+        unSolidLayers.forEach(function (layer) {
+            if (this.getTile([layer], col, row) !== 0) {
+                collision = false;
+            }
+        }, this);
         return collision;
-        /*        // tiles 3 and 5 are solid -- the rest are walkable
-                // loop through all layers and return TRUE if any tile is solid
-                return this.layers.reduce(function (res, layer, index) {
-                    var isSolid = layer === 3 || layer === 4 || layer === 5 || layer === 6 || layer === 8 || layer === 9;
-                    var tile = this.getTile(index, col, row);
-                    var isFilled = tile !== 0;
-                    return isSolid && (res || isFilled);
-                }.bind(this), false);
-         */
+    },
+    getTileLevelAtXY: function (x, y) {
+        var level = 999;
+        var col = Math.floor(x / this.drawSize);
+        var row = Math.floor(y / this.drawSize);
+
+        var layers = [];
+
+        layers.push([2]); // 0
+        layers.push([8]); // 1
+        layers.push([9]); // 2
+
+        var unLeveledLayers = [10]; // Layers that block conversion
+
+        for (var layerHeight = 0; layerHeight < layers.length; layerHeight++) {
+            for (var i = 0; i < layers[layerHeight].length; i++) {
+                if (this.getTile(layers[layerHeight][i], col, row) !== 0) {
+                    if (level == 999 || level == layerHeight) {
+                        level = layerHeight;
+                    } else {
+                        level = -1;
+                        //console.log('double tile');
+                    }
+                }
+            }
+        }
+
+        unLeveledLayers.forEach(function (layer) {
+            if (this.getTile([layer], col, row) !== 0) {
+                level = -1;
+            }
+        }, this);
+
+        return level === 999 ? -1 : level;
     },
     getCol: function (x) {
         return Math.floor(x / this.tsize);

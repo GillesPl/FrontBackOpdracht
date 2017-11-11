@@ -5,14 +5,15 @@ function Hero(map, x, y) {
     this.width = map.drawSize;
     this.height = map.drawSize;
     this.maskWidth = map.drawSize * 0.75;
-    this.maskHeight = map.drawSize * 0.8;
-
+    this.maskHeight = map.drawSize * 0.85;
+    this.tileLevel = 0; // HeighttileLevel
     this.image = Loader.getImage('hero');
 }
 
 Hero.SPEED = 256; // pixels per second
 
 Hero.prototype.move = function (delta, dirx, diry) {
+    this._calculateTileLevel();
     // move hero
     this.x += dirx * Hero.SPEED * delta;
     this.y += diry * Hero.SPEED * delta;
@@ -27,6 +28,16 @@ Hero.prototype.move = function (delta, dirx, diry) {
     this.y = Math.max(0, Math.min(this.y, maxY));
 };
 
+Hero.prototype._calculateTileLevel = function () {
+    var newTileLevel = map.getTileLevelAtXY(this.x, this.y);
+    if (newTileLevel != -1) {
+        if (this.tileLevel != newTileLevel) {
+            console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
+            this.tileLevel = newTileLevel;
+        }
+    }
+};
+
 Hero.prototype._collide = function (dirx, diry) {
     var row, col;
     // -1 in right and bottom is because image ranges from 0..63
@@ -38,10 +49,10 @@ Hero.prototype._collide = function (dirx, diry) {
 
     // check for collisions on sprite sides
     var collision =
-        this.map.isSolidTileAtXY(left, top) ||
-        this.map.isSolidTileAtXY(right, top) ||
-        this.map.isSolidTileAtXY(right, bottom) ||
-        this.map.isSolidTileAtXY(left, bottom);
+        this.map.isSolidTileAtXY(left, top, this.tileLevel) ||
+        this.map.isSolidTileAtXY(right, top, this.tileLevel) ||
+        this.map.isSolidTileAtXY(right, bottom, this.tileLevel) ||
+        this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
     if (!collision) {
         return;
     }

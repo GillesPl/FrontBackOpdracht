@@ -5,7 +5,7 @@ Game.render = function () {
     canvas.style.width = window.innerWidth;
     canvas.style.height = window.innerHeight;
 
-    this.ctx.width = window.innerWidth;    
+    this.ctx.width = window.innerWidth;
     this.ctx.height = window.innerHeight;
     this.camera.width = window.innerWidth;
     this.camera.height = window.innerHeight;
@@ -13,7 +13,16 @@ Game.render = function () {
     this.ctx.globalAlpha = 1;
     this.ctx.imageSmoothingEnabled = false;
     // draw map background layer
-    for (var i = 0; i < 11; i++)
+    var layersUnderPlayer = 12;
+    var totalLayers = map.layers.length;
+    if (this.hero.tileLevel === 0)
+        layersUnderPlayer = 9;
+    else if (this.hero.tileLevel === 1)
+        layersUnderPlayer = 10;
+    else if (this.hero.tileLevel === 1)
+        layersUnderPlayer = 12;
+
+    for (var i = 0; i < layersUnderPlayer; i++)
         this._drawLayer(i);
 
     // draw main character
@@ -25,20 +34,21 @@ Game.render = function () {
         this.hero.height);
 
     // draw map top layer
-    for (i = 11; i < 13; i++)
+    for (i = layersUnderPlayer; i < totalLayers - 1; i++)
         this._drawLayer(i);
 
     this.ctx.globalAlpha = 0.5;
-    this._drawLayer(13);
+    this._drawLayer(totalLayers - 1);
     //this._drawGrid();
     var tx = 10,
         ty = 0,
         dy = 40;
     this.ctx.font = "30px Arial";
     this.ctx.fillStyle = "white";
-    this.ctx.fillText("Player:", 10, ty += dy);
-    this.ctx.fillText("x: " + this.hero.x, 10, ty += dy);
-    this.ctx.fillText("y: " + this.hero.y, 10, ty += dy);
+    this.ctx.fillText("Player:", tx, ty += dy);
+    this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
+    this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
+    this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
 };
 
 Game._drawLayer = function (layer) {
