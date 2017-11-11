@@ -7,6 +7,15 @@ function Hero(map, x, y) {
     this.maskWidth = map.drawSize * 0.75;
     this.maskHeight = map.drawSize * 0.85;
     this.tileLevel = 0; // HeighttileLevel
+    this.STATE = {
+        RUNNINGNORTH: 1,
+        RUNNINGEAST: 2,
+        RUNNINGSOUTH: 3,
+        RUNNINGWEST: 4,
+        STOP: 5
+    };
+
+    this.action = this.STATE.STOP;
     this.image = Loader.getImage('hero');
 }
 
