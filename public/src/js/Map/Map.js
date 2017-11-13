@@ -1,3 +1,15 @@
+export default class Map {
+    constructor() {
+        this.tilesetSrc = "not implemented";
+        this.cols = 12;
+        this.rows = 12;
+        this.tsize = 64;
+        this.drawSize = 64;
+        this.twidth
+    }
+}
+
+
 var map = {
     loadMap: function (src) {},
     tilesetSrc: 'Not implemented',
