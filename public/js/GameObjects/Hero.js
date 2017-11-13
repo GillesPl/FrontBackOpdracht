@@ -41,7 +41,7 @@ Hero.prototype._calculateTileLevel = function () {
     var newTileLevel = map.getTileLevelAtXY(this.x, this.y);
     if (newTileLevel != -1) {
         if (this.tileLevel != newTileLevel) {
-            console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
+            //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
             this.tileLevel = newTileLevel;
         }
     }
