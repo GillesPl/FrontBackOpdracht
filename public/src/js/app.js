@@ -1,16 +1,12 @@
 import GameStateManager from "./GameState/GameStateManager";
 import MainGameState from "./GameState/MainGameState";
-import * as map from "./Map/Map";
-import loadTiled from "./Map/LoadTiled";
+import Map from "./Map/Map.class";
 
-
-
-(function() {
+(function () {
     let ctx = document.querySelector("#game").getContext('2d');
 
     let Socket = io();
 
     let gamestatemanager = new GameStateManager();
-    let mainstate = new MainGameState(ctx,map,Socket);
-
+    let mainstate = new MainGameState(ctx, new Map(), Socket);
 })();

@@ -1,21 +1,19 @@
-
-import * as Camera from "../Loader/Camera";
-import * as Keyboard from "../Loader/Keyboard.class";
+import Camera from "../Loader/Camera";
+import Keyboard from "../Loader/Keyboard.class";
+import Hero from "../GameObjects/Hero.class";
+import Loader from "../Loader/Loader";
 import GameState from "./GameState";
 
 export default class MainGameState extends GameState {
-    constructor(ctx, map,socket) {
+    constructor(ctx, map, socket) {
         super(ctx);
 
         this.map = map;
-
         this.hero;
         this.camera;
 
         this.Socket = socket;
-
         this.fullscreenState = false;
-
         this.Loader = new Loader();
 
         this.ctx = ctx;
@@ -28,7 +26,7 @@ export default class MainGameState extends GameState {
         Promise.all(this.loadassets).then(function (loaded) {
             this.init();
             let self = this;
-            window.requestAnimationFrame(function(elapsed) {
+            window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
             });
         }.bind(this));
@@ -37,19 +35,17 @@ export default class MainGameState extends GameState {
 
     draw(elapsed) {
         let self = this;
-        window.requestAnimationFrame(function(elapsed) {
+        window.requestAnimationFrame(function (elapsed) {
             self.draw(elapsed);
         });
 
         // clear previous frame
         this.ctx.clearRect(0, 0, 512, 512);
 
-        
         // compute delta elapsed in seconds -- also cap it
         let delta = (elapsed - this._previousElapsed) / 1000.0;
         delta = Math.min(delta, 0.25); // maximum delta of 250 ms
         this._previousElapsed = elapsed;
-        
 
         //var in update == delta, see commented code above
         this.update(delta);
@@ -62,20 +58,18 @@ export default class MainGameState extends GameState {
         this.Keyboard = new Keyboard();
         this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S]);
 
-
         this.tileAtlas = this.Loader.getImage('tiles');
-
-        this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize,this.Loader);
+        this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
 
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero);
         this.events();
     }
 
-
     load() {
-        return [this.Loader.loadImage('tiles', '../assets/map/tileset.png'),
-        this.Loader.loadImage('hero', '../assets/sprites/george-front.png')];
+        return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
+            this.Loader.loadImage('hero', '../../assets/sprites/george-front.png')
+        ];
     }
 
 
@@ -106,8 +100,7 @@ export default class MainGameState extends GameState {
                 this.Socket.emit("MoveSouth", this.hero);
             }
             diry = 1;
-        }
-        else {
+        } else {
             if (this.hero.action != this.hero.STATE.STOP) {
                 this.hero.action = this.hero.STATE.STOP;
                 this.Socket.emit("Stop", this.hero);
@@ -139,7 +132,7 @@ export default class MainGameState extends GameState {
             layersUnderPlayer = 11;
         else if (this.hero.tileLevel === 1)
             layersUnderPlayer = 12;
-        else if (this.hero.tileLevel === 1)
+        else if (this.hero.tileLevel === 2)
             layersUnderPlayer = 14;
 
         for (let i = 0; i < layersUnderPlayer; i++)

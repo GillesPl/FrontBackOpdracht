@@ -1,9 +1,9 @@
 export default class Hero {
-    constructor(map,x,y,Loader) {
+    constructor(map, x, y, Loader) {
+        console.log('Hero created at ' + x + ', ' + y);
         this.map = map;
         this.x = x;
         this.y = y;
-
         this.Loader = Loader;
 
         this.width = map.drawSize;
@@ -18,23 +18,23 @@ export default class Hero {
             RUNNINGWEST: 4,
             STOP: 5
         };
-    
+
         this.action = this.STATE.STOP;
         this.image = this.Loader.getImage('hero');
 
         this.speed = 256;
     }
-    
 
-    move(delta, dirx,diry) {
+
+    move(delta, dirx, diry) {
         this._calculateTileLevel();
         // move hero
         this.x += dirx * this.speed * delta;
         this.y += diry * this.speed * delta;
-    
+
         // check if we walked into a non-walkable tile
         this._collide(dirx, diry);
-    
+
         // clamp values
         let maxX = this.map.cols * this.map.drawSize;
         let maxY = this.map.rows * this.map.drawSize;
@@ -53,7 +53,7 @@ export default class Hero {
         }
     }
 
-    _collide(dirx,diry) {
+    _collide(dirx, diry) {
         let row, col;
         // -1 in right and bottom is because image ranges from 0..63
         // and not up to 64
@@ -61,7 +61,7 @@ export default class Hero {
         let right = this.x + this.maskWidth / 2 - 1;
         let top = this.y - this.maskHeight / 2;
         let bottom = this.y + this.maskHeight / 2 - 1;
-    
+
         // check for collisions on sprite sides
         let collision =
             this.map.isSolidTileAtXY(left, top, this.tileLevel) ||
@@ -71,7 +71,7 @@ export default class Hero {
         if (!collision) {
             return;
         }
-    
+
         if (diry > 0) {
             row = this.map.getRow(bottom);
             this.y = -this.maskHeight / 2 + this.map.getY(row);

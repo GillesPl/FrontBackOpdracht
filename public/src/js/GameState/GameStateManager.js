@@ -16,7 +16,7 @@ export default class GameStateManager {
     }
 
     getState(gameState) {
-        gameStates.forEach(el => {
+        gameStates.forEach((el) => {
             if(el === gameState) return el;
             else throw new Error("Gamestate not found in GameStateManager");
         });

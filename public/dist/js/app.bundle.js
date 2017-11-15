@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(2);
+module.exports = __webpack_require__(9);
 
 
 /***/ }),
@@ -78,23 +78,17 @@ module.exports = __webpack_require__(2);
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(4);
+var _GameStateManager = __webpack_require__(2);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _MainGameState = __webpack_require__(5);
+var _MainGameState = __webpack_require__(3);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(11);
+var _Map = __webpack_require__(13);
 
-var map = _interopRequireWildcard(_Map);
-
-var _LoadTiled = __webpack_require__(12);
-
-var _LoadTiled2 = _interopRequireDefault(_LoadTiled);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _Map2 = _interopRequireDefault(_Map);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -104,18 +98,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var Socket = io();
 
     var gamestatemanager = new _GameStateManager2.default();
-    var mainstate = new _MainGameState2.default(ctx, map, Socket);
+    var mainstate = new _MainGameState2.default(ctx, new _Map2.default(), Socket);
 })();
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 3 */,
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -185,7 +172,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -197,21 +184,27 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Camera = __webpack_require__(7);
+var _Camera = __webpack_require__(4);
 
-var Camera = _interopRequireWildcard(_Camera);
+var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(6);
+var _Keyboard = __webpack_require__(5);
 
-var Keyboard = _interopRequireWildcard(_Keyboard);
+var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
-var _GameState2 = __webpack_require__(8);
+var _Hero = __webpack_require__(12);
+
+var _Hero2 = _interopRequireDefault(_Hero);
+
+var _Loader = __webpack_require__(11);
+
+var _Loader2 = _interopRequireDefault(_Loader);
+
+var _GameState2 = __webpack_require__(6);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -228,15 +221,12 @@ var MainGameState = function (_GameState) {
         var _this = _possibleConstructorReturn(this, (MainGameState.__proto__ || Object.getPrototypeOf(MainGameState)).call(this, ctx));
 
         _this.map = map;
-
         _this.hero;
         _this.camera;
 
         _this.Socket = socket;
-
         _this.fullscreenState = false;
-
-        _this.Loader = new Loader();
+        _this.Loader = new _Loader2.default();
 
         _this.ctx = ctx;
         _this.ctx.width = window.innerWidth;
@@ -281,13 +271,12 @@ var MainGameState = function (_GameState) {
     }, {
         key: "init",
         value: function init() {
-            this.Keyboard = new Keyboard();
+            this.Keyboard = new _Keyboard2.default();
             this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S]);
 
             this.tileAtlas = this.Loader.getImage('tiles');
-
-            this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
-            this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
+            this.hero = new _Hero2.default(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
+            this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
 
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero);
             this.events();
@@ -295,7 +284,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../assets/map/tileset.png'), this.Loader.loadImage('hero', '../assets/sprites/george-front.png')];
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george-front.png')];
         }
     }, {
         key: "update",
@@ -354,7 +343,7 @@ var MainGameState = function (_GameState) {
             // draw map background layer
             var layersUnderPlayer = 12;
             var totalLayers = this.map.layers.length;
-            if (this.hero.tileLevel === 0) layersUnderPlayer = 11;else if (this.hero.tileLevel === 1) layersUnderPlayer = 12;else if (this.hero.tileLevel === 1) layersUnderPlayer = 14;
+            if (this.hero.tileLevel === 0) layersUnderPlayer = 11;else if (this.hero.tileLevel === 1) layersUnderPlayer = 12;else if (this.hero.tileLevel === 2) layersUnderPlayer = 14;
 
             for (var i = 0; i < layersUnderPlayer; i++) {
                 this._drawLayer(i);
@@ -467,7 +456,89 @@ var MainGameState = function (_GameState) {
 exports.default = MainGameState;
 
 /***/ }),
-/* 6 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Camera = function () {
+    function Camera(map, width, height) {
+        _classCallCheck(this, Camera);
+
+        this.width = width;
+        this.height = height;
+        this.map = map;
+
+        this.x = 0;
+        this.y = 0;
+    }
+
+    _createClass(Camera, [{
+        key: "follow",
+        value: function follow(sprite) {
+            this.following = sprite;
+            sprite.screenX = 0;
+            sprite.screenY = 0;
+        }
+    }, {
+        key: "update",
+        value: function update() {
+            if (this.following === undefined) return;
+
+            this.maxX = this.map.cols * this.map.drawSize - this.width;
+            this.maxY = this.map.rows * this.map.drawSize - this.height;
+
+            var minPlayerX = this.width / 3;
+            var minPlayerY = this.height / 3;
+            var maxPlayerX = 2 * this.width / 3;
+            var maxPlayerY = 2 * this.height / 3;
+
+            this.following.screenX = this.following.x - this.x;
+            this.following.screenY = this.following.y - this.y;
+
+            if (this.following.screenX > this.width || this.following.screenY > this.height) {
+                // already off screen -> center screen
+                this.following.screenX = this.width / 2;
+                this.following.screenY = this.height / 2;
+                this.x = this.following.x - this.width / 2;
+                this.y = this.following.y - this.height / 2;
+            }
+
+            if (this.following.screenX < minPlayerX) {
+                this.x = this.following.x - minPlayerX;
+            } else if (this.following.screenX > maxPlayerX) {
+                this.x = this.following.x - maxPlayerX;
+            }
+            if (this.following.screenY < minPlayerY) {
+                this.y = this.following.y - minPlayerY;
+            } else if (this.following.screenY > maxPlayerY) {
+                this.y = this.following.y - maxPlayerY;
+            }
+
+            this.x = Math.max(0, Math.min(this.x, this.maxX));
+            this.y = Math.max(0, Math.min(this.y, this.maxY));
+
+            this.following.screenX = this.following.x - this.x;
+            this.following.screenY = this.following.y - this.y;
+        }
+    }]);
+
+    return Camera;
+}();
+
+exports.default = Camera;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -541,87 +612,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Camera = function () {
-    function Camera(map, width, height) {
-        _classCallCheck(this, Camera);
-
-        this.width = width;
-        this.height = height;
-        this.map = map;
-
-        this.x = 0;
-        this.y = 0;
-    }
-
-    _createClass(Camera, [{
-        key: "follow",
-        value: function follow(sprite) {
-            this.following = sprite;
-            sprite.screenX = 0;
-            sprite.screenY = 0;
-        }
-    }, {
-        key: "update",
-        value: function update() {
-            this.maxX = map.cols * map.drawSize - this.width;
-            this.maxY = map.rows * map.drawSize - this.height;
-
-            var minPlayerX = this.width / 3;
-            var minPlayerY = this.height / 3;
-            var maxPlayerX = 2 * this.width / 3;
-            var maxPlayerY = 2 * this.height / 3;
-
-            this.following.screenX = this.following.x - this.x;
-            this.following.screenY = this.following.y - this.y;
-
-            if (this.following.screenX > this.width || this.following.screenY > this.height) {
-                // already off screen -> center screen
-                this.following.screenX = this.width / 2;
-                this.following.screenY = this.height / 2;
-                this.x = this.following.x - this.width / 2;
-                this.y = this.following.y - this.height / 2;
-            }
-
-            if (this.following.screenX < minPlayerX) {
-                this.x = this.following.x - minPlayerX;
-            } else if (this.following.screenX > maxPlayerX) {
-                this.x = this.following.x - maxPlayerX;
-            }
-            if (this.following.screenY < minPlayerY) {
-                this.y = this.following.y - minPlayerY;
-            } else if (this.following.screenY > maxPlayerY) {
-                this.y = this.following.y - maxPlayerY;
-            }
-
-            this.x = Math.max(0, Math.min(this.x, this.maxX));
-            this.y = Math.max(0, Math.min(this.y, this.maxY));
-
-            this.following.screenX = this.following.x - this.x;
-            this.following.screenY = this.following.y - this.y;
-        }
-    }]);
-
-    return Camera;
-}();
-
-exports.default = Camera;
-
-/***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -666,7 +657,14 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 9 */,
+/* 7 */,
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
 /* 10 */,
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -678,41 +676,370 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Map = function Map() {
-    _classCallCheck(this, Map);
+var Loader = function () {
+    function Loader() {
+        _classCallCheck(this, Loader);
 
-    this.tilesetSrc = "not implemented";
-    this.cols = 12;
-    this.rows = 12;
-    this.tsize = 64;
-    this.drawSize = 64;
-    this.twidth;
-};
+        this.images = {};
+    }
 
-exports.default = Map;
+    _createClass(Loader, [{
+        key: 'loadImage',
+        value: function loadImage(key, src) {
+            var img = new Image();
+
+            var d = new Promise(function (resolve, reject) {
+                img.onload = function () {
+                    this.images[key] = img;
+                    resolve(img);
+                }.bind(this);
+
+                img.onerror = function () {
+                    reject('Could not load image: ' + src);
+                };
+            }.bind(this));
+
+            img.src = src;
+            return d;
+        }
+    }, {
+        key: 'getImage',
+        value: function getImage(key) {
+            return key in this.images ? this.images[key] : null;
+        }
+    }]);
+
+    return Loader;
+}();
+
+exports.default = Loader;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Hero = function () {
+    function Hero(map, x, y, Loader) {
+        _classCallCheck(this, Hero);
+
+        console.log('Hero created at ' + x + ', ' + y);
+        this.map = map;
+        this.x = x;
+        this.y = y;
+        this.Loader = Loader;
+
+        this.width = map.drawSize;
+        this.height = map.drawSize;
+        this.maskWidth = map.drawSize * 0.75;
+        this.maskHeight = map.drawSize * 0.85;
+        this.tileLevel = 0; // HeighttileLevel
+        this.STATE = {
+            RUNNINGNORTH: 1,
+            RUNNINGEAST: 2,
+            RUNNINGSOUTH: 3,
+            RUNNINGWEST: 4,
+            STOP: 5
+        };
+
+        this.action = this.STATE.STOP;
+        this.image = this.Loader.getImage('hero');
+
+        this.speed = 256;
+    }
+
+    _createClass(Hero, [{
+        key: 'move',
+        value: function move(delta, dirx, diry) {
+            this._calculateTileLevel();
+            // move hero
+            this.x += dirx * this.speed * delta;
+            this.y += diry * this.speed * delta;
+
+            // check if we walked into a non-walkable tile
+            this._collide(dirx, diry);
+
+            // clamp values
+            var maxX = this.map.cols * this.map.drawSize;
+            var maxY = this.map.rows * this.map.drawSize;
+            this.x = Math.max(0, Math.min(this.x, maxX));
+            this.y = Math.max(0, Math.min(this.y, maxY));
+        }
+    }, {
+        key: '_calculateTileLevel',
+        value: function _calculateTileLevel() {
+            var newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
+            if (newTileLevel != -1) {
+                if (this.tileLevel != newTileLevel) {
+                    //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
+                    this.tileLevel = newTileLevel;
+                }
+            }
+        }
+    }, {
+        key: '_collide',
+        value: function _collide(dirx, diry) {
+            var row = void 0,
+                col = void 0;
+            // -1 in right and bottom is because image ranges from 0..63
+            // and not up to 64
+            var left = this.x - this.maskWidth / 2;
+            var right = this.x + this.maskWidth / 2 - 1;
+            var top = this.y - this.maskHeight / 2;
+            var bottom = this.y + this.maskHeight / 2 - 1;
+
+            // check for collisions on sprite sides
+            var collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
+            if (!collision) {
+                return;
+            }
+
+            if (diry > 0) {
+                row = this.map.getRow(bottom);
+                this.y = -this.maskHeight / 2 + this.map.getY(row);
+            } else if (diry < 0) {
+                row = this.map.getRow(top);
+                this.y = this.maskHeight / 2 + this.map.getY(row + 1);
+            } else if (dirx > 0) {
+                col = this.map.getCol(right);
+                this.x = -this.maskWidth / 2 + this.map.getX(col);
+            } else if (dirx < 0) {
+                col = this.map.getCol(left);
+                this.x = this.maskWidth / 2 + this.map.getX(col + 1);
+            }
+        }
+    }]);
+
+    return Hero;
+}();
+
+exports.default = Hero;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Map = function () {
+    function Map() {
+        _classCallCheck(this, Map);
+
+        this.tilesetSrc = "not implemented";
+        this.cols = 150;
+        this.rows = 150;
+        this.tsize = 16;
+        this.drawSize = 64;
+        this.twidth = 2;
+        this.layers = [[0, 0], [0, 0]]; // Basic empty layers
+    }
+
+    _createClass(Map, [{
+        key: 'loadMap',
+        value: function loadMap(src, camera, hero) {
+            var map = this;
+            this.loadJSON(src, function (data) {
+                console.log(data);
+                map.cols = data.width;
+                map.rows = data.height;
+                map.tsize = data.tilewidth;
+                map.twidth = data.tilesets[0].columns;
+                map.layers = [];
+                data.layers.forEach(function (layer) {
+                    map.layers.push(layer.data);
+                }, map);
+
+                camera.follow(hero);
+                console.log('#layers:' + map.layers.length);
+                console.log('#tiles horizontally in tileset:' + map.twidth);
+            });
+        }
+    }, {
+        key: 'loadJSON',
+        value: function loadJSON(src, callback) {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType("application/json");
+            xobj.open('GET', src, true);
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState == 4 && xobj.status == "200") {
+                    callback(JSON.parse(xobj.responseText));
+                }
+            };
+            xobj.send(null);
+        }
+    }, {
+        key: 'getTile',
+        value: function getTile(layer, col, row) {
+            if (this.layers[layer] === undefined) {
+                //console.error(layer + ' not in ' + this.layers);
+                return null;
+            } else return this.layers[layer][row * this.cols + col];
+        }
+    }, {
+        key: 'isSolidTileAtXY',
+        value: function isSolidTileAtXY(x, y, level) {
+            var collision = false;
+            var col = Math.floor(x / this.drawSize);
+            var row = Math.floor(y / this.drawSize);
+
+            var solidLayers,
+                unSolidLayers = [12]; // Layers/tiles that the player always is allowed on
+
+            if (level === 0) {
+                solidLayers = [3, 4, 5, 6, 8, 11, 13];
+            } else if (level === 1) {
+                solidLayers = [3, 4, 5, 6, 8, 13];
+            } else if (level === 2) {
+                solidLayers = [5, 6, 8, 13, 14];
+            } else {
+                //console.log('Unknown level');
+                return false;
+            }
+            var map = this;
+            solidLayers.forEach(function (layer) {
+                if (map.getTile([layer], col, row) !== 0) {
+                    collision = true;
+                }
+            }, this);
+            unSolidLayers.forEach(function (layer) {
+                if (map.getTile([layer], col, row) !== 0) {
+                    collision = false;
+                }
+            }, this);
+            return collision;
+        }
+    }, {
+        key: 'getTileLevelAtXY',
+        value: function getTileLevelAtXY(x, y) {
+            var level = 999;
+            var col = Math.floor(x / this.drawSize);
+            var row = Math.floor(y / this.drawSize);
+
+            var layers = [];
+
+            layers.push([2]); // 0
+            layers.push([10]); // 1
+            layers.push([11]); // 2
+
+            var unLeveledLayers = [12]; // Layers that block conversion
+
+            for (var layerHeight = 0; layerHeight < layers.length; layerHeight++) {
+                for (var i = 0; i < layers[layerHeight].length; i++) {
+                    if (this.getTile(layers[layerHeight][i], col, row) !== 0) {
+                        if (level == 999 || level == layerHeight) {
+                            level = layerHeight;
+                        } else {
+                            level = -1;
+                            //console.log('double tile');
+                        }
+                    }
+                }
+            }
+
+            unLeveledLayers.forEach(function (layer) {
+                if (this.getTile([layer], col, row) !== 0) {
+                    level = -1;
+                }
+            }, this);
+
+            return level === 999 ? -1 : level;
+        }
+    }, {
+        key: 'getCol',
+        value: function getCol(x) {
+            return Math.floor(x / this.tsize);
+        }
+    }, {
+        key: 'getRow',
+        value: function getRow(y) {
+            return Math.floor(y / this.tsize);
+        }
+    }, {
+        key: 'getX',
+        value: function getX(col) {
+            return col * this.tsize;
+        }
+    }, {
+        key: 'getY',
+        value: function getY(row) {
+            return row * this.tsize;
+        }
+    }]);
+
+    return Map;
+}();
+
+/*
 var map = {
-    loadMap: function loadMap(src) {},
+    loadMap: function (src) {},
     tilesetSrc: 'Not implemented',
     cols: 12,
     rows: 12,
     tsize: 64,
     drawSize: 64,
     twidth: 1,
-    layers: [[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3, 3, 3, 3, 1, 1, 2, 3, 3, 3, 3, 3, 3], [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 3, 3, 3, 3, 3, 3, 3]],
-    getTile: function getTile(layer, col, row) {
+    layers: [
+        [
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+            3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3,
+            3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3,
+            3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3,
+            3, 3, 3, 1, 1, 2, 3, 3, 3, 3, 3, 3
+        ],
+        [
+            4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+            4, 4, 4, 0, 5, 4, 4, 4, 4, 4, 4, 4,
+            4, 4, 4, 0, 0, 3, 3, 3, 3, 3, 3, 3
+        ]
+    ],
+    getTile: function (layer, col, row) {
         return this.layers[layer][row * map.cols + col];
     },
-    isSolidTileAtXY: function isSolidTileAtXY(x, y, level) {
+    isSolidTileAtXY: function (x, y, level) {
         var collision = false;
         var col = Math.floor(x / this.drawSize);
         var row = Math.floor(y / this.drawSize);
 
-        var solidLayers,
-            unSolidLayers = [12]; // Layers/tiles that the player always is allowed on
+        var solidLayers, unSolidLayers = [12]; // Layers/tiles that the player always is allowed on
 
         if (level === 0) {
             solidLayers = [3, 4, 5, 6, 8, 11, 13];
@@ -736,7 +1063,7 @@ var map = {
         }, this);
         return collision;
     },
-    getTileLevelAtXY: function getTileLevelAtXY(x, y) {
+    getTileLevelAtXY: function (x, y) {
         var level = 999;
         var col = Math.floor(x / this.drawSize);
         var row = Math.floor(y / this.drawSize);
@@ -770,56 +1097,22 @@ var map = {
 
         return level === 999 ? -1 : level;
     },
-    getCol: function getCol(x) {
+    getCol: function (x) {
         return Math.floor(x / this.tsize);
     },
-    getRow: function getRow(y) {
+    getRow: function (y) {
         return Math.floor(y / this.tsize);
     },
-    getX: function getX(col) {
+    getX: function (col) {
         return col * this.tsize;
     },
-    getY: function getY(row) {
+    getY: function (row) {
         return row * this.tsize;
     }
-};
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
+};*/
 
 
-map.loadMap = function (src, camera, hero) {
-    loadJSON(src, function (data) {
-        console.log(data);
-        map.cols = data.width;
-        map.rows = data.height;
-        map.tsize = data.tilewidth;
-        map.twidth = data.tilesets[0].columns;
-        map.layers = [];
-        data.layers.forEach(function (layer) {
-            map.layers.push(layer.data);
-        }, this);
-
-        camera.follow(hero);
-        console.log('#layers:' + map.layers.length);
-        console.log('#tiles horizontally in tileset:' + map.twidth);
-    });
-};
-
-function loadJSON(src, callback) {
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', src, true);
-    xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4 && xobj.status == "200") {
-            callback(JSON.parse(xobj.responseText));
-        }
-    };
-    xobj.send(null);
-}
+exports.default = Map;
 
 /***/ })
 /******/ ]);

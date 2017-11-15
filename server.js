@@ -15,10 +15,9 @@ app.get('/', function (req, res) {
 
 
 io.on('connection', function (socket) {
-
     socket.on("requestlogin",function(player) {
         //
-    })
+    });
 
     socket.on("MoveWest", function (hero) {
         console.log("Moves west on " + "x: " + hero.x + "y: " + hero.y);
@@ -42,7 +41,7 @@ io.on('connection', function (socket) {
 });
 
 
-server.listen(process.env.PORT || 5000, function () { // Listens to port 8081
+server.listen(process.env.PORT || 5000, function () {
     console.log('Listening on ' + server.address().port);
 });
 
