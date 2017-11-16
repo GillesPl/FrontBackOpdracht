@@ -1,14 +1,13 @@
-export default class Hero {
-    constructor(map, x, y, Loader) {
-        this.map = map;
+export default class OtherPlayer {
+    constructor(x, y, action, speed, Loader, drawSize) {
         this.x = x;
         this.y = y;
         this.Loader = Loader;
 
-        this.width = map.drawSize;
-        this.height = map.drawSize;
-        this.maskWidth = map.drawSize * 0.75;
-        this.maskHeight = map.drawSize * 0.85;
+        this.width = drawSize;
+        this.height = drawSize;
+        this.maskWidth = drawSize * 0.75;
+        this.maskHeight = drawSize * 0.85;
         this.tileLevel = 0; // HeighttileLevel
         this.STATE = {
             RUNNINGNORTH: 1,
@@ -18,15 +17,36 @@ export default class Hero {
             STOP: 5
         };
 
-        this.action = this.STATE.STOP;
-        this.image = this.Loader.getImage('hero');
-
-        this.speed = 256;
+        this.action = action;
+        this.image = this.Loader.getImage('otherPlayer');
+        this.speed = speed;
     }
 
-
-    move(delta, dirx, diry) {
+    move(delta) {
         this._calculateTileLevel();
+
+        switch (this.action) {
+            case RUNNINGNORTH:
+                dirx = 0;
+                diry = -1;
+                break;
+            case RUNNINGEAST:
+                dirx = 1;
+                diry = 0;
+                break;
+            case RUNNINGSOUTH:
+                dirx = 0;
+                diry = 1;
+                break;
+            case RUNNINGWEST:
+                dirx = -1;
+                diry = 0;
+                break;
+            case STOP:
+                dirx = 0;
+                diry = 0;
+                break;
+        }
         // move hero
         this.x += dirx * this.speed * delta;
         this.y += diry * this.speed * delta;
@@ -40,7 +60,6 @@ export default class Hero {
         this.x = Math.max(0, Math.min(this.x, maxX));
         this.y = Math.max(0, Math.min(this.y, maxY));
     }
-
 
     _calculateTileLevel() {
         let newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
@@ -85,5 +104,4 @@ export default class Hero {
             this.x = this.maskWidth / 2 + this.map.getX(col + 1);
         }
     }
-
 }

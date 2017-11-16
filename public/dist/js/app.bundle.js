@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(9);
+module.exports = __webpack_require__(10);
 
 
 /***/ }),
@@ -86,7 +86,7 @@ var _MainGameState = __webpack_require__(3);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(13);
+var _Map = __webpack_require__(9);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -95,10 +95,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function () {
     var ctx = document.querySelector("#game").getContext('2d');
 
-    var Socket = io();
+    //const socket = io();
+    var socket = io.connect("http://localhost:5000");
 
     var gamestatemanager = new _GameStateManager2.default();
-    var mainstate = new _MainGameState2.default(ctx, new _Map2.default(), Socket);
+    var mainstate = new _MainGameState2.default(ctx, new _Map2.default(), socket);
 })();
 
 /***/ }),
@@ -192,15 +193,19 @@ var _Keyboard = __webpack_require__(5);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
-var _Hero = __webpack_require__(12);
+var _Hero = __webpack_require__(6);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _Loader = __webpack_require__(11);
+var _OtherPlayer = __webpack_require__(12);
+
+var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
+
+var _Loader = __webpack_require__(7);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState2 = __webpack_require__(6);
+var _GameState2 = __webpack_require__(8);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
@@ -223,10 +228,10 @@ var MainGameState = function (_GameState) {
         _this.map = map;
         _this.hero;
         _this.camera;
-
-        _this.Socket = socket;
+        _this.socket = socket;
         _this.fullscreenState = false;
         _this.Loader = new _Loader2.default();
+        _this.otherPlayers = null;
 
         _this.ctx = ctx;
         _this.ctx.width = window.innerWidth;
@@ -278,13 +283,56 @@ var MainGameState = function (_GameState) {
             this.hero = new _Hero2.default(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
 
-            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero);
+            var self = this;
+            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function () {
+                self.socket.emit("new_user", self.hero);
+                self.loadSocket(self.socket);
+            });
             this.events();
+        }
+    }, {
+        key: "loadSocket",
+        value: function loadSocket(client) {
+            var self = this;
+            client.on("New_connection", function (hero) {
+                console.log('new player at ' + hero);
+                self.otherPlayers = new _OtherPlayer2.default(hero.x, hero.y, hero.action, hero.speed, self.Loader, self.map.drawSize);
+            });
+            client.on("MovingWest", function (hero) {
+                console.log("Moves west on " + "x: " + hero.x + " y: " + hero.y);
+                self.otherPlayers.action = hero.action;
+                self.otherPlayers.x = hero.x;
+                self.otherPlayers.y = hero.y;
+            });
+            client.on("MovingEast", function (hero) {
+                console.log("Moves east on " + "x: " + hero.x + " y: " + hero.y);
+                self.otherPlayers.action = hero.action;
+                self.otherPlayers.x = hero.x;
+                self.otherPlayers.y = hero.y;
+            });
+            client.on("MovingSouth", function (hero) {
+                console.log("Moves south on " + "x: " + hero.x + " y: " + hero.y);
+                self.otherPlayers.action = hero.action;
+                self.otherPlayers.x = hero.x;
+                self.otherPlayers.y = hero.y;
+            });
+            client.on("MovingNorth", function (hero) {
+                console.log("Moves north on " + "x: " + hero.x + " y: " + hero.y);
+                self.otherPlayers.action = hero.action;
+                self.otherPlayers.x = hero.x;
+                self.otherPlayers.y = hero.y;
+            });
+            client.on("Stopped", function (hero) {
+                console.log("Stopped on " + "x: " + hero.x + " y: " + hero.y);
+                self.otherPlayers.action = hero.action;
+                self.otherPlayers.x = hero.x;
+                self.otherPlayers.y = hero.y;
+            });
         }
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george-front.png')];
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george-front.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other-front.png')];
         }
     }, {
         key: "update",
@@ -294,31 +342,31 @@ var MainGameState = function (_GameState) {
             if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                     this.hero.action = this.hero.STATE.RUNNINGWEST;
-                    this.Socket.emit("MoveWest", this.hero);
+                    this.socket.emit("MoveWest", this.hero);
                 }
                 dirx = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                     this.hero.action = this.hero.STATE.RUNNINGEAST;
-                    this.Socket.emit("MoveEast", this.hero);
+                    this.socket.emit("MoveEast", this.hero);
                 }
                 dirx = 1;
             } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                     this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                    this.Socket.emit("MoveNorth", this.hero);
+                    this.socket.emit("MoveNorth", this.hero);
                 }
                 diry = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                     this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                    this.Socket.emit("MoveSouth", this.hero);
+                    this.socket.emit("MoveSouth", this.hero);
                 }
                 diry = 1;
             } else {
                 if (this.hero.action != this.hero.STATE.STOP) {
                     this.hero.action = this.hero.STATE.STOP;
-                    this.Socket.emit("Stop", this.hero);
+                    this.socket.emit("Stop", this.hero);
                 }
             }
             this.hero.move(delta, dirx, diry);
@@ -349,6 +397,10 @@ var MainGameState = function (_GameState) {
                 this._drawLayer(i);
             } // draw main character
             this.ctx.drawImage(this.hero.image, this.hero.screenX - this.hero.width / 2, this.hero.screenY - this.hero.height / 2, this.hero.width, this.hero.height);
+
+            if (this.otherPlayers != null) {
+                this.ctx.drawImage(this.otherPlayers.image, this.camera.getScreenX(this.otherPlayers.x) - this.otherPlayers.width / 2, this.camera.getScreenY(this.otherPlayers.y) - this.otherPlayers.height / 2, this.otherPlayers.width, this.otherPlayers.height);
+            }
 
             // draw map top layer
             for (var _i = layersUnderPlayer; _i < totalLayers - 1; _i++) {
@@ -530,6 +582,16 @@ var Camera = function () {
             this.following.screenX = this.following.x - this.x;
             this.following.screenY = this.following.y - this.y;
         }
+    }, {
+        key: "getScreenX",
+        value: function getScreenX(playerX) {
+            return playerX - this.x;
+        }
+    }, {
+        key: "getScreenY",
+        value: function getScreenY(playerY) {
+            return playerY - this.y;
+        }
     }]);
 
     return Camera;
@@ -626,118 +688,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var GameState = function () {
-    function GameState(ctx) {
-        _classCallCheck(this, GameState);
-
-        this.ctx = ctx;
-    }
-
-    _createClass(GameState, [{
-        key: "getContext",
-        value: function getContext() {
-            return this.ctx;
-        }
-    }, {
-        key: "clear",
-        value: function clear() {
-            this.ctx.clearRect(0, 0, ctx.width, ctx.height);
-        }
-    }, {
-        key: "draw",
-        value: function draw() {
-            //this draws something
-            this.ctx.clearRect(0, 0, ctx.width, ctx.height);
-        }
-    }]);
-
-    return GameState;
-}();
-
-exports.default = GameState;
-
-/***/ }),
-/* 7 */,
-/* 8 */,
-/* 9 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 10 */,
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Loader = function () {
-    function Loader() {
-        _classCallCheck(this, Loader);
-
-        this.images = {};
-    }
-
-    _createClass(Loader, [{
-        key: 'loadImage',
-        value: function loadImage(key, src) {
-            var img = new Image();
-
-            var d = new Promise(function (resolve, reject) {
-                img.onload = function () {
-                    this.images[key] = img;
-                    resolve(img);
-                }.bind(this);
-
-                img.onerror = function () {
-                    reject('Could not load image: ' + src);
-                };
-            }.bind(this));
-
-            img.src = src;
-            return d;
-        }
-    }, {
-        key: 'getImage',
-        value: function getImage(key) {
-            return key in this.images ? this.images[key] : null;
-        }
-    }]);
-
-    return Loader;
-}();
-
-exports.default = Loader;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var Hero = function () {
     function Hero(map, x, y, Loader) {
         _classCallCheck(this, Hero);
 
-        console.log('Hero created at ' + x + ', ' + y);
         this.map = map;
         this.x = x;
         this.y = y;
@@ -830,7 +784,105 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 13 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Loader = function () {
+    function Loader() {
+        _classCallCheck(this, Loader);
+
+        this.images = {};
+    }
+
+    _createClass(Loader, [{
+        key: 'loadImage',
+        value: function loadImage(key, src) {
+            var img = new Image();
+
+            var d = new Promise(function (resolve, reject) {
+                img.onload = function () {
+                    this.images[key] = img;
+                    resolve(img);
+                }.bind(this);
+
+                img.onerror = function () {
+                    reject('Could not load image: ' + src);
+                };
+            }.bind(this));
+
+            img.src = src;
+            return d;
+        }
+    }, {
+        key: 'getImage',
+        value: function getImage(key) {
+            return key in this.images ? this.images[key] : null;
+        }
+    }]);
+
+    return Loader;
+}();
+
+exports.default = Loader;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GameState = function () {
+    function GameState(ctx) {
+        _classCallCheck(this, GameState);
+
+        this.ctx = ctx;
+    }
+
+    _createClass(GameState, [{
+        key: "getContext",
+        value: function getContext() {
+            return this.ctx;
+        }
+    }, {
+        key: "clear",
+        value: function clear() {
+            this.ctx.clearRect(0, 0, ctx.width, ctx.height);
+        }
+    }, {
+        key: "draw",
+        value: function draw() {
+            //this draws something
+            this.ctx.clearRect(0, 0, ctx.width, ctx.height);
+        }
+    }]);
+
+    return GameState;
+}();
+
+exports.default = GameState;
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -859,7 +911,7 @@ var Map = function () {
 
     _createClass(Map, [{
         key: 'loadMap',
-        value: function loadMap(src, camera, hero) {
+        value: function loadMap(src, camera, hero, callback) {
             var map = this;
             this.loadJSON(src, function (data) {
                 console.log(data);
@@ -875,6 +927,7 @@ var Map = function () {
                 camera.follow(hero);
                 console.log('#layers:' + map.layers.length);
                 console.log('#tiles horizontally in tileset:' + map.twidth);
+                callback();
             });
         }
     }, {
@@ -1113,6 +1166,144 @@ var map = {
 
 
 exports.default = Map;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 11 */,
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var OtherPlayer = function () {
+    function OtherPlayer(x, y, action, speed, Loader, drawSize) {
+        _classCallCheck(this, OtherPlayer);
+
+        this.x = x;
+        this.y = y;
+        this.Loader = Loader;
+
+        this.width = drawSize;
+        this.height = drawSize;
+        this.maskWidth = drawSize * 0.75;
+        this.maskHeight = drawSize * 0.85;
+        this.tileLevel = 0; // HeighttileLevel
+        this.STATE = {
+            RUNNINGNORTH: 1,
+            RUNNINGEAST: 2,
+            RUNNINGSOUTH: 3,
+            RUNNINGWEST: 4,
+            STOP: 5
+        };
+
+        this.action = action;
+        this.image = this.Loader.getImage('otherPlayer');
+        this.speed = speed;
+    }
+
+    _createClass(OtherPlayer, [{
+        key: 'move',
+        value: function move(delta) {
+            this._calculateTileLevel();
+
+            switch (this.action) {
+                case RUNNINGNORTH:
+                    dirx = 0;
+                    diry = -1;
+                    break;
+                case RUNNINGEAST:
+                    dirx = 1;
+                    diry = 0;
+                    break;
+                case RUNNINGSOUTH:
+                    dirx = 0;
+                    diry = 1;
+                    break;
+                case RUNNINGWEST:
+                    dirx = -1;
+                    diry = 0;
+                    break;
+                case STOP:
+                    dirx = 0;
+                    diry = 0;
+                    break;
+            }
+            // move hero
+            this.x += dirx * this.speed * delta;
+            this.y += diry * this.speed * delta;
+
+            // check if we walked into a non-walkable tile
+            this._collide(dirx, diry);
+
+            // clamp values
+            var maxX = this.map.cols * this.map.drawSize;
+            var maxY = this.map.rows * this.map.drawSize;
+            this.x = Math.max(0, Math.min(this.x, maxX));
+            this.y = Math.max(0, Math.min(this.y, maxY));
+        }
+    }, {
+        key: '_calculateTileLevel',
+        value: function _calculateTileLevel() {
+            var newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
+            if (newTileLevel != -1) {
+                if (this.tileLevel != newTileLevel) {
+                    //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
+                    this.tileLevel = newTileLevel;
+                }
+            }
+        }
+    }, {
+        key: '_collide',
+        value: function _collide(dirx, diry) {
+            var row = void 0,
+                col = void 0;
+            // -1 in right and bottom is because image ranges from 0..63
+            // and not up to 64
+            var left = this.x - this.maskWidth / 2;
+            var right = this.x + this.maskWidth / 2 - 1;
+            var top = this.y - this.maskHeight / 2;
+            var bottom = this.y + this.maskHeight / 2 - 1;
+
+            // check for collisions on sprite sides
+            var collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
+            if (!collision) {
+                return;
+            }
+
+            if (diry > 0) {
+                row = this.map.getRow(bottom);
+                this.y = -this.maskHeight / 2 + this.map.getY(row);
+            } else if (diry < 0) {
+                row = this.map.getRow(top);
+                this.y = this.maskHeight / 2 + this.map.getY(row + 1);
+            } else if (dirx > 0) {
+                col = this.map.getCol(right);
+                this.x = -this.maskWidth / 2 + this.map.getX(col);
+            } else if (dirx < 0) {
+                col = this.map.getCol(left);
+                this.x = this.maskWidth / 2 + this.map.getX(col + 1);
+            }
+        }
+    }]);
+
+    return OtherPlayer;
+}();
+
+exports.default = OtherPlayer;
 
 /***/ })
 /******/ ]);

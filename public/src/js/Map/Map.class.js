@@ -12,7 +12,7 @@ export default class Map {
         ]; // Basic empty layers
     }
 
-    loadMap(src, camera, hero) {
+    loadMap(src, camera, hero, callback) {
         let map = this;
         this.loadJSON(src, function (data) {
             console.log(data);
@@ -28,6 +28,7 @@ export default class Map {
             camera.follow(hero);
             console.log('#layers:' + map.layers.length);
             console.log('#tiles horizontally in tileset:' + map.twidth);
+            callback();
         });
     }
 

@@ -54,4 +54,11 @@ export default class Camera {
 
     }
 
+    getScreenX(playerX) {
+        return playerX - this.x;
+    }
+    getScreenY(playerY) {
+        return playerY - this.y ;
+    }
+
 }

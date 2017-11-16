@@ -1,20 +1,20 @@
 import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
 import Hero from "../GameObjects/Hero.class";
+import OtherPlayer from "../GameObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
 
 export default class MainGameState extends GameState {
     constructor(ctx, map, socket) {
         super(ctx);
-
         this.map = map;
         this.hero;
         this.camera;
-
-        this.Socket = socket;
+        this.socket = socket;
         this.fullscreenState = false;
         this.Loader = new Loader();
+        this.otherPlayers = null;
 
         this.ctx = ctx;
         this.ctx.width = window.innerWidth;
@@ -62,16 +62,59 @@ export default class MainGameState extends GameState {
         this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
 
-        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero);
+        let self = this;
+        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function () {
+            self.socket.emit("new_user", self.hero);
+            self.loadSocket(self.socket);
+        });
         this.events();
+    }
+
+
+    loadSocket(client) {
+        let self = this;
+        client.on("New_connection", function (hero) {
+            console.log('new player at ' + hero);
+            self.otherPlayers = new OtherPlayer(hero.x, hero.y, hero.action, hero.speed, self.Loader, self.map.drawSize);
+        });
+        client.on("MovingWest", function (hero) {
+            console.log("Moves west on " + "x: " + hero.x + " y: " + hero.y);
+            self.otherPlayers.action = hero.action;
+            self.otherPlayers.x = hero.x;
+            self.otherPlayers.y = hero.y;
+        });
+        client.on("MovingEast", function (hero) {
+            console.log("Moves east on " + "x: " + hero.x + " y: " + hero.y);
+            self.otherPlayers.action = hero.action;
+            self.otherPlayers.x = hero.x;
+            self.otherPlayers.y = hero.y;
+        });
+        client.on("MovingSouth", function (hero) {
+            console.log("Moves south on " + "x: " + hero.x + " y: " + hero.y);
+            self.otherPlayers.action = hero.action;
+            self.otherPlayers.x = hero.x;
+            self.otherPlayers.y = hero.y;
+        });
+        client.on("MovingNorth", function (hero) {
+            console.log("Moves north on " + "x: " + hero.x + " y: " + hero.y);
+            self.otherPlayers.action = hero.action;
+            self.otherPlayers.x = hero.x;
+            self.otherPlayers.y = hero.y;
+        });
+        client.on("Stopped", function (hero) {
+            console.log("Stopped on " + "x: " + hero.x + " y: " + hero.y);
+            self.otherPlayers.action = hero.action;
+            self.otherPlayers.x = hero.x;
+            self.otherPlayers.y = hero.y;
+        });
     }
 
     load() {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
-            this.Loader.loadImage('hero', '../../assets/sprites/george-front.png')
+            this.Loader.loadImage('hero', '../../assets/sprites/george-front.png'),
+            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other-front.png')
         ];
     }
-
 
     update(delta) {
         let dirx = 0;
@@ -79,31 +122,31 @@ export default class MainGameState extends GameState {
         if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
             if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                 this.hero.action = this.hero.STATE.RUNNINGWEST;
-                this.Socket.emit("MoveWest", this.hero);
+                this.socket.emit("MoveWest", this.hero);
             }
             dirx = -1;
         } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
             if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                 this.hero.action = this.hero.STATE.RUNNINGEAST;
-                this.Socket.emit("MoveEast", this.hero);
+                this.socket.emit("MoveEast", this.hero);
             }
             dirx = 1;
         } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
             if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                 this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                this.Socket.emit("MoveNorth", this.hero);
+                this.socket.emit("MoveNorth", this.hero);
             }
             diry = -1;
         } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
             if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                 this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                this.Socket.emit("MoveSouth", this.hero);
+                this.socket.emit("MoveSouth", this.hero);
             }
             diry = 1;
         } else {
             if (this.hero.action != this.hero.STATE.STOP) {
                 this.hero.action = this.hero.STATE.STOP;
-                this.Socket.emit("Stop", this.hero);
+                this.socket.emit("Stop", this.hero);
             }
 
         }
@@ -145,6 +188,15 @@ export default class MainGameState extends GameState {
             this.hero.screenY - this.hero.height / 2,
             this.hero.width,
             this.hero.height);
+
+        if (this.otherPlayers != null) {
+            this.ctx.drawImage(
+                this.otherPlayers.image,
+                this.camera.getScreenX(this.otherPlayers.x) - this.otherPlayers.width / 2,
+                this.camera.getScreenY(this.otherPlayers.y) - this.otherPlayers.height / 2,
+                this.otherPlayers.width,
+                this.otherPlayers.height);
+        }
 
         // draw map top layer
         for (let i = layersUnderPlayer; i < totalLayers - 1; i++)
