@@ -95,8 +95,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (function () {
     var ctx = document.querySelector("#game").getContext('2d');
 
-    //const socket = io();
-    var socket = io.connect("http://localhost:5000");
+    var socket = io();
+    //const socket = io.connect("http://localhost:5000");
 
     var gamestatemanager = new _GameStateManager2.default();
     var mainstate = new _MainGameState2.default(ctx, new _Map2.default(), socket);
