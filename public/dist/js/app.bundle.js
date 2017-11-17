@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(10);
+module.exports = __webpack_require__(12);
 
 
 /***/ }),
@@ -86,7 +86,7 @@ var _MainGameState = __webpack_require__(3);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(9);
+var _Map = __webpack_require__(11);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -197,17 +197,19 @@ var _Hero = __webpack_require__(6);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _OtherPlayer = __webpack_require__(12);
+var _OtherPlayer = __webpack_require__(7);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(7);
+var _Loader = __webpack_require__(8);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState2 = __webpack_require__(8);
+var _GameState2 = __webpack_require__(9);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
+
+var _os = __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -231,7 +233,7 @@ var MainGameState = function (_GameState) {
         _this.socket = socket;
         _this.fullscreenState = false;
         _this.Loader = new _Loader2.default();
-        _this.otherPlayers = null;
+        _this.otherPlayers = [];
 
         _this.ctx = ctx;
         _this.ctx.width = window.innerWidth;
@@ -294,39 +296,80 @@ var MainGameState = function (_GameState) {
         key: "loadSocket",
         value: function loadSocket(client) {
             var self = this;
+            client.on("otherPlayers", function (others) {
+                self.otherPlayers = [];
+                others.forEach(function (player) {
+                    if (player.id != self.hero.id) {
+                        self.otherPlayers.push(new _OtherPlayer2.default(player, self.Loader, self.map));
+                    }
+                });
+            });
             client.on("New_connection", function (hero) {
-                console.log('new player at ' + hero);
-                self.otherPlayers = new _OtherPlayer2.default(hero.x, hero.y, hero.action, hero.speed, self.Loader, self.map.drawSize);
+                self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
+            });
+            client.on("user_leave", function (hero) {
+                console.log('player left');
+                var toDeleteIndex = 0;
+                for (var _i = 0; _i < self.otherPlayers.length; _i++) {
+                    if (self.otherPlayers[_i].id === hero.id) toDeleteIndex = _i;
+                }
+                self.otherPlayers.splice(i, 1);
+                self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
             });
             client.on("MovingWest", function (hero) {
-                console.log("Moves west on " + "x: " + hero.x + " y: " + hero.y);
-                self.otherPlayers.action = hero.action;
-                self.otherPlayers.x = hero.x;
-                self.otherPlayers.y = hero.y;
+                self.otherPlayers.forEach(function (player) {
+                    if (player.id === hero.id) {
+                        console.log('info from ' + player.id);
+                        player.action = hero.action;
+                        player.x = hero.x;
+                        player.y = hero.y;
+                        player.tileLevel = hero.tileLevel;
+                    }
+                });
             });
             client.on("MovingEast", function (hero) {
-                console.log("Moves east on " + "x: " + hero.x + " y: " + hero.y);
-                self.otherPlayers.action = hero.action;
-                self.otherPlayers.x = hero.x;
-                self.otherPlayers.y = hero.y;
+                self.otherPlayers.forEach(function (player) {
+                    if (player.id === hero.id) {
+                        console.log('info from ' + player.id);
+                        player.action = hero.action;
+                        player.x = hero.x;
+                        player.y = hero.y;
+                        player.tileLevel = hero.tileLevel;
+                    }
+                });
             });
             client.on("MovingSouth", function (hero) {
-                console.log("Moves south on " + "x: " + hero.x + " y: " + hero.y);
-                self.otherPlayers.action = hero.action;
-                self.otherPlayers.x = hero.x;
-                self.otherPlayers.y = hero.y;
+                self.otherPlayers.forEach(function (player) {
+                    if (player.id === hero.id) {
+                        console.log('info from ' + player.id);
+                        player.action = hero.action;
+                        player.x = hero.x;
+                        player.y = hero.y;
+                        player.tileLevel = hero.tileLevel;
+                    }
+                });
             });
             client.on("MovingNorth", function (hero) {
-                console.log("Moves north on " + "x: " + hero.x + " y: " + hero.y);
-                self.otherPlayers.action = hero.action;
-                self.otherPlayers.x = hero.x;
-                self.otherPlayers.y = hero.y;
+                self.otherPlayers.forEach(function (player) {
+                    if (player.id === hero.id) {
+                        console.log('info from ' + player.id);
+                        player.action = hero.action;
+                        player.x = hero.x;
+                        player.y = hero.y;
+                        player.tileLevel = hero.tileLevel;
+                    }
+                });
             });
             client.on("Stopped", function (hero) {
-                console.log("Stopped on " + "x: " + hero.x + " y: " + hero.y);
-                self.otherPlayers.action = hero.action;
-                self.otherPlayers.x = hero.x;
-                self.otherPlayers.y = hero.y;
+                self.otherPlayers.forEach(function (player) {
+                    if (player.id === hero.id) {
+                        console.log('info from ' + player.id);
+                        player.action = hero.action;
+                        player.x = hero.x;
+                        player.y = hero.y;
+                        player.tileLevel = hero.tileLevel;
+                    }
+                });
             });
         }
     }, {
@@ -370,11 +413,28 @@ var MainGameState = function (_GameState) {
                 }
             }
             this.hero.move(delta, dirx, diry);
+            this.otherPlayers.forEach(function (player) {
+                player.move(delta);
+            });
             this.camera.update();
+        }
+    }, {
+        key: "getLayersUnder",
+        value: function getLayersUnder(tileLevel) {
+            switch (tileLevel) {
+                case 1:
+                    return 12;
+                case 2:
+                    return 14;
+                default:
+                    return 11;
+            }
         }
     }, {
         key: "render",
         value: function render() {
+            var _this2 = this;
+
             var canvas = document.querySelector("canvas");
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -389,23 +449,46 @@ var MainGameState = function (_GameState) {
             this.ctx.globalAlpha = 1;
             this.ctx.imageSmoothingEnabled = false;
             // draw map background layer
-            var layersUnderPlayer = 12;
+            var layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
             var totalLayers = this.map.layers.length;
-            if (this.hero.tileLevel === 0) layersUnderPlayer = 11;else if (this.hero.tileLevel === 1) layersUnderPlayer = 12;else if (this.hero.tileLevel === 2) layersUnderPlayer = 14;
+            var self = this;
 
-            for (var i = 0; i < layersUnderPlayer; i++) {
-                this._drawLayer(i);
-            } // draw main character
-            this.ctx.drawImage(this.hero.image, this.hero.screenX - this.hero.width / 2, this.hero.screenY - this.hero.height / 2, this.hero.width, this.hero.height);
+            var _loop = function _loop(_i2) {
+                _this2._drawLayer(_i2);
 
-            if (this.otherPlayers != null) {
-                this.ctx.drawImage(this.otherPlayers.image, this.camera.getScreenX(this.otherPlayers.x) - this.otherPlayers.width / 2, this.camera.getScreenY(this.otherPlayers.y) - this.otherPlayers.height / 2, this.otherPlayers.width, this.otherPlayers.height);
+                _this2.otherPlayers.forEach(function (player) {
+                    var thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                    if (thisLayersUnder - 1 === _i2) {
+                        self.ctx.drawImage(player.image, self.camera.getScreenX(player.x) - player.width / 2, self.camera.getScreenY(player.y) - player.height / 2, player.width, player.height);
+                    }
+                });
+            };
+
+            for (var _i2 = 0; _i2 < layersUnderPlayer; _i2++) {
+                _loop(_i2);
             }
 
+            // draw main character
+            this.ctx.drawImage(this.hero.image, this.hero.screenX - this.hero.width / 2, this.hero.screenY - this.hero.height / 2, this.hero.width, this.hero.height);
+
             // draw map top layer
-            for (var _i = layersUnderPlayer; _i < totalLayers - 1; _i++) {
-                this._drawLayer(_i);
-            }this.ctx.globalAlpha = 0.5;
+
+            var _loop2 = function _loop2(_i3) {
+                _this2._drawLayer(_i3);
+
+                _this2.otherPlayers.forEach(function (player) {
+                    var thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                    if (thisLayersUnder - 1 === _i3) {
+                        self.ctx.drawImage(player.image, self.camera.getScreenX(player.x) - player.width / 2, self.camera.getScreenY(player.y) - player.height / 2, player.width, player.height);
+                    }
+                });
+            };
+
+            for (var _i3 = layersUnderPlayer; _i3 < totalLayers - 1; _i3++) {
+                _loop2(_i3);
+            }
+
+            this.ctx.globalAlpha = 0.5;
             this._drawLayer(totalLayers - 1);
 
             var tx = 10,
@@ -714,9 +797,22 @@ var Hero = function () {
         this.image = this.Loader.getImage('hero');
 
         this.speed = 256;
+        this.id = this.generateId();
     }
 
     _createClass(Hero, [{
+        key: 'generateId',
+        value: function generateId() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+            }
+
+            function time() {
+                return Math.floor((1 + new Date().getTime()) * 0x10000).toString(16).substring(1);
+            }
+            return time() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        }
+    }, {
         key: 'move',
         value: function move(delta, dirx, diry) {
             this._calculateTileLevel();
@@ -798,6 +894,123 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var OtherPlayer = function () {
+    function OtherPlayer(hero, Loader, map) {
+        _classCallCheck(this, OtherPlayer);
+
+        this.x = hero.x;
+        this.y = hero.y;
+        this.Loader = Loader;
+
+        this.width = hero.width;
+        this.height = hero.height;
+        this.maskWidth = hero.width * 0.75;
+        this.maskHeight = hero.height * 0.85;
+        this.tileLevel = 0; // HeighttileLevel
+        this.STATE = {
+            RUNNINGNORTH: 1,
+            RUNNINGEAST: 2,
+            RUNNINGSOUTH: 3,
+            RUNNINGWEST: 4,
+            STOP: 5
+        };
+
+        this.action = hero.action;
+        this.image = this.Loader.getImage('otherPlayer');
+        this.speed = hero.speed;
+        this.id = hero.id;
+        this.map = map;
+    }
+
+    _createClass(OtherPlayer, [{
+        key: 'move',
+        value: function move(delta) {
+            var dirx = void 0,
+                diry = void 0;
+
+            switch (this.action) {
+                case this.STATE.RUNNINGNORTH:
+                    dirx = 0;
+                    diry = -1;
+                    break;
+                case this.STATE.RUNNINGEAST:
+                    dirx = 1;
+                    diry = 0;
+                    break;
+                case this.STATE.RUNNINGSOUTH:
+                    dirx = 0;
+                    diry = 1;
+                    break;
+                case this.STATE.RUNNINGWEST:
+                    dirx = -1;
+                    diry = 0;
+                    break;
+                case this.STATE.STOP:
+                    dirx = 0;
+                    diry = 0;
+                    break;
+            }
+            // move hero
+            this.x += dirx * this.speed * delta;
+            this.y += diry * this.speed * delta;
+
+            // check if we walked into a non-walkable tile
+            this._collide(dirx, diry);
+        }
+    }, {
+        key: '_collide',
+        value: function _collide(dirx, diry) {
+            var row = void 0,
+                col = void 0;
+            // -1 in right and bottom is because image ranges from 0..63
+            // and not up to 64
+            var left = this.x - this.maskWidth / 2;
+            var right = this.x + this.maskWidth / 2 - 1;
+            var top = this.y - this.maskHeight / 2;
+            var bottom = this.y + this.maskHeight / 2 - 1;
+
+            // check for collisions on sprite sides
+            var collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
+            if (!collision) {
+                return;
+            }
+
+            if (diry > 0) {
+                row = this.map.getRow(bottom);
+                this.y = -this.maskHeight / 2 + this.map.getY(row);
+            } else if (diry < 0) {
+                row = this.map.getRow(top);
+                this.y = this.maskHeight / 2 + this.map.getY(row + 1);
+            } else if (dirx > 0) {
+                col = this.map.getCol(right);
+                this.x = -this.maskWidth / 2 + this.map.getX(col);
+            } else if (dirx < 0) {
+                col = this.map.getCol(left);
+                this.x = this.maskWidth / 2 + this.map.getX(col + 1);
+            }
+        }
+    }]);
+
+    return OtherPlayer;
+}();
+
+exports.default = OtherPlayer;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var Loader = function () {
     function Loader() {
         _classCallCheck(this, Loader);
@@ -837,7 +1050,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -882,7 +1095,58 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 9 */
+/* 10 */
+/***/ (function(module, exports) {
+
+exports.endianness = function () { return 'LE' };
+
+exports.hostname = function () {
+    if (typeof location !== 'undefined') {
+        return location.hostname
+    }
+    else return '';
+};
+
+exports.loadavg = function () { return [] };
+
+exports.uptime = function () { return 0 };
+
+exports.freemem = function () {
+    return Number.MAX_VALUE;
+};
+
+exports.totalmem = function () {
+    return Number.MAX_VALUE;
+};
+
+exports.cpus = function () { return [] };
+
+exports.type = function () { return 'Browser' };
+
+exports.release = function () {
+    if (typeof navigator !== 'undefined') {
+        return navigator.appVersion;
+    }
+    return '';
+};
+
+exports.networkInterfaces
+= exports.getNetworkInterfaces
+= function () { return {} };
+
+exports.arch = function () { return 'javascript' };
+
+exports.platform = function () { return 'browser' };
+
+exports.tmpdir = exports.tmpDir = function () {
+    return '/tmp';
+};
+
+exports.EOL = '\n';
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1168,142 +1432,10 @@ var map = {
 exports.default = Map;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 11 */,
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var OtherPlayer = function () {
-    function OtherPlayer(x, y, action, speed, Loader, drawSize) {
-        _classCallCheck(this, OtherPlayer);
-
-        this.x = x;
-        this.y = y;
-        this.Loader = Loader;
-
-        this.width = drawSize;
-        this.height = drawSize;
-        this.maskWidth = drawSize * 0.75;
-        this.maskHeight = drawSize * 0.85;
-        this.tileLevel = 0; // HeighttileLevel
-        this.STATE = {
-            RUNNINGNORTH: 1,
-            RUNNINGEAST: 2,
-            RUNNINGSOUTH: 3,
-            RUNNINGWEST: 4,
-            STOP: 5
-        };
-
-        this.action = action;
-        this.image = this.Loader.getImage('otherPlayer');
-        this.speed = speed;
-    }
-
-    _createClass(OtherPlayer, [{
-        key: 'move',
-        value: function move(delta) {
-            this._calculateTileLevel();
-
-            switch (this.action) {
-                case RUNNINGNORTH:
-                    dirx = 0;
-                    diry = -1;
-                    break;
-                case RUNNINGEAST:
-                    dirx = 1;
-                    diry = 0;
-                    break;
-                case RUNNINGSOUTH:
-                    dirx = 0;
-                    diry = 1;
-                    break;
-                case RUNNINGWEST:
-                    dirx = -1;
-                    diry = 0;
-                    break;
-                case STOP:
-                    dirx = 0;
-                    diry = 0;
-                    break;
-            }
-            // move hero
-            this.x += dirx * this.speed * delta;
-            this.y += diry * this.speed * delta;
-
-            // check if we walked into a non-walkable tile
-            this._collide(dirx, diry);
-
-            // clamp values
-            var maxX = this.map.cols * this.map.drawSize;
-            var maxY = this.map.rows * this.map.drawSize;
-            this.x = Math.max(0, Math.min(this.x, maxX));
-            this.y = Math.max(0, Math.min(this.y, maxY));
-        }
-    }, {
-        key: '_calculateTileLevel',
-        value: function _calculateTileLevel() {
-            var newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
-            if (newTileLevel != -1) {
-                if (this.tileLevel != newTileLevel) {
-                    //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
-                    this.tileLevel = newTileLevel;
-                }
-            }
-        }
-    }, {
-        key: '_collide',
-        value: function _collide(dirx, diry) {
-            var row = void 0,
-                col = void 0;
-            // -1 in right and bottom is because image ranges from 0..63
-            // and not up to 64
-            var left = this.x - this.maskWidth / 2;
-            var right = this.x + this.maskWidth / 2 - 1;
-            var top = this.y - this.maskHeight / 2;
-            var bottom = this.y + this.maskHeight / 2 - 1;
-
-            // check for collisions on sprite sides
-            var collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
-            if (!collision) {
-                return;
-            }
-
-            if (diry > 0) {
-                row = this.map.getRow(bottom);
-                this.y = -this.maskHeight / 2 + this.map.getY(row);
-            } else if (diry < 0) {
-                row = this.map.getRow(top);
-                this.y = this.maskHeight / 2 + this.map.getY(row + 1);
-            } else if (dirx > 0) {
-                col = this.map.getCol(right);
-                this.x = -this.maskWidth / 2 + this.map.getX(col);
-            } else if (dirx < 0) {
-                col = this.map.getCol(left);
-                this.x = this.maskWidth / 2 + this.map.getX(col + 1);
-            }
-        }
-    }]);
-
-    return OtherPlayer;
-}();
-
-exports.default = OtherPlayer;
 
 /***/ })
 /******/ ]);

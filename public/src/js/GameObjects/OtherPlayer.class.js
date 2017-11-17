@@ -1,13 +1,13 @@
 export default class OtherPlayer {
-    constructor(x, y, action, speed, Loader, drawSize) {
-        this.x = x;
-        this.y = y;
+    constructor(hero, Loader, map) {
+        this.x = hero.x;
+        this.y = hero.y;
         this.Loader = Loader;
 
-        this.width = drawSize;
-        this.height = drawSize;
-        this.maskWidth = drawSize * 0.75;
-        this.maskHeight = drawSize * 0.85;
+        this.width = hero.width;
+        this.height = hero.height;
+        this.maskWidth = hero.width * 0.75;
+        this.maskHeight = hero.height * 0.85;
         this.tileLevel = 0; // HeighttileLevel
         this.STATE = {
             RUNNINGNORTH: 1,
@@ -17,32 +17,34 @@ export default class OtherPlayer {
             STOP: 5
         };
 
-        this.action = action;
+        this.action = hero.action;
         this.image = this.Loader.getImage('otherPlayer');
-        this.speed = speed;
+        this.speed = hero.speed;
+        this.id = hero.id;
+        this.map = map;
     }
 
     move(delta) {
-        this._calculateTileLevel();
+        let dirx, diry;
 
         switch (this.action) {
-            case RUNNINGNORTH:
+            case this.STATE.RUNNINGNORTH:
                 dirx = 0;
                 diry = -1;
                 break;
-            case RUNNINGEAST:
+            case this.STATE.RUNNINGEAST:
                 dirx = 1;
                 diry = 0;
                 break;
-            case RUNNINGSOUTH:
+            case this.STATE.RUNNINGSOUTH:
                 dirx = 0;
                 diry = 1;
                 break;
-            case RUNNINGWEST:
+            case this.STATE.RUNNINGWEST:
                 dirx = -1;
                 diry = 0;
                 break;
-            case STOP:
+            case this.STATE.STOP:
                 dirx = 0;
                 diry = 0;
                 break;
@@ -53,22 +55,6 @@ export default class OtherPlayer {
 
         // check if we walked into a non-walkable tile
         this._collide(dirx, diry);
-
-        // clamp values
-        let maxX = this.map.cols * this.map.drawSize;
-        let maxY = this.map.rows * this.map.drawSize;
-        this.x = Math.max(0, Math.min(this.x, maxX));
-        this.y = Math.max(0, Math.min(this.y, maxY));
-    }
-
-    _calculateTileLevel() {
-        let newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
-        if (newTileLevel != -1) {
-            if (this.tileLevel != newTileLevel) {
-                //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
-                this.tileLevel = newTileLevel;
-            }
-        }
     }
 
     _collide(dirx, diry) {

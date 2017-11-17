@@ -22,6 +22,23 @@ export default class Hero {
         this.image = this.Loader.getImage('hero');
 
         this.speed = 256;
+        this.id = this.generateId();
+    }
+
+    generateId() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+
+        function time() {
+            return Math.floor((1 + (new Date()).getTime()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return time() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
     }
 
 

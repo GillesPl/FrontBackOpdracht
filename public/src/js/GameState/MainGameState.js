@@ -4,6 +4,9 @@ import Hero from "../GameObjects/Hero.class";
 import OtherPlayer from "../GameObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
+import {
+    platform
+} from "os";
 
 export default class MainGameState extends GameState {
     constructor(ctx, map, socket) {
@@ -14,7 +17,7 @@ export default class MainGameState extends GameState {
         this.socket = socket;
         this.fullscreenState = false;
         this.Loader = new Loader();
-        this.otherPlayers = null;
+        this.otherPlayers = [];
 
         this.ctx = ctx;
         this.ctx.width = window.innerWidth;
@@ -73,39 +76,81 @@ export default class MainGameState extends GameState {
 
     loadSocket(client) {
         let self = this;
+        client.on("otherPlayers", function (others) {
+            self.otherPlayers = [];
+            others.forEach((player) => {
+                if (player.id != self.hero.id) {
+                    self.otherPlayers.push(new OtherPlayer(player, self.Loader, self.map));
+                }
+            });
+        });
         client.on("New_connection", function (hero) {
-            console.log('new player at ' + hero);
-            self.otherPlayers = new OtherPlayer(hero.x, hero.y, hero.action, hero.speed, self.Loader, self.map.drawSize);
+            self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
+        });
+        client.on("user_leave", function (hero) {
+            console.log('player left');
+            let toDeleteIndex = 0;
+            for (let i = 0; i < self.otherPlayers.length; i++) {
+                if (self.otherPlayers[i].id === hero.id)
+                    toDeleteIndex = i;
+            }
+            self.otherPlayers.splice(i, 1);
+            self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
         });
         client.on("MovingWest", function (hero) {
-            console.log("Moves west on " + "x: " + hero.x + " y: " + hero.y);
-            self.otherPlayers.action = hero.action;
-            self.otherPlayers.x = hero.x;
-            self.otherPlayers.y = hero.y;
+            self.otherPlayers.forEach((player) => {
+                if (player.id === hero.id) {
+                    console.log('info from ' + player.id);
+                    player.action = hero.action;
+                    player.x = hero.x;
+                    player.y = hero.y;
+                    player.tileLevel = hero.tileLevel;
+                }
+            });
         });
         client.on("MovingEast", function (hero) {
-            console.log("Moves east on " + "x: " + hero.x + " y: " + hero.y);
-            self.otherPlayers.action = hero.action;
-            self.otherPlayers.x = hero.x;
-            self.otherPlayers.y = hero.y;
+            self.otherPlayers.forEach((player) => {
+                if (player.id === hero.id) {
+                    console.log('info from ' + player.id);
+                    player.action = hero.action;
+                    player.x = hero.x;
+                    player.y = hero.y;
+                    player.tileLevel = hero.tileLevel;
+                }
+            });
         });
         client.on("MovingSouth", function (hero) {
-            console.log("Moves south on " + "x: " + hero.x + " y: " + hero.y);
-            self.otherPlayers.action = hero.action;
-            self.otherPlayers.x = hero.x;
-            self.otherPlayers.y = hero.y;
+            self.otherPlayers.forEach((player) => {
+                if (player.id === hero.id) {
+                    console.log('info from ' + player.id);
+                    player.action = hero.action;
+                    player.x = hero.x;
+                    player.y = hero.y;
+                    player.tileLevel = hero.tileLevel;
+                }
+            });
         });
         client.on("MovingNorth", function (hero) {
-            console.log("Moves north on " + "x: " + hero.x + " y: " + hero.y);
-            self.otherPlayers.action = hero.action;
-            self.otherPlayers.x = hero.x;
-            self.otherPlayers.y = hero.y;
+            self.otherPlayers.forEach((player) => {
+                if (player.id === hero.id) {
+                    console.log('info from ' + player.id);
+                    player.action = hero.action;
+                    player.x = hero.x;
+                    player.y = hero.y;
+                    player.tileLevel = hero.tileLevel;
+                }
+            });
         });
         client.on("Stopped", function (hero) {
-            console.log("Stopped on " + "x: " + hero.x + " y: " + hero.y);
-            self.otherPlayers.action = hero.action;
-            self.otherPlayers.x = hero.x;
-            self.otherPlayers.y = hero.y;
+            self.otherPlayers.forEach((player) => {
+                if (player.id === hero.id) {
+                    console.log('info from ' + player.id);
+                    player.action = hero.action;
+                    player.x = hero.x;
+                    player.y = hero.y;
+                    player.tileLevel = hero.tileLevel;
+                }
+            });
         });
     }
 
@@ -151,7 +196,21 @@ export default class MainGameState extends GameState {
 
         }
         this.hero.move(delta, dirx, diry);
+        this.otherPlayers.forEach((player) => {
+            player.move(delta);
+        });
         this.camera.update();
+    }
+
+    getLayersUnder(tileLevel) {
+        switch (tileLevel) {
+            case 1:
+                return 12;
+            case 2:
+                return 14;
+            default:
+                return 11;
+        }
     }
 
     render() {
@@ -169,17 +228,25 @@ export default class MainGameState extends GameState {
         this.ctx.globalAlpha = 1;
         this.ctx.imageSmoothingEnabled = false;
         // draw map background layer
-        let layersUnderPlayer = 12;
+        let layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
         let totalLayers = this.map.layers.length;
-        if (this.hero.tileLevel === 0)
-            layersUnderPlayer = 11;
-        else if (this.hero.tileLevel === 1)
-            layersUnderPlayer = 12;
-        else if (this.hero.tileLevel === 2)
-            layersUnderPlayer = 14;
+        let self = this;
 
-        for (let i = 0; i < layersUnderPlayer; i++)
+        for (let i = 0; i < layersUnderPlayer; i++) {
             this._drawLayer(i);
+
+            this.otherPlayers.forEach((player) => {
+                let thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                if (thisLayersUnder - 1 === i) {
+                    self.ctx.drawImage(
+                        player.image,
+                        self.camera.getScreenX(player.x) - player.width / 2,
+                        self.camera.getScreenY(player.y) - player.height / 2,
+                        player.width,
+                        player.height);
+                }
+            });
+        }
 
         // draw main character
         this.ctx.drawImage(
@@ -189,18 +256,22 @@ export default class MainGameState extends GameState {
             this.hero.width,
             this.hero.height);
 
-        if (this.otherPlayers != null) {
-            this.ctx.drawImage(
-                this.otherPlayers.image,
-                this.camera.getScreenX(this.otherPlayers.x) - this.otherPlayers.width / 2,
-                this.camera.getScreenY(this.otherPlayers.y) - this.otherPlayers.height / 2,
-                this.otherPlayers.width,
-                this.otherPlayers.height);
-        }
-
         // draw map top layer
-        for (let i = layersUnderPlayer; i < totalLayers - 1; i++)
+        for (let i = layersUnderPlayer; i < totalLayers - 1; i++) {
             this._drawLayer(i);
+
+            this.otherPlayers.forEach((player) => {
+                let thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                if (thisLayersUnder - 1 === i) {
+                    self.ctx.drawImage(
+                        player.image,
+                        self.camera.getScreenX(player.x) - player.width / 2,
+                        self.camera.getScreenY(player.y) - player.height / 2,
+                        player.width,
+                        player.height);
+                }
+            });
+        }
 
         this.ctx.globalAlpha = 0.5;
         this._drawLayer(totalLayers - 1);
