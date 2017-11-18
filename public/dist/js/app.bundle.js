@@ -314,9 +314,10 @@ var MainGameState = function (_GameState) {
                     if (self.otherPlayers[_i].id === hero.id) toDeleteIndex = _i;
                 }
                 self.otherPlayers.splice(i, 1);
-                self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
+                //self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
             });
-            client.on("MovingWest", function (hero) {
+            client.on("updatingPlayer", function (hero) {
+                var found = false; // is player in cache
                 self.otherPlayers.forEach(function (player) {
                     if (player.id === hero.id) {
                         console.log('info from ' + player.id);
@@ -324,52 +325,12 @@ var MainGameState = function (_GameState) {
                         player.x = hero.x;
                         player.y = hero.y;
                         player.tileLevel = hero.tileLevel;
+                        found = true;
                     }
                 });
-            });
-            client.on("MovingEast", function (hero) {
-                self.otherPlayers.forEach(function (player) {
-                    if (player.id === hero.id) {
-                        console.log('info from ' + player.id);
-                        player.action = hero.action;
-                        player.x = hero.x;
-                        player.y = hero.y;
-                        player.tileLevel = hero.tileLevel;
-                    }
-                });
-            });
-            client.on("MovingSouth", function (hero) {
-                self.otherPlayers.forEach(function (player) {
-                    if (player.id === hero.id) {
-                        console.log('info from ' + player.id);
-                        player.action = hero.action;
-                        player.x = hero.x;
-                        player.y = hero.y;
-                        player.tileLevel = hero.tileLevel;
-                    }
-                });
-            });
-            client.on("MovingNorth", function (hero) {
-                self.otherPlayers.forEach(function (player) {
-                    if (player.id === hero.id) {
-                        console.log('info from ' + player.id);
-                        player.action = hero.action;
-                        player.x = hero.x;
-                        player.y = hero.y;
-                        player.tileLevel = hero.tileLevel;
-                    }
-                });
-            });
-            client.on("Stopped", function (hero) {
-                self.otherPlayers.forEach(function (player) {
-                    if (player.id === hero.id) {
-                        console.log('info from ' + player.id);
-                        player.action = hero.action;
-                        player.x = hero.x;
-                        player.y = hero.y;
-                        player.tileLevel = hero.tileLevel;
-                    }
-                });
+                if (!found) {
+                    self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
+                }
             });
         }
     }, {
@@ -385,31 +346,31 @@ var MainGameState = function (_GameState) {
             if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                     this.hero.action = this.hero.STATE.RUNNINGWEST;
-                    this.socket.emit("MoveWest", this.hero);
+                    this.socket.emit("updatePlayer", this.hero);
                 }
                 dirx = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                     this.hero.action = this.hero.STATE.RUNNINGEAST;
-                    this.socket.emit("MoveEast", this.hero);
+                    this.socket.emit("updatePlayer", this.hero);
                 }
                 dirx = 1;
             } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                     this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                    this.socket.emit("MoveNorth", this.hero);
+                    this.socket.emit("updatePlayer", this.hero);
                 }
                 diry = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                     this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                    this.socket.emit("MoveSouth", this.hero);
+                    this.socket.emit("updatePlayer", this.hero);
                 }
                 diry = 1;
             } else {
                 if (this.hero.action != this.hero.STATE.STOP) {
                     this.hero.action = this.hero.STATE.STOP;
-                    this.socket.emit("Stop", this.hero);
+                    this.socket.emit("updatePlayer", this.hero);
                 }
             }
             this.hero.move(delta, dirx, diry);

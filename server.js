@@ -52,54 +52,18 @@ io.sockets.on('connection', function (socket) {
         // 
     });
 
-    socket.on("MoveWest", function (hero) {
-        console.log("Moves west on " + "x: " + hero.x + "y: " + hero.y);
-        //socket.emit("SelfMovingWest", hero);
-        socket.broadcast.emit("MovingWest", hero);
+    socket.on("updatePlayer", function (hero) {
+        socket.broadcast.emit("updatingPlayer", hero); // Notify all other players
+        let found = false;
         for (let i = players.length - 1; i >= 0; i--) {
             if (hero.id === players[i].id) {
-                players[i] = hero;
+                players[i] = hero; // Update player in cache
+                found = true;
             }
         }
-    });
-
-    socket.on("MoveEast", function (hero) {
-        console.log("Moves east on " + "x: " + hero.x + "y: " + hero.y);
-        socket.broadcast.emit("MovingEast", hero);
-        for (let i = players.length - 1; i >= 0; i--) {
-            if (hero.id === players[i].id) {
-                players[i] = hero;
-            }
-        }
-    });
-
-    socket.on("MoveSouth", function (hero) {
-        console.log("Moves south on " + "x: " + hero.x + "y: " + hero.y);
-        socket.broadcast.emit("MovingSouth", hero);
-        for (let i = players.length - 1; i >= 0; i--) {
-            if (hero.id === players[i].id) {
-                players[i] = hero;
-            }
-        }
-    });
-
-    socket.on("MoveNorth", function (hero) {
-        console.log("Moves north on " + "x: " + hero.x + "y: " + hero.y);
-        socket.broadcast.emit("MovingNorth", hero);
-        for (let i = players.length - 1; i >= 0; i--) {
-            if (hero.id === players[i].id) {
-                players[i] = hero;
-            }
-        }
-    });
-
-    socket.on("Stop", function (hero) {
-        console.log("stopped on " + "x: " + hero.x + "y: " + hero.y);
-        socket.broadcast.emit("Stopped", hero);
-        for (let i = players.length - 1; i >= 0; i--) {
-            if (hero.id === players[i].id) {
-                players[i] = hero;
-            }
+        if (!found) {
+            socketsConnected.push(socket);
+            players.push(hero);
         }
     });
 });
