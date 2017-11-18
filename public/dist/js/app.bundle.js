@@ -234,7 +234,7 @@ var MainGameState = function (_GameState) {
         _this.fullscreenState = false;
         _this.Loader = new _Loader2.default();
         _this.otherPlayers = [];
-
+        _this.connected = false;
         _this.ctx = ctx;
         _this.ctx.width = window.innerWidth;
         _this.ctx.height = window.innerHeight;
@@ -293,9 +293,30 @@ var MainGameState = function (_GameState) {
             this.events();
         }
     }, {
+        key: "retryConnectOnFailure",
+        value: function retryConnectOnFailure(retryInMilliseconds, socket, self) {
+            self.timeout = setTimeout(function () {
+                if (!self.connected) {
+                    //console.log('trying to connect...');
+                    socket.connect();
+                    self.retryConnectOnFailure(retryInMilliseconds, socket, self);
+                }
+            }, retryInMilliseconds);
+        }
+    }, {
         key: "loadSocket",
         value: function loadSocket(client) {
             var self = this;
+            client.on('connect', function () {
+                self.connected = true;
+                clearTimeout(self.timeout);
+                console.log('connected');
+            });
+            client.on('disconnect', function () {
+                self.connected = false;
+                console.log('disconnected');
+                self.retryConnectOnFailure(3000, client, self); // Try again in 3s
+            });
             client.on("otherPlayers", function (others) {
                 self.otherPlayers = [];
                 others.forEach(function (player) {
@@ -308,7 +329,7 @@ var MainGameState = function (_GameState) {
                 self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
             });
             client.on("user_leave", function (hero) {
-                console.log('player left');
+                //console.log('player left');
                 var toDeleteIndex = 0;
                 for (var _i = 0; _i < self.otherPlayers.length; _i++) {
                     if (self.otherPlayers[_i].id === hero.id) toDeleteIndex = _i;
@@ -320,7 +341,7 @@ var MainGameState = function (_GameState) {
                 var found = false; // is player in cache
                 self.otherPlayers.forEach(function (player) {
                     if (player.id === hero.id) {
-                        console.log('info from ' + player.id);
+                        //console.log('info from ' + player.id);
                         player.action = hero.action;
                         player.x = hero.x;
                         player.y = hero.y;

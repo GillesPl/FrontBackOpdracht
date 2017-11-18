@@ -18,7 +18,7 @@ export default class MainGameState extends GameState {
         this.fullscreenState = false;
         this.Loader = new Loader();
         this.otherPlayers = [];
-
+        this.connected = false;
         this.ctx = ctx;
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
@@ -73,9 +73,29 @@ export default class MainGameState extends GameState {
         this.events();
     }
 
+    retryConnectOnFailure(retryInMilliseconds, socket, self) {
+        self.timeout = setTimeout(function () {
+            if (!self.connected) {
+                //console.log('trying to connect...');
+                socket.connect();
+                self.retryConnectOnFailure(retryInMilliseconds, socket, self);
+            }
+        }, retryInMilliseconds);
+    }
+
 
     loadSocket(client) {
         let self = this;
+        client.on('connect', function () {
+            self.connected = true;
+            clearTimeout(self.timeout);
+            console.log('connected');
+        });
+        client.on('disconnect', function () {
+            self.connected = false;
+            console.log('disconnected');
+            self.retryConnectOnFailure(3000, client, self); // Try again in 3s
+        });
         client.on("otherPlayers", function (others) {
             self.otherPlayers = [];
             others.forEach((player) => {
@@ -88,7 +108,7 @@ export default class MainGameState extends GameState {
             self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
         });
         client.on("user_leave", function (hero) {
-            console.log('player left');
+            //console.log('player left');
             let toDeleteIndex = 0;
             for (let i = 0; i < self.otherPlayers.length; i++) {
                 if (self.otherPlayers[i].id === hero.id)
@@ -101,7 +121,7 @@ export default class MainGameState extends GameState {
             let found = false; // is player in cache
             self.otherPlayers.forEach((player) => {
                 if (player.id === hero.id) {
-                    console.log('info from ' + player.id);
+                    //console.log('info from ' + player.id);
                     player.action = hero.action;
                     player.x = hero.x;
                     player.y = hero.y;
