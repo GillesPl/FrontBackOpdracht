@@ -482,6 +482,7 @@ var MainGameState = function (_GameState) {
             this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
             this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
             this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
+            this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
         }
     }, {
         key: "events",
