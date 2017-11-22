@@ -5,10 +5,14 @@ export default class Hero {
         this.y = y;
         this.Loader = Loader;
 
+        this.imageIndex = 0;
+        this.imageState = 0;
         this.width = map.drawSize;
         this.height = map.drawSize;
-        this.maskWidth = map.drawSize * 0.75;
-        this.maskHeight = map.drawSize * 0.85;
+        this.imageWidth = 48;
+        this.imageHeight = 48;
+        this.maskWidth = map.drawSize * 0.65;
+        this.maskHeight = map.drawSize * 0.8;
         this.tileLevel = 0; // HeighttileLevel
         this.STATE = {
             RUNNINGNORTH: 1,
@@ -58,6 +62,9 @@ export default class Hero {
 
     move(delta, dirx, diry) {
         this._calculateTileLevel();
+
+        this._calculateImageState(dirx, diry, delta * 8);
+
         // move hero
         this.x += dirx * this.speed * delta;
         this.y += diry * this.speed * delta;
@@ -72,6 +79,22 @@ export default class Hero {
         this.y = Math.max(0, Math.min(this.y, maxY));
     }
 
+    getImageIndex() {
+        return this.imageState + 4 * Math.floor(this.imageIndex);
+    }
+
+    draw(ctx) {
+        ctx.drawImage(
+            this.image, // Image
+            (this.getImageIndex() % 4) * this.imageWidth, // Src x
+            Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+            this.imageWidth, // Src width
+            this.imageHeight, // Src height
+            this.screenX - this.width / 2, // Target x
+            this.screenY - this.height / 2, // Target y
+            this.width, // Target width
+            this.height); // Target height
+    }
 
     _calculateTileLevel() {
         let newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
@@ -80,6 +103,27 @@ export default class Hero {
                 //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
                 this.tileLevel = newTileLevel;
             }
+        }
+    }
+
+    _calculateImageState(dirx, diry, increase) {
+        if (dirx !== 0 || diry !== 0) {
+            this.imageIndex += increase;
+            if (this.imageIndex >= 4) {
+                this.imageIndex -= 4;
+            }
+        } else {
+            this.imageIndex = 0;
+        }
+
+        if (diry > 0) {
+            this.imageState = 0;
+        } else if (diry < 0) {
+            this.imageState = 2;
+        } else if (dirx > 0) {
+            this.imageState = 3;
+        } else if (dirx < 0) {
+            this.imageState = 1;
         }
     }
 
@@ -105,15 +149,19 @@ export default class Hero {
         if (diry > 0) {
             row = this.map.getRow(bottom);
             this.y = -this.maskHeight / 2 + this.map.getY(row);
+            this.imageIndex = 0;
         } else if (diry < 0) {
             row = this.map.getRow(top);
             this.y = this.maskHeight / 2 + this.map.getY(row + 1);
+            this.imageIndex = 0;
         } else if (dirx > 0) {
             col = this.map.getCol(right);
             this.x = -this.maskWidth / 2 + this.map.getX(col);
+            this.imageIndex = 0;
         } else if (dirx < 0) {
             col = this.map.getCol(left);
             this.x = this.maskWidth / 2 + this.map.getX(col + 1);
+            this.imageIndex = 0;
         }
     }
 }

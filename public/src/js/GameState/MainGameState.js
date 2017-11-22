@@ -4,9 +4,6 @@ import Hero from "../GameObjects/Hero.class";
 import OtherPlayer from "../GameObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
-import {
-    platform
-} from "os";
 
 export default class MainGameState extends GameState {
     constructor(ctx, map, socket) {
@@ -67,7 +64,7 @@ export default class MainGameState extends GameState {
 
         let self = this;
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function () {
-            self.socket.emit("new_user", self.hero);
+            self.socket.emit("new_user", self.hero.getSmallObject());
             self.loadSocket(self.socket);
         });
         this.events();
@@ -137,8 +134,8 @@ export default class MainGameState extends GameState {
 
     load() {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
-            this.Loader.loadImage('hero', '../../assets/sprites/george-front.png'),
-            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other-front.png')
+            this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
+            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png')
         ];
     }
 
@@ -219,27 +216,13 @@ export default class MainGameState extends GameState {
             this.otherPlayers.forEach((player) => {
                 let thisLayersUnder = self.getLayersUnder(player.tileLevel);
                 if (thisLayersUnder - 1 === i) {
-                    self.ctx.drawImage(
-                        player.image,
-                        self.camera.getScreenX(player.x) - player.width / 2,
-                        self.camera.getScreenY(player.y) - player.height / 2,
-                        player.width,
-                        player.height);
+                    player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
                 }
             });
         }
 
         // draw main character
-        this.ctx.drawImage(
-            this.hero.image,
-            //0,
-            //0,
-            //this.hero.width,
-            //this.hero.height,
-            this.hero.screenX - this.hero.width / 2,
-            this.hero.screenY - this.hero.height / 2,
-            this.hero.width,
-            this.hero.height);
+        this.hero.draw(this.ctx);
 
         // draw map top layer
         for (let i = layersUnderPlayer; i < totalLayers - 1; i++) {
@@ -248,12 +231,7 @@ export default class MainGameState extends GameState {
             this.otherPlayers.forEach((player) => {
                 let thisLayersUnder = self.getLayersUnder(player.tileLevel);
                 if (thisLayersUnder - 1 === i) {
-                    self.ctx.drawImage(
-                        player.image,
-                        self.camera.getScreenX(player.x) - player.width / 2,
-                        self.camera.getScreenY(player.y) - player.height / 2,
-                        player.width,
-                        player.height);
+                    player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
                 }
             });
         }

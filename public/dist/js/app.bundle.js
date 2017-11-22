@@ -209,8 +209,6 @@ var _GameState2 = __webpack_require__(9);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
-var _os = __webpack_require__(10);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -287,7 +285,7 @@ var MainGameState = function (_GameState) {
 
             var self = this;
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function () {
-                self.socket.emit("new_user", self.hero);
+                self.socket.emit("new_user", self.hero.getSmallObject());
                 self.loadSocket(self.socket);
             });
             this.events();
@@ -357,7 +355,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george-front.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other-front.png')];
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png')];
         }
     }, {
         key: "update",
@@ -441,7 +439,7 @@ var MainGameState = function (_GameState) {
                 _this2.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = self.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
-                        self.ctx.drawImage(player.image, self.camera.getScreenX(player.x) - player.width / 2, self.camera.getScreenY(player.y) - player.height / 2, player.width, player.height);
+                        player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -451,12 +449,7 @@ var MainGameState = function (_GameState) {
             }
 
             // draw main character
-            this.ctx.drawImage(this.hero.image,
-            //0,
-            //0,
-            //this.hero.width,
-            //this.hero.height,
-            this.hero.screenX - this.hero.width / 2, this.hero.screenY - this.hero.height / 2, this.hero.width, this.hero.height);
+            this.hero.draw(this.ctx);
 
             // draw map top layer
 
@@ -466,7 +459,7 @@ var MainGameState = function (_GameState) {
                 _this2.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = self.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i3) {
-                        self.ctx.drawImage(player.image, self.camera.getScreenX(player.x) - player.width / 2, self.camera.getScreenY(player.y) - player.height / 2, player.width, player.height);
+                        player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -768,10 +761,14 @@ var Hero = function () {
         this.y = y;
         this.Loader = Loader;
 
+        this.imageIndex = 0;
+        this.imageState = 0;
         this.width = map.drawSize;
         this.height = map.drawSize;
-        this.maskWidth = map.drawSize * 0.75;
-        this.maskHeight = map.drawSize * 0.85;
+        this.imageWidth = 48;
+        this.imageHeight = 48;
+        this.maskWidth = map.drawSize * 0.65;
+        this.maskHeight = map.drawSize * 0.8;
         this.tileLevel = 0; // HeighttileLevel
         this.STATE = {
             RUNNINGNORTH: 1,
@@ -819,6 +816,9 @@ var Hero = function () {
         key: 'move',
         value: function move(delta, dirx, diry) {
             this._calculateTileLevel();
+
+            this._calculateImageState(dirx, diry, delta * 8);
+
             // move hero
             this.x += dirx * this.speed * delta;
             this.y += diry * this.speed * delta;
@@ -833,6 +833,24 @@ var Hero = function () {
             this.y = Math.max(0, Math.min(this.y, maxY));
         }
     }, {
+        key: 'getImageIndex',
+        value: function getImageIndex() {
+            return this.imageState + 4 * Math.floor(this.imageIndex);
+        }
+    }, {
+        key: 'draw',
+        value: function draw(ctx) {
+            ctx.drawImage(this.image, // Image
+            this.getImageIndex() % 4 * this.imageWidth, // Src x
+            Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+            this.imageWidth, // Src width
+            this.imageHeight, // Src height
+            this.screenX - this.width / 2, // Target x
+            this.screenY - this.height / 2, // Target y
+            this.width, // Target width
+            this.height); // Target height
+        }
+    }, {
         key: '_calculateTileLevel',
         value: function _calculateTileLevel() {
             var newTileLevel = this.map.getTileLevelAtXY(this.x, this.y);
@@ -841,6 +859,28 @@ var Hero = function () {
                     //console.log('switch from level ' + this.tileLevel + ' to level ' + newTileLevel);
                     this.tileLevel = newTileLevel;
                 }
+            }
+        }
+    }, {
+        key: '_calculateImageState',
+        value: function _calculateImageState(dirx, diry, increase) {
+            if (dirx !== 0 || diry !== 0) {
+                this.imageIndex += increase;
+                if (this.imageIndex >= 4) {
+                    this.imageIndex -= 4;
+                }
+            } else {
+                this.imageIndex = 0;
+            }
+
+            if (diry > 0) {
+                this.imageState = 0;
+            } else if (diry < 0) {
+                this.imageState = 2;
+            } else if (dirx > 0) {
+                this.imageState = 3;
+            } else if (dirx < 0) {
+                this.imageState = 1;
             }
         }
     }, {
@@ -864,15 +904,19 @@ var Hero = function () {
             if (diry > 0) {
                 row = this.map.getRow(bottom);
                 this.y = -this.maskHeight / 2 + this.map.getY(row);
+                this.imageIndex = 0;
             } else if (diry < 0) {
                 row = this.map.getRow(top);
                 this.y = this.maskHeight / 2 + this.map.getY(row + 1);
+                this.imageIndex = 0;
             } else if (dirx > 0) {
                 col = this.map.getCol(right);
                 this.x = -this.maskWidth / 2 + this.map.getX(col);
+                this.imageIndex = 0;
             } else if (dirx < 0) {
                 col = this.map.getCol(left);
                 this.x = this.maskWidth / 2 + this.map.getX(col + 1);
+                this.imageIndex = 0;
             }
         }
     }]);
@@ -905,10 +949,14 @@ var OtherPlayer = function () {
         this.y = hero.y;
         this.Loader = Loader;
 
-        this.width = hero.width;
-        this.height = hero.height;
-        this.maskWidth = hero.width * 0.75;
-        this.maskHeight = hero.height * 0.85;
+        this.imageIndex = 0;
+        this.imageState = 0;
+        this.width = map.drawSize;
+        this.height = map.drawSize;
+        this.imageWidth = 48;
+        this.imageHeight = 48;
+        this.maskWidth = map.drawSize * 0.65;
+        this.maskHeight = map.drawSize * 0.8;
         this.tileLevel = 0; // HeighttileLevel
         this.STATE = {
             RUNNINGNORTH: 1,
@@ -926,6 +974,11 @@ var OtherPlayer = function () {
     }
 
     _createClass(OtherPlayer, [{
+        key: 'getImageIndex',
+        value: function getImageIndex() {
+            return this.imageState + 4 * Math.floor(this.imageIndex);
+        }
+    }, {
         key: 'move',
         value: function move(delta) {
             var dirx = void 0,
@@ -957,8 +1010,59 @@ var OtherPlayer = function () {
             this.x += dirx * this.speed * delta;
             this.y += diry * this.speed * delta;
 
+            this._calculateImageState(dirx, diry, delta * 8);
+
             // check if we walked into a non-walkable tile
             this._collide(dirx, diry);
+
+            // TODO: Ban hackers (collide)
+        }
+    }, {
+        key: 'draw',
+        value: function draw(ctx, x, y) {
+            //console.log({
+            //    image: this.image, // Image
+            //    sx: (this.getImageIndex() % 4) * this.imageWidth, // Src x
+            //    sy: Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+            //    sw: this.imageWidth, // Src width
+            //    sh: this.imageHeight, // Src height
+            //    tx: x - this.width / 2, // Target x
+            //    ty: y - this.height / 2, // Target y
+            //    tw: this.width, // Target width
+            //    th: this.height // Target height
+            //});
+
+            ctx.drawImage(this.image, // Image
+            this.getImageIndex() % 4 * this.imageWidth, // Src x
+            Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+            this.imageWidth, // Src width
+            this.imageHeight, // Src height
+            x - this.width / 2, // Target x
+            y - this.height / 2, // Target y
+            this.width, // Target width
+            this.height); // Target height
+        }
+    }, {
+        key: '_calculateImageState',
+        value: function _calculateImageState(dirx, diry, increase) {
+            if (dirx !== 0 || diry !== 0) {
+                this.imageIndex += increase;
+                if (this.imageIndex >= 4) {
+                    this.imageIndex -= 4;
+                }
+            } else {
+                this.imageIndex = 0;
+            }
+
+            if (diry > 0) {
+                this.imageState = 0;
+            } else if (diry < 0) {
+                this.imageState = 2;
+            } else if (dirx > 0) {
+                this.imageState = 3;
+            } else if (dirx < 0) {
+                this.imageState = 1;
+            }
         }
     }, {
         key: '_collide',
@@ -981,15 +1085,19 @@ var OtherPlayer = function () {
             if (diry > 0) {
                 row = this.map.getRow(bottom);
                 this.y = -this.maskHeight / 2 + this.map.getY(row);
+                this.imageIndex = 0;
             } else if (diry < 0) {
                 row = this.map.getRow(top);
                 this.y = this.maskHeight / 2 + this.map.getY(row + 1);
+                this.imageIndex = 0;
             } else if (dirx > 0) {
                 col = this.map.getCol(right);
                 this.x = -this.maskWidth / 2 + this.map.getX(col);
+                this.imageIndex = 0;
             } else if (dirx < 0) {
                 col = this.map.getCol(left);
                 this.x = this.maskWidth / 2 + this.map.getX(col + 1);
+                this.imageIndex = 0;
             }
         }
     }]);
@@ -1098,57 +1206,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-exports.endianness = function () { return 'LE' };
-
-exports.hostname = function () {
-    if (typeof location !== 'undefined') {
-        return location.hostname
-    }
-    else return '';
-};
-
-exports.loadavg = function () { return [] };
-
-exports.uptime = function () { return 0 };
-
-exports.freemem = function () {
-    return Number.MAX_VALUE;
-};
-
-exports.totalmem = function () {
-    return Number.MAX_VALUE;
-};
-
-exports.cpus = function () { return [] };
-
-exports.type = function () { return 'Browser' };
-
-exports.release = function () {
-    if (typeof navigator !== 'undefined') {
-        return navigator.appVersion;
-    }
-    return '';
-};
-
-exports.networkInterfaces
-= exports.getNetworkInterfaces
-= function () { return {} };
-
-exports.arch = function () { return 'javascript' };
-
-exports.platform = function () { return 'browser' };
-
-exports.tmpdir = exports.tmpDir = function () {
-    return '/tmp';
-};
-
-exports.EOL = '\n';
-
-
-/***/ }),
+/* 10 */,
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
