@@ -367,31 +367,31 @@ var MainGameState = function (_GameState) {
             if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                     this.hero.action = this.hero.STATE.RUNNINGWEST;
-                    this.socket.emit("updatePlayer", this.hero);
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
                 dirx = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                     this.hero.action = this.hero.STATE.RUNNINGEAST;
-                    this.socket.emit("updatePlayer", this.hero);
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
                 dirx = 1;
             } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                     this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                    this.socket.emit("updatePlayer", this.hero);
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
                 diry = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                     this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                    this.socket.emit("updatePlayer", this.hero);
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
                 diry = 1;
             } else {
                 if (this.hero.action != this.hero.STATE.STOP) {
                     this.hero.action = this.hero.STATE.STOP;
-                    this.socket.emit("updatePlayer", this.hero);
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
             }
             this.hero.move(delta, dirx, diry);
@@ -451,7 +451,12 @@ var MainGameState = function (_GameState) {
             }
 
             // draw main character
-            this.ctx.drawImage(this.hero.image, this.hero.screenX - this.hero.width / 2, this.hero.screenY - this.hero.height / 2, this.hero.width, this.hero.height);
+            this.ctx.drawImage(this.hero.image,
+            //0,
+            //0,
+            //this.hero.width,
+            //this.hero.height,
+            this.hero.screenX - this.hero.width / 2, this.hero.screenY - this.hero.height / 2, this.hero.width, this.hero.height);
 
             // draw map top layer
 
@@ -784,6 +789,21 @@ var Hero = function () {
     }
 
     _createClass(Hero, [{
+        key: 'getSmallObject',
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.x = Math.floor(this.x * 100) / 100;
+            smallObject.y = Math.floor(this.y * 100) / 100;
+            smallObject.action = this.action;
+            smallObject.tileLevel = this.tileLevel;
+            smallObject.speed = this.speed;
+            smallObject.width = this.width;
+            smallObject.height = this.height;
+            //console.log(smallObject);
+            return smallObject;
+        }
+    }, {
         key: 'generateId',
         value: function generateId() {
             function s4() {

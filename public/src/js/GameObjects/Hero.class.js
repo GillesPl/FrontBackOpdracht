@@ -25,6 +25,20 @@ export default class Hero {
         this.id = this.generateId();
     }
 
+    getSmallObject() {
+        let smallObject = {};
+        smallObject.id = this.id;
+        smallObject.x = Math.floor(this.x * 100) / 100;
+        smallObject.y = Math.floor(this.y * 100) / 100;
+        smallObject.action = this.action;
+        smallObject.tileLevel = this.tileLevel;
+        smallObject.speed = this.speed;
+        smallObject.width = this.width;
+        smallObject.height = this.height;
+        //console.log(smallObject);
+        return smallObject;
+    }
+
     generateId() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
@@ -102,5 +116,4 @@ export default class Hero {
             this.x = this.maskWidth / 2 + this.map.getX(col + 1);
         }
     }
-
 }
