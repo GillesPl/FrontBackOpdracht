@@ -4,6 +4,10 @@ export default class Hero {
         this.x = x;
         this.y = y;
         this.Loader = Loader;
+        this.debugging = true;
+
+        this.health = 80;
+        this.shield = 50;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -27,6 +31,10 @@ export default class Hero {
 
         this.speed = 256;
         this.id = this.generateId();
+
+        if (this.debugging) {
+            this.speed = 512;
+        }
     }
 
     getSmallObject() {
@@ -70,7 +78,9 @@ export default class Hero {
         this.y += diry * this.speed * delta;
 
         // check if we walked into a non-walkable tile
-        this._collide(dirx, diry);
+        if (!this.debugging) {
+            this._collide(dirx, diry);
+        }
 
         // clamp values
         let maxX = this.map.cols * this.map.drawSize;

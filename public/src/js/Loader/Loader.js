@@ -24,5 +24,4 @@ export default class Loader {
     getImage(key) {
         return (key in this.images) ? this.images[key] : null;
     }
-
 }

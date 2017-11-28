@@ -1,5 +1,6 @@
 import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
+import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
 import Hero from "../GameObjects/Hero.class";
 import OtherPlayer from "../GameObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
@@ -24,6 +25,7 @@ export default class MainGameState extends GameState {
 
         this.loadassets = this.load();
         Promise.all(this.loadassets).then(function (loaded) {
+            this.loadNonCharacterObjects();
             this.init();
             let self = this;
             window.requestAnimationFrame(function (elapsed) {
@@ -52,6 +54,11 @@ export default class MainGameState extends GameState {
         this.render();
     }
 
+    loadNonCharacterObjects() {
+        this.nonCharacterObjects = [];
+        this.nonCharacterObjects.push(new Fire(this.Loader, 6100, 2340));
+        this.nonCharacterObjects.push(new Fire(this.Loader, 3100, 3100));
+    }
 
     // send map in this
     init() {
@@ -135,7 +142,8 @@ export default class MainGameState extends GameState {
     load() {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
             this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
-            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png')
+            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
+            this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png')
         ];
     }
 
@@ -177,6 +185,9 @@ export default class MainGameState extends GameState {
         this.otherPlayers.forEach((player) => {
             player.move(delta);
         });
+        this.nonCharacterObjects.forEach((thisObject) => {
+            thisObject.update(delta);
+        });
         this.camera.update();
     }
 
@@ -203,7 +214,6 @@ export default class MainGameState extends GameState {
         this.camera.width = window.innerWidth;
         this.camera.height = window.innerHeight;
 
-        this.ctx.globalAlpha = 1;
         this.ctx.imageSmoothingEnabled = false;
         // draw map background layer
         let layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
@@ -224,6 +234,12 @@ export default class MainGameState extends GameState {
         // draw main character
         this.hero.draw(this.ctx);
 
+        this.nonCharacterObjects.forEach((thisObject) => {
+            thisObject.draw(this.ctx,
+                this.camera.getScreenX(thisObject.x),
+                this.camera.getScreenY(thisObject.y));
+        });
+
         // draw map top layer
         for (let i = layersUnderPlayer; i < totalLayers - 1; i++) {
             this._drawLayer(i);
@@ -239,16 +255,8 @@ export default class MainGameState extends GameState {
         this.ctx.globalAlpha = 0.5;
         this._drawLayer(totalLayers - 1);
 
-        var tx = 10,
-            ty = 0,
-            dy = 40;
-        this.ctx.font = "30px Arial";
-        this.ctx.fillStyle = "white";
-        this.ctx.fillText("Player:", tx, ty += dy);
-        this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
-        this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
-        this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
-        this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
+        this.ctx.globalAlpha = 1;
+        this._drawUI();
     }
 
 
@@ -301,6 +309,36 @@ export default class MainGameState extends GameState {
             }
         }
     };
+
+    _drawUI() {
+        var tx = 10,
+            ty = 0,
+            dy = 40;
+
+
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(tx, ty += dy, 102, 20);
+        this.ctx.fillStyle = "red";
+        this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
+
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(tx, ty += dy, 102, 20);
+        this.ctx.fillStyle = "blue";
+        this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
+
+        ty += dy;
+        dy /= 2;
+
+        this.ctx.font = "22px Arial";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText("Player:", tx, ty += dy);
+        this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
+        this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
+        this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
+        this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
+        this.ctx.fillText("shield: " + this.hero.shield, tx, ty += dy);
+        this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
+    }
 
 
     _drawLayer(layer) {

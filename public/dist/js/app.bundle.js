@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(12);
+module.exports = __webpack_require__(11);
 
 
 /***/ }),
@@ -86,7 +86,7 @@ var _MainGameState = __webpack_require__(3);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(11);
+var _Map = __webpack_require__(10);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -193,6 +193,10 @@ var _Keyboard = __webpack_require__(5);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
+var _Fire = __webpack_require__(13);
+
+var _Fire2 = _interopRequireDefault(_Fire);
+
 var _Hero = __webpack_require__(6);
 
 var _Hero2 = _interopRequireDefault(_Hero);
@@ -241,6 +245,7 @@ var MainGameState = function (_GameState) {
 
         _this.loadassets = _this.load();
         Promise.all(_this.loadassets).then(function (loaded) {
+            this.loadNonCharacterObjects();
             this.init();
             var self = this;
             window.requestAnimationFrame(function (elapsed) {
@@ -269,6 +274,13 @@ var MainGameState = function (_GameState) {
             //var in update == delta, see commented code above
             this.update(delta);
             this.render();
+        }
+    }, {
+        key: "loadNonCharacterObjects",
+        value: function loadNonCharacterObjects() {
+            this.nonCharacterObjects = [];
+            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 6100, 2340));
+            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 3100, 3100));
         }
 
         // send map in this
@@ -355,7 +367,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png')];
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png')];
         }
     }, {
         key: "update",
@@ -396,6 +408,9 @@ var MainGameState = function (_GameState) {
             this.otherPlayers.forEach(function (player) {
                 player.move(delta);
             });
+            this.nonCharacterObjects.forEach(function (thisObject) {
+                thisObject.update(delta);
+            });
             this.camera.update();
         }
     }, {
@@ -426,7 +441,6 @@ var MainGameState = function (_GameState) {
             this.camera.width = window.innerWidth;
             this.camera.height = window.innerHeight;
 
-            this.ctx.globalAlpha = 1;
             this.ctx.imageSmoothingEnabled = false;
             // draw map background layer
             var layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
@@ -451,6 +465,10 @@ var MainGameState = function (_GameState) {
             // draw main character
             this.hero.draw(this.ctx);
 
+            this.nonCharacterObjects.forEach(function (thisObject) {
+                thisObject.draw(_this2.ctx, _this2.camera.getScreenX(thisObject.x), _this2.camera.getScreenY(thisObject.y));
+            });
+
             // draw map top layer
 
             var _loop2 = function _loop2(_i3) {
@@ -471,16 +489,8 @@ var MainGameState = function (_GameState) {
             this.ctx.globalAlpha = 0.5;
             this._drawLayer(totalLayers - 1);
 
-            var tx = 10,
-                ty = 0,
-                dy = 40;
-            this.ctx.font = "30px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText("Player:", tx, ty += dy);
-            this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
-            this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
-            this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
-            this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
+            this.ctx.globalAlpha = 1;
+            this._drawUI();
         }
     }, {
         key: "events",
@@ -532,6 +542,36 @@ var MainGameState = function (_GameState) {
                     console.log('goFullScreen not supported');
                 }
             }
+        }
+    }, {
+        key: "_drawUI",
+        value: function _drawUI() {
+            var tx = 10,
+                ty = 0,
+                dy = 40;
+
+            this.ctx.fillStyle = "black";
+            this.ctx.fillRect(tx, ty += dy, 102, 20);
+            this.ctx.fillStyle = "red";
+            this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
+
+            this.ctx.fillStyle = "black";
+            this.ctx.fillRect(tx, ty += dy, 102, 20);
+            this.ctx.fillStyle = "blue";
+            this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
+
+            ty += dy;
+            dy /= 2;
+
+            this.ctx.font = "22px Arial";
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("Player:", tx, ty += dy);
+            this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
+            this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
+            this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
+            this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
+            this.ctx.fillText("shield: " + this.hero.shield, tx, ty += dy);
+            this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
         }
     }, {
         key: "_drawLayer",
@@ -648,13 +688,13 @@ var Camera = function () {
         }
     }, {
         key: "getScreenX",
-        value: function getScreenX(playerX) {
-            return playerX - this.x;
+        value: function getScreenX(originalX) {
+            return originalX - this.x;
         }
     }, {
         key: "getScreenY",
-        value: function getScreenY(playerY) {
-            return playerY - this.y;
+        value: function getScreenY(originalY) {
+            return originalY - this.y;
         }
     }]);
 
@@ -760,6 +800,10 @@ var Hero = function () {
         this.x = x;
         this.y = y;
         this.Loader = Loader;
+        this.debugging = true;
+
+        this.health = 80;
+        this.shield = 50;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -783,6 +827,10 @@ var Hero = function () {
 
         this.speed = 256;
         this.id = this.generateId();
+
+        if (this.debugging) {
+            this.speed = 512;
+        }
     }
 
     _createClass(Hero, [{
@@ -824,7 +872,9 @@ var Hero = function () {
             this.y += diry * this.speed * delta;
 
             // check if we walked into a non-walkable tile
-            this._collide(dirx, diry);
+            if (!this.debugging) {
+                this._collide(dirx, diry);
+            }
 
             // clamp values
             var maxX = this.map.cols * this.map.drawSize;
@@ -1206,8 +1256,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1493,10 +1542,152 @@ var map = {
 exports.default = Map;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 12 */,
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _nonCharacterObjectBase = __webpack_require__(14);
+
+var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Fire = function (_NonCharacterObject) {
+    _inherits(Fire, _NonCharacterObject);
+
+    function Fire(Loader, x, y) {
+        _classCallCheck(this, Fire);
+
+        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 50, false));
+
+        _this.setTilesImage(Loader.getImage('fire'), 1, 5, 10);
+        return _this;
+    }
+
+    return Fire;
+}(_nonCharacterObjectBase2.default);
+
+exports.default = Fire;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var NonCharacterObject = function () {
+    function NonCharacterObject(x, y, width, height, damage, solid) {
+        _classCallCheck(this, NonCharacterObject);
+
+        this.x = x; // int
+        this.y = y; // int
+        this.width = width; // int
+        this.height = height; // int
+        this.damage = damage; // int
+        this.solid = solid; // bool
+        this.image = null;
+        this.rows = 1;
+        this.cols = 1;
+        this.tileWidth = 1;
+        this.tileHeight = 1;
+        this.imageIndex = 0;
+        this.increaseRatio = 1;
+    }
+
+    _createClass(NonCharacterObject, [{
+        key: "setImage",
+        value: function setImage(image) {
+            this.image = image; // image
+            this.rows = 1;
+            this.cols = 1;
+            this.tileWidth = image.width;
+            this.tileHeight = image.height;
+            this.imageIndex = 0;
+        }
+    }, {
+        key: "setTilesImage",
+        value: function setTilesImage(image, rows, cols, increaseRatio) {
+            this.setImage(image);
+            this.rows = rows;
+            this.cols = cols;
+            this.tileWidth = image.width / cols;
+            this.tileHeight = image.height / rows;
+            this.imageIndex = 0;
+            this.increaseRatio = increaseRatio;
+        }
+    }, {
+        key: "increaseImageIndex",
+        value: function increaseImageIndex(increase) {
+            this.imageIndex += increase * this.increaseRatio;
+            if (this.imageIndex >= this.rows * this.cols) {
+                this.imageIndex -= this.rows * this.cols;
+            }
+        }
+    }, {
+        key: "getImageIndex",
+        value: function getImageIndex() {
+            return Math.floor(this.imageIndex);
+        }
+    }, {
+        key: "update",
+        value: function update(delta) {
+            if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
+                this.increaseImageIndex(delta);
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, screenX, screenY) {
+            if (this.image === null) {
+                this.ctx.fillText("Object", this.x, this.y);
+                this.ctx.fillStyle = "purple";
+                this.ctx.fillRect(this.x, this.y, this.width, this.height);
+            } else {
+                ctx.drawImage(this.image, // Image
+                this.getImageIndex() % this.cols * this.tileWidth, // Src x
+                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                screenX, // Target x
+                screenY, // Target y
+                this.width, // Target width
+                this.height); // Target height
+            }
+        }
+    }]);
+
+    return NonCharacterObject;
+}();
+
+exports.default = NonCharacterObject;
 
 /***/ })
 /******/ ]);

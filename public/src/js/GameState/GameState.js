@@ -9,9 +9,8 @@ export default class GameState {
     }
 
     clear() {
-        this.ctx.clearRect(0,0,ctx.width,ctx.height)
+        this.ctx.clearRect(0,0,ctx.width,ctx.height);
     }
-
 
     draw() {
         //this draws something
