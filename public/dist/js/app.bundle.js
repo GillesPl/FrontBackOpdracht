@@ -279,8 +279,8 @@ var MainGameState = function (_GameState) {
         key: "loadNonCharacterObjects",
         value: function loadNonCharacterObjects() {
             this.nonCharacterObjects = [];
-            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 6100, 2340));
-            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 3100, 3100));
+            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 6065, 2280));
+            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 3000, 3100));
         }
 
         // send map in this
@@ -372,6 +372,8 @@ var MainGameState = function (_GameState) {
     }, {
         key: "update",
         value: function update(delta) {
+            var _this2 = this;
+
             var dirx = 0;
             var diry = 0;
             if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
@@ -410,6 +412,12 @@ var MainGameState = function (_GameState) {
             });
             this.nonCharacterObjects.forEach(function (thisObject) {
                 thisObject.update(delta);
+                if (thisObject.hasDamage()) {
+                    var playerBounds = _this2.hero.getPlayerBounds();
+                    if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
+                        _this2.hero.takeDamage(thisObject.damage * delta);
+                    }
+                }
             });
             this.camera.update();
         }
@@ -428,7 +436,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "render",
         value: function render() {
-            var _this2 = this;
+            var _this3 = this;
 
             var canvas = document.querySelector("canvas");
             canvas.width = window.innerWidth;
@@ -448,9 +456,9 @@ var MainGameState = function (_GameState) {
             var self = this;
 
             var _loop = function _loop(_i2) {
-                _this2._drawLayer(_i2);
+                _this3._drawLayer(_i2);
 
-                _this2.otherPlayers.forEach(function (player) {
+                _this3.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = self.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
                         player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
@@ -466,15 +474,15 @@ var MainGameState = function (_GameState) {
             this.hero.draw(this.ctx);
 
             this.nonCharacterObjects.forEach(function (thisObject) {
-                thisObject.draw(_this2.ctx, _this2.camera.getScreenX(thisObject.x), _this2.camera.getScreenY(thisObject.y));
+                thisObject.draw(_this3.ctx, _this3.camera.getScreenX(thisObject.x), _this3.camera.getScreenY(thisObject.y));
             });
 
             // draw map top layer
 
             var _loop2 = function _loop2(_i3) {
-                _this2._drawLayer(_i3);
+                _this3._drawLayer(_i3);
 
-                _this2.otherPlayers.forEach(function (player) {
+                _this3.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = self.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i3) {
                         player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
@@ -557,7 +565,7 @@ var MainGameState = function (_GameState) {
 
             this.ctx.fillStyle = "black";
             this.ctx.fillRect(tx, ty += dy, 102, 20);
-            this.ctx.fillStyle = "blue";
+            this.ctx.fillStyle = "lightblue";
             this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
 
             ty += dy;
@@ -802,8 +810,8 @@ var Hero = function () {
         this.Loader = Loader;
         this.debugging = false;
 
-        this.health = 80;
-        this.shield = 50;
+        this.health = 100;
+        this.shield = 100;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -849,6 +857,16 @@ var Hero = function () {
             return smallObject;
         }
     }, {
+        key: 'getPlayerBounds',
+        value: function getPlayerBounds() {
+            return {
+                xMin: this.x - this.maskWidth / 2,
+                yMin: this.y - this.maskHeight / 2,
+                xMax: this.x + this.maskWidth / 2,
+                yMax: this.y + this.maskHeight / 2
+            };
+        }
+    }, {
         key: 'generateId',
         value: function generateId() {
             function s4() {
@@ -886,6 +904,20 @@ var Hero = function () {
         key: 'getImageIndex',
         value: function getImageIndex() {
             return this.imageState + 4 * Math.floor(this.imageIndex);
+        }
+    }, {
+        key: 'takeDamage',
+        value: function takeDamage(damage) {
+            if (this.shield > 0) {
+                this.shield -= damage;
+            } else if (this.health > 0) {
+                this.shield = 0;
+                this.health -= damage;
+            } else {
+                // Die
+                this.shield = 100;
+                this.health = 100;
+            }
         }
     }, {
         key: 'draw',
@@ -1623,6 +1655,11 @@ var NonCharacterObject = function () {
     }
 
     _createClass(NonCharacterObject, [{
+        key: "hasDamage",
+        value: function hasDamage() {
+            return this.damage >= 0;
+        }
+    }, {
         key: "setImage",
         value: function setImage(image) {
             this.image = image; // image
@@ -1631,6 +1668,19 @@ var NonCharacterObject = function () {
             this.tileWidth = image.width;
             this.tileHeight = image.height;
             this.imageIndex = 0;
+        }
+    }, {
+        key: "isNear",
+        value: function isNear(xMin, yMin, xMax, yMax) {
+            // DON'T EDIT IF YOU DON'T UNDERSTAND! (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
+            //console.log('isNear: ' + (this.x < xMax) + ' && ' + (this.x + this.width > xMin) + ' && ' +
+            //   (this.y < yMax) + ' && ' + (this.y + this.height > yMin));
+            return this.x < xMax && this.x + this.width > xMin && this.y < yMax && this.y + this.height > yMin;
+        }
+    }, {
+        key: "isInObject",
+        value: function isInObject(x, y) {
+            return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
         }
     }, {
         key: "setTilesImage",

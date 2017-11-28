@@ -6,8 +6,8 @@ export default class Hero {
         this.Loader = Loader;
         this.debugging = false;
 
-        this.health = 80;
-        this.shield = 50;
+        this.health = 100;
+        this.shield = 100;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -51,6 +51,15 @@ export default class Hero {
         return smallObject;
     }
 
+    getPlayerBounds() {
+        return {
+            xMin: this.x - this.maskWidth / 2,
+            yMin: this.y - this.maskHeight / 2,
+            xMax: this.x + this.maskWidth / 2,
+            yMax: this.y + this.maskHeight / 2
+        };
+    }
+
     generateId() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
@@ -91,6 +100,18 @@ export default class Hero {
 
     getImageIndex() {
         return this.imageState + 4 * Math.floor(this.imageIndex);
+    }
+
+    takeDamage(damage) {
+        if (this.shield > 0) {
+            this.shield -= damage;
+        } else if (this.health > 0) {
+            this.shield = 0;
+            this.health -= damage;
+        } else { // Die
+            this.shield = 100;
+            this.health = 100;
+        }
     }
 
     draw(ctx) {

@@ -56,8 +56,8 @@ export default class MainGameState extends GameState {
 
     loadNonCharacterObjects() {
         this.nonCharacterObjects = [];
-        this.nonCharacterObjects.push(new Fire(this.Loader, 6100, 2340));
-        this.nonCharacterObjects.push(new Fire(this.Loader, 3100, 3100));
+        this.nonCharacterObjects.push(new Fire(this.Loader, 6065, 2280));
+        this.nonCharacterObjects.push(new Fire(this.Loader, 3000, 3100));
     }
 
     // send map in this
@@ -187,6 +187,12 @@ export default class MainGameState extends GameState {
         });
         this.nonCharacterObjects.forEach((thisObject) => {
             thisObject.update(delta);
+            if (thisObject.hasDamage()) {
+                let playerBounds = this.hero.getPlayerBounds();
+                if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
+                    this.hero.takeDamage(thisObject.damage * delta);
+                }
+            }
         });
         this.camera.update();
     }
@@ -315,7 +321,6 @@ export default class MainGameState extends GameState {
             ty = 0,
             dy = 40;
 
-
         this.ctx.fillStyle = "black";
         this.ctx.fillRect(tx, ty += dy, 102, 20);
         this.ctx.fillStyle = "red";
@@ -323,9 +328,9 @@ export default class MainGameState extends GameState {
 
         this.ctx.fillStyle = "black";
         this.ctx.fillRect(tx, ty += dy, 102, 20);
-        this.ctx.fillStyle = "blue";
+        this.ctx.fillStyle = "lightblue";
         this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
-
+        
         ty += dy;
         dy /= 2;
 
