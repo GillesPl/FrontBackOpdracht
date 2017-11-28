@@ -800,7 +800,7 @@ var Hero = function () {
         this.x = x;
         this.y = y;
         this.Loader = Loader;
-        this.debugging = true;
+        this.debugging = false;
 
         this.health = 80;
         this.shield = 50;
