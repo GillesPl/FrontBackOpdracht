@@ -347,28 +347,26 @@ var MainGameState = function (_GameState) {
         _this.ctx = ctx;
         _this.ctx.width = window.innerWidth;
         _this.ctx.height = window.innerHeight;
+        _this.nonCharacterObjects = [];
 
         _this._previousElapsed = 0;
         _this.isMousePressed = true;
 
         _this.loadassets = _this.load();
         Promise.all(_this.loadassets).then(function (loaded) {
-            this.loadNonCharacterObjects();
             this.loadInventoryObjects();
             this.init();
             var self = this;
+            document.onmousemove = function (event) {
+                self.onMouseMove(event, self);
+            };
+            document.onclick = function (event) {
+                self.onMouseClickEvent(event, self);
+            };
             window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
             });
         }.bind(_this));
-
-        var self = _this;
-        document.onmousemove = function (event) {
-            self.onMouseMove(event, self);
-        };
-        document.onclick = function (event) {
-            self.onMouseClickEvent(event, self);
-        };
         return _this;
     }
 
@@ -394,10 +392,19 @@ var MainGameState = function (_GameState) {
         }
     }, {
         key: "loadNonCharacterObjects",
-        value: function loadNonCharacterObjects() {
-            this.nonCharacterObjects = [];
-            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 6065, 2280));
-            this.nonCharacterObjects.push(new _Fire2.default(this.Loader, 3000, 3100));
+        value: function loadNonCharacterObjects(objects, gameState) {
+            objects.forEach(function (object) {
+                switch (object.name) {
+                    case "Fire":
+                        gameState.nonCharacterObjects.push(new _Fire2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                        break;
+
+                    default:
+                        console.log("Object '" + object.name + "' doesn't  exist.");
+                        console.log(object);
+                        break;
+                }
+            });
         }
     }, {
         key: "loadInventoryObjects",
@@ -421,9 +428,10 @@ var MainGameState = function (_GameState) {
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
 
             var self = this;
-            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function () {
+            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
                 self.socket.emit("new_user", self.hero.getSmallObject());
                 self.loadSocket(self.socket);
+                self.loadNonCharacterObjects(objects, self);
             });
             this.events();
         }
@@ -1889,6 +1897,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Fire = __webpack_require__(7);
+
+var _Fire2 = _interopRequireDefault(_Fire);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Map = function () {
@@ -1899,34 +1913,46 @@ var Map = function () {
         this.cols = 150;
         this.rows = 150;
         this.tsize = 16;
-        this.drawSize = 64;
+        this.scale = 4;
+        this.drawSize = this.tsize * this.scale;
         this.twidth = 2;
         this.layers = [[0, 0], [0, 0]]; // Basic empty layers
     }
 
     _createClass(Map, [{
-        key: 'loadMap',
+        key: "loadMap",
         value: function loadMap(src, camera, hero, callback) {
             var map = this;
+            var objects = [];
             this.loadJSON(src, function (data) {
-                console.log(data);
+                //console.log(data);
                 map.cols = data.width;
                 map.rows = data.height;
                 map.tsize = data.tilewidth;
                 map.twidth = data.tilesets[0].columns;
                 map.layers = [];
                 data.layers.forEach(function (layer) {
-                    map.layers.push(layer.data);
-                }, map);
+                    if (layer.type === "tilelayer") {
+                        map.layers.push(layer.data);
+                    } else if (layer.type === "objectgroup") {
+                        layer.objects.forEach(function (object) {
+                            objects.push(object);
+                        });
+                        // objects.concat(layer.objects); <- not working?
+                    } else {
+                        console.log("Unknown layer type: '" + layer.type + "' in layer");
+                        console.log(layer);
+                    }
+                }, this);
 
                 camera.follow(hero);
-                console.log('#layers:' + map.layers.length);
-                console.log('#tiles horizontally in tileset:' + map.twidth);
-                callback();
+                //console.log('#layers:' + map.layers.length);
+                //console.log('#tiles horizontally in tileset:' + map.twidth);
+                callback(objects);
             });
         }
     }, {
-        key: 'loadJSON',
+        key: "loadJSON",
         value: function loadJSON(src, callback) {
             var xobj = new XMLHttpRequest();
             xobj.overrideMimeType("application/json");
@@ -1939,7 +1965,7 @@ var Map = function () {
             xobj.send(null);
         }
     }, {
-        key: 'getTile',
+        key: "getTile",
         value: function getTile(layer, col, row) {
             if (this.layers[layer] === undefined) {
                 //console.error(layer + ' not in ' + this.layers);
@@ -1947,7 +1973,7 @@ var Map = function () {
             } else return this.layers[layer][row * this.cols + col];
         }
     }, {
-        key: 'isSolidTileAtXY',
+        key: "isSolidTileAtXY",
         value: function isSolidTileAtXY(x, y, level) {
             var collision = false;
             var col = Math.floor(x / this.drawSize);
@@ -1980,7 +2006,7 @@ var Map = function () {
             return collision;
         }
     }, {
-        key: 'getTileLevelAtXY',
+        key: "getTileLevelAtXY",
         value: function getTileLevelAtXY(x, y) {
             var level = 999;
             var col = Math.floor(x / this.drawSize);
@@ -2016,22 +2042,22 @@ var Map = function () {
             return level === 999 ? -1 : level;
         }
     }, {
-        key: 'getCol',
+        key: "getCol",
         value: function getCol(x) {
             return Math.floor(x / this.tsize);
         }
     }, {
-        key: 'getRow',
+        key: "getRow",
         value: function getRow(y) {
             return Math.floor(y / this.tsize);
         }
     }, {
-        key: 'getX',
+        key: "getX",
         value: function getX(col) {
             return col * this.tsize;
         }
     }, {
-        key: 'getY',
+        key: "getY",
         value: function getY(row) {
             return row * this.tsize;
         }

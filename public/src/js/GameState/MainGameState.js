@@ -23,28 +23,26 @@ export default class MainGameState extends GameState {
         this.ctx = ctx;
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
+        this.nonCharacterObjects = [];
 
         this._previousElapsed = 0;
         this.isMousePressed = true;
 
         this.loadassets = this.load();
         Promise.all(this.loadassets).then(function (loaded) {
-            this.loadNonCharacterObjects();
             this.loadInventoryObjects();
             this.init();
             let self = this;
+            document.onmousemove = function (event) {
+                self.onMouseMove(event, self);
+            };
+            document.onclick = function (event) {
+                self.onMouseClickEvent(event, self);
+            };
             window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
             });
         }.bind(this));
-
-        let self = this;
-        document.onmousemove = function (event) {
-            self.onMouseMove(event, self);
-        };
-        document.onclick = function (event) {
-            self.onMouseClickEvent(event, self);
-        };
     }
 
 
@@ -67,10 +65,19 @@ export default class MainGameState extends GameState {
         this.render(delta);
     }
 
-    loadNonCharacterObjects() {
-        this.nonCharacterObjects = [];
-        this.nonCharacterObjects.push(new Fire(this.Loader, 6065, 2280));
-        this.nonCharacterObjects.push(new Fire(this.Loader, 3000, 3100));
+    loadNonCharacterObjects(objects, gameState) {
+        objects.forEach(object => {
+            switch (object.name) {
+                case "Fire":
+                    gameState.nonCharacterObjects.push(new Fire(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                    break;
+
+                default:
+                    console.log("Object '" + object.name + "' doesn't  exist.");
+                    console.log(object);
+                    break;
+            }
+        });
     }
 
     loadInventoryObjects() {
@@ -90,9 +97,10 @@ export default class MainGameState extends GameState {
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
 
         let self = this;
-        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function () {
+        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
             self.socket.emit("new_user", self.hero.getSmallObject());
             self.loadSocket(self.socket);
+            self.loadNonCharacterObjects(objects, self);
         });
         this.events();
     }

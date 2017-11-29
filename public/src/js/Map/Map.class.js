@@ -1,10 +1,13 @@
+import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
+
 export default class Map {
     constructor() {
         this.tilesetSrc = "not implemented";
         this.cols = 150;
         this.rows = 150;
         this.tsize = 16;
-        this.drawSize = 64;
+        this.scale = 4;
+        this.drawSize = this.tsize * this.scale;
         this.twidth = 2;
         this.layers = [
             [0, 0],
@@ -14,21 +17,32 @@ export default class Map {
 
     loadMap(src, camera, hero, callback) {
         let map = this;
+        let objects = [];
         this.loadJSON(src, function (data) {
-            console.log(data);
+            //console.log(data);
             map.cols = data.width;
             map.rows = data.height;
             map.tsize = data.tilewidth;
             map.twidth = data.tilesets[0].columns;
             map.layers = [];
             data.layers.forEach(function (layer) {
-                map.layers.push(layer.data);
-            }, map);
+                if (layer.type === "tilelayer") {
+                    map.layers.push(layer.data);
+                } else if (layer.type === "objectgroup") {
+                    layer.objects.forEach(object => {
+                        objects.push(object);
+                    });
+                    // objects.concat(layer.objects); <- not working?
+                } else {
+                    console.log("Unknown layer type: '" + layer.type + "' in layer");
+                    console.log(layer);
+                }
+            }, this);
 
             camera.follow(hero);
-            console.log('#layers:' + map.layers.length);
-            console.log('#tiles horizontally in tileset:' + map.twidth);
-            callback();
+            //console.log('#layers:' + map.layers.length);
+            //console.log('#tiles horizontally in tileset:' + map.twidth);
+            callback(objects);
         });
     }
 
