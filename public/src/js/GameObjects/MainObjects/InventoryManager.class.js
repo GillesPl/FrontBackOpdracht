@@ -10,10 +10,12 @@ export default class InventoryManager {
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.imageIconBar = Loader.getImage("iconbar");
-        this.iconBarCols = 2;
+        this.iconBarCols = 3;
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
+
+        this.selectedAction = 0;
 
         this.STATES = {
             HIDDEN: 0,
@@ -21,8 +23,15 @@ export default class InventoryManager {
             CHARACTER: 2
         };
         this.iconBar = [];
-        this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 0, this.tileIconBarHeight));
-        this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 1, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 2, this.tileIconBarHeight));
+
+        this.actionBarIcons = [];
+        for (let i = 0; i < 10; i++) {
+            this.actionBarIcons.push(new InventoryIcon(i, this.imageIconBar, 0, this.tileIconBarHeight));
+            if (this.selectedAction === i)
+                this.actionBarIcons[i].isSelected = true;
+        }
 
         this.state = this.STATES.HIDDEN;
     }
@@ -35,6 +44,7 @@ export default class InventoryManager {
 
     onMouseClick(mousePosition) {
         let oldState = this.state;
+        let oldSelectedAction = this.selectedAction;
         this.iconBar.forEach(icon => {
             if (icon.onMouseMove(mousePosition)) {
                 if (icon.isSelected) {
@@ -53,26 +63,43 @@ export default class InventoryManager {
                 }
             });
         }
+        this.actionBarIcons.forEach(icon => {
+            if (icon.onMouseMove(mousePosition)) {
+                icon.isSelected = true;
+                this.selectedAction = icon.state;
+            }
+        });
+        if (this.selectedAction !== oldSelectedAction) {
+            this.actionBarIcons.forEach(icon => {
+                if (this.selectedAction !== icon.state) {
+                    icon.isSelected = false;
+                }
+            });
+        }
     }
 
     onMouseMove(mousePosition, mousePressed) {
         this.iconBar.forEach(icon => {
             icon.onMouseMove(mousePosition);
         });
+        this.actionBarIcons.forEach(icon => {
+            icon.onMouseMove(mousePosition);
+        });
     }
 
-    draw(ctx, x, y, width, height) {
-        //ctx.fillRect(x, y, width, height);
+    draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
+        //ctx.fillRect(xIcon, yIcon, width, height);
         let iterations = 8;
         let drawWidth = Math.round(width / iterations * 5) / 5;
         let drawHeight = Math.ceil(height / (iterations + 1));
 
         if (this.state !== this.STATES.HIDDEN) {
-            this.drawBack(ctx, x, y, drawWidth, drawHeight, iterations);
-            ctx.fillText(this.state, x + 128, y + 128);
+            this.drawBack(ctx, xIcon, yIcon, drawWidth, drawHeight, iterations);
+            ctx.fillText(this.state, xIcon + 128, yIcon + 128);
         }
 
-        this.drawIconBar(ctx, x, y, drawWidth, drawHeight);
+        this.drawIconBar(ctx, xIcon, yIcon, drawWidth, drawHeight);
+        this.drawActionBar(ctx, xAction, yAction, drawWidth * 10, drawHeight);
     }
 
     drawBack(ctx, x, y, drawWidth, drawHeight, iterations) {
@@ -111,6 +138,16 @@ export default class InventoryManager {
         for (let i = 0; i < this.iconBar.length; i++) {
             const icon = this.iconBar[i];
             icon.draw(ctx, x + i * drawWidth, y, drawWidth, drawHeight);
+        }
+    }
+
+    drawActionBar(ctx, x, y, drawWidth, drawHeight) {
+        let drawX = x,
+            dx = drawWidth / 10;
+        ctx.fillStyle = "white";
+        for (let i = 0; i < 10; i++) {
+            this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
+            ctx.fillText(i === 9 ? 0 : i + 1, drawX + dx / 2 + i * dx, y + drawHeight / 2);
         }
     }
 }

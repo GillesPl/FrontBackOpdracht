@@ -295,7 +295,9 @@ export default class MainGameState extends GameState {
         this._drawLayer(totalLayers - 1);
 
         this.ctx.globalAlpha = 1;
-        this.InventoryManager.draw(this.ctx, this.ctx.width * 0.8, 0, this.ctx.width * 0.2, this.ctx.width * 0.24);
+        this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0,
+             this.ctx.width * 0.3, this.ctx.width * 0.36,
+             this.ctx.width * 0.3, 0);
         this._drawUI(delta);
     }
 

@@ -60,11 +60,51 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _nonCharacterObjectBase = __webpack_require__(8);
+
+var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Fire = function (_NonCharacterObject) {
+    _inherits(Fire, _NonCharacterObject);
+
+    function Fire(Loader, x, y) {
+        _classCallCheck(this, Fire);
+
+        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 50, false));
+
+        _this.setTilesImage(Loader.getImage('fire'), 1, 5, 12);
+        return _this;
+    }
+
+    return Fire;
+}(_nonCharacterObjectBase2.default);
+
+exports.default = Fire;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -159,25 +199,25 @@ var InventoryObject = function () {
 exports.default = InventoryObject;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(2);
+__webpack_require__(3);
 module.exports = __webpack_require__(18);
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(3);
+var _GameStateManager = __webpack_require__(4);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _MainGameState = __webpack_require__(4);
+var _MainGameState = __webpack_require__(5);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
@@ -198,7 +238,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 })();
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -268,7 +308,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -280,15 +320,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Camera = __webpack_require__(5);
+var _Camera = __webpack_require__(6);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(6);
+var _Keyboard = __webpack_require__(7);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
-var _Fire = __webpack_require__(7);
+var _Fire = __webpack_require__(0);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
@@ -632,7 +672,7 @@ var MainGameState = function (_GameState) {
             this._drawLayer(totalLayers - 1);
 
             this.ctx.globalAlpha = 1;
-            this.InventoryManager.draw(this.ctx, this.ctx.width * 0.8, 0, this.ctx.width * 0.2, this.ctx.width * 0.24);
+            this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0, this.ctx.width * 0.3, this.ctx.width * 0.36, this.ctx.width * 0.3, 0);
             this._drawUI(delta);
         }
     }, {
@@ -774,7 +814,7 @@ var MainGameState = function (_GameState) {
 exports.default = MainGameState;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -866,7 +906,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -938,46 +978,6 @@ var Keyboard = function () {
 }();
 
 exports.default = Keyboard;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _nonCharacterObjectBase = __webpack_require__(8);
-
-var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Fire = function (_NonCharacterObject) {
-    _inherits(Fire, _NonCharacterObject);
-
-    function Fire(Loader, x, y) {
-        _classCallCheck(this, Fire);
-
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 50, false));
-
-        _this.setTilesImage(Loader.getImage('fire'), 1, 5, 10);
-        return _this;
-    }
-
-    return Fire;
-}(_nonCharacterObjectBase2.default);
-
-exports.default = Fire;
 
 /***/ }),
 /* 8 */
@@ -1109,7 +1109,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _InventoryObjectBase = __webpack_require__(0);
+var _InventoryObjectBase = __webpack_require__(1);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
@@ -1150,7 +1150,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _InventoryObjectBase = __webpack_require__(0);
+var _InventoryObjectBase = __webpack_require__(1);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
@@ -1436,10 +1436,12 @@ var InventoryManager = function () {
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.imageIconBar = Loader.getImage("iconbar");
-        this.iconBarCols = 2;
+        this.iconBarCols = 3;
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
+
+        this.selectedAction = 0;
 
         this.STATES = {
             HIDDEN: 0,
@@ -1447,8 +1449,14 @@ var InventoryManager = function () {
             CHARACTER: 2
         };
         this.iconBar = [];
-        this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 0, this.tileIconBarHeight));
-        this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 1, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 2, this.tileIconBarHeight));
+
+        this.actionBarIcons = [];
+        for (var i = 0; i < 10; i++) {
+            this.actionBarIcons.push(new _InventoryIcon2.default(i, this.imageIconBar, 0, this.tileIconBarHeight));
+            if (this.selectedAction === i) this.actionBarIcons[i].isSelected = true;
+        }
 
         this.state = this.STATES.HIDDEN;
     }
@@ -1466,6 +1474,7 @@ var InventoryManager = function () {
             var _this = this;
 
             var oldState = this.state;
+            var oldSelectedAction = this.selectedAction;
             this.iconBar.forEach(function (icon) {
                 if (icon.onMouseMove(mousePosition)) {
                     if (icon.isSelected) {
@@ -1484,6 +1493,19 @@ var InventoryManager = function () {
                     }
                 });
             }
+            this.actionBarIcons.forEach(function (icon) {
+                if (icon.onMouseMove(mousePosition)) {
+                    icon.isSelected = true;
+                    _this.selectedAction = icon.state;
+                }
+            });
+            if (this.selectedAction !== oldSelectedAction) {
+                this.actionBarIcons.forEach(function (icon) {
+                    if (_this.selectedAction !== icon.state) {
+                        icon.isSelected = false;
+                    }
+                });
+            }
         }
     }, {
         key: "onMouseMove",
@@ -1491,21 +1513,25 @@ var InventoryManager = function () {
             this.iconBar.forEach(function (icon) {
                 icon.onMouseMove(mousePosition);
             });
+            this.actionBarIcons.forEach(function (icon) {
+                icon.onMouseMove(mousePosition);
+            });
         }
     }, {
         key: "draw",
-        value: function draw(ctx, x, y, width, height) {
-            //ctx.fillRect(x, y, width, height);
+        value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
+            //ctx.fillRect(xIcon, yIcon, width, height);
             var iterations = 8;
             var drawWidth = Math.round(width / iterations * 5) / 5;
             var drawHeight = Math.ceil(height / (iterations + 1));
 
             if (this.state !== this.STATES.HIDDEN) {
-                this.drawBack(ctx, x, y, drawWidth, drawHeight, iterations);
-                ctx.fillText(this.state, x + 128, y + 128);
+                this.drawBack(ctx, xIcon, yIcon, drawWidth, drawHeight, iterations);
+                ctx.fillText(this.state, xIcon + 128, yIcon + 128);
             }
 
-            this.drawIconBar(ctx, x, y, drawWidth, drawHeight);
+            this.drawIconBar(ctx, xIcon, yIcon, drawWidth, drawHeight);
+            this.drawActionBar(ctx, xAction, yAction, drawWidth * 10, drawHeight);
         }
     }, {
         key: "drawBack",
@@ -1537,6 +1563,17 @@ var InventoryManager = function () {
             for (var i = 0; i < this.iconBar.length; i++) {
                 var icon = this.iconBar[i];
                 icon.draw(ctx, x + i * drawWidth, y, drawWidth, drawHeight);
+            }
+        }
+    }, {
+        key: "drawActionBar",
+        value: function drawActionBar(ctx, x, y, drawWidth, drawHeight) {
+            var drawX = x,
+                dx = drawWidth / 10;
+            ctx.fillStyle = "white";
+            for (var i = 0; i < 10; i++) {
+                this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
+                ctx.fillText(i === 9 ? 0 : i + 1, drawX + dx / 2 + i * dx, y + drawHeight / 2);
             }
         }
     }]);
@@ -1897,7 +1934,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Fire = __webpack_require__(7);
+var _Fire = __webpack_require__(0);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
