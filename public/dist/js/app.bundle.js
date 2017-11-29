@@ -406,9 +406,17 @@ var MainGameState = function (_GameState) {
             window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
             });
+            //window.oncontextmenu = function () {
+            //    self.showCustomMenu();
+            //    return false; // cancel default menu
+            //};
         }.bind(_this));
         return _this;
     }
+
+    //showCustomMenu() {
+    //
+    //}
 
     _createClass(MainGameState, [{
         key: "draw",
@@ -540,7 +548,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('sword', '../../assets/sprites/Sword.png'), this.Loader.loadImage('shield', '../../assets/sprites/Shield.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png')];
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('sword', '../../assets/sprites/Sword.png'), this.Loader.loadImage('shield', '../../assets/sprites/Shield.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png')];
         }
     }, {
         key: "update",
@@ -1430,6 +1438,7 @@ var InventoryManager = function () {
 
         this.inventory = inventoryObjects;
 
+        this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
         this.backCols = 4;
         this.backRows = 4;
@@ -1449,8 +1458,8 @@ var InventoryManager = function () {
             CHARACTER: 2
         };
         this.iconBar = [];
-        this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 1, this.tileIconBarHeight));
-        this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 2, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (var i = 0; i < 10; i++) {
@@ -1523,11 +1532,13 @@ var InventoryManager = function () {
             //ctx.fillRect(xIcon, yIcon, width, height);
             var iterations = 8;
             var drawWidth = Math.round(width / iterations * 5) / 5;
-            var drawHeight = Math.ceil(height / (iterations + 1));
+            var drawHeight = Math.round(height / (iterations + 1));
 
             if (this.state !== this.STATES.HIDDEN) {
                 this.drawBack(ctx, xIcon, yIcon, drawWidth, drawHeight, iterations);
-                ctx.fillText(this.state, xIcon + 128, yIcon + 128);
+                if (this.state === this.STATES.CHARACTER) {
+                    ctx.drawImage(this.imageCharacter, xIcon, yIcon + drawHeight, drawWidth * iterations, drawHeight * iterations);
+                }
             }
 
             this.drawIconBar(ctx, xIcon, yIcon, drawWidth, drawHeight);

@@ -4,6 +4,7 @@ export default class InventoryManager {
     constructor(inventoryObjects, Loader) {
         this.inventory = inventoryObjects;
 
+        this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
         this.backCols = 4;
         this.backRows = 4;
@@ -23,8 +24,8 @@ export default class InventoryManager {
             CHARACTER: 2
         };
         this.iconBar = [];
-        this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 1, this.tileIconBarHeight));
-        this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 2, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (let i = 0; i < 10; i++) {
@@ -91,11 +92,13 @@ export default class InventoryManager {
         //ctx.fillRect(xIcon, yIcon, width, height);
         let iterations = 8;
         let drawWidth = Math.round(width / iterations * 5) / 5;
-        let drawHeight = Math.ceil(height / (iterations + 1));
+        let drawHeight = Math.round(height / (iterations + 1));
 
         if (this.state !== this.STATES.HIDDEN) {
             this.drawBack(ctx, xIcon, yIcon, drawWidth, drawHeight, iterations);
-            ctx.fillText(this.state, xIcon + 128, yIcon + 128);
+            if (this.state === this.STATES.CHARACTER) {
+                ctx.drawImage(this.imageCharacter, xIcon, yIcon + drawHeight, drawWidth * iterations, drawHeight * iterations);
+            }
         }
 
         this.drawIconBar(ctx, xIcon, yIcon, drawWidth, drawHeight);

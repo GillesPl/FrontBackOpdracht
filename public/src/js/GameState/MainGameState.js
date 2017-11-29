@@ -42,9 +42,16 @@ export default class MainGameState extends GameState {
             window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
             });
+            //window.oncontextmenu = function () {
+            //    self.showCustomMenu();
+            //    return false; // cancel default menu
+            //};
         }.bind(this));
     }
 
+    //showCustomMenu() {
+    //
+    //}
 
     draw(elapsed) {
         let self = this;
@@ -175,7 +182,8 @@ export default class MainGameState extends GameState {
             this.Loader.loadImage('sword', '../../assets/sprites/Sword.png'),
             this.Loader.loadImage('shield', '../../assets/sprites/Shield.png'),
             this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
-            this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png')
+            this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
+            this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png')
         ];
     }
 
@@ -296,8 +304,8 @@ export default class MainGameState extends GameState {
 
         this.ctx.globalAlpha = 1;
         this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0,
-             this.ctx.width * 0.3, this.ctx.width * 0.36,
-             this.ctx.width * 0.3, 0);
+            this.ctx.width * 0.3, this.ctx.width * 0.36,
+            this.ctx.width * 0.3, 0);
         this._drawUI(delta);
     }
 
