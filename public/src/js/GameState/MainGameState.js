@@ -1,8 +1,11 @@
 import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
 import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
-import Hero from "../GameObjects/Hero.class";
-import OtherPlayer from "../GameObjects/OtherPlayer.class";
+import Sword from "../GameObjects/InventoryObjects/Sword.class";
+import Shield from "../GameObjects/InventoryObjects/Shield.class";
+import Hero from "../GameObjects/MainObjects/Hero.class";
+import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class";
+import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
 
@@ -22,16 +25,26 @@ export default class MainGameState extends GameState {
         this.ctx.height = window.innerHeight;
 
         this._previousElapsed = 0;
+        this.isMousePressed = true;
 
         this.loadassets = this.load();
         Promise.all(this.loadassets).then(function (loaded) {
             this.loadNonCharacterObjects();
+            this.loadInventoryObjects();
             this.init();
             let self = this;
             window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
             });
         }.bind(this));
+
+        let self = this;
+        document.onmousemove = function (event) {
+            self.onMouseMove(event, self);
+        };
+        document.onclick = function (event) {
+            self.onMouseClickEvent(event, self);
+        };
     }
 
 
@@ -51,13 +64,20 @@ export default class MainGameState extends GameState {
 
         //var in update == delta, see commented code above
         this.update(delta);
-        this.render();
+        this.render(delta);
     }
 
     loadNonCharacterObjects() {
         this.nonCharacterObjects = [];
         this.nonCharacterObjects.push(new Fire(this.Loader, 6065, 2280));
         this.nonCharacterObjects.push(new Fire(this.Loader, 3000, 3100));
+    }
+
+    loadInventoryObjects() {
+        let inventoryObjects = [];
+        inventoryObjects.push(new Sword(this.Loader));
+        inventoryObjects.push(new Shield(this.Loader));
+        this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader);
     }
 
     // send map in this
@@ -143,7 +163,11 @@ export default class MainGameState extends GameState {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
             this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
             this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
-            this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png')
+            this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
+            this.Loader.loadImage('sword', '../../assets/sprites/Sword.png'),
+            this.Loader.loadImage('shield', '../../assets/sprites/Shield.png'),
+            this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
+            this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png')
         ];
     }
 
@@ -194,6 +218,7 @@ export default class MainGameState extends GameState {
                 }
             }
         });
+        this.InventoryManager.update(delta);
         this.camera.update();
     }
 
@@ -208,7 +233,7 @@ export default class MainGameState extends GameState {
         }
     }
 
-    render() {
+    render(delta) {
         let canvas = document.querySelector("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -262,9 +287,25 @@ export default class MainGameState extends GameState {
         this._drawLayer(totalLayers - 1);
 
         this.ctx.globalAlpha = 1;
-        this._drawUI();
+        this.InventoryManager.draw(this.ctx, this.ctx.width * 0.8, 0, this.ctx.width * 0.2, this.ctx.width * 0.24);
+        this._drawUI(delta);
     }
 
+    onMouseClickEvent(event, self) {
+        let mousePosition = {
+            x: event.pageX,
+            y: event.pageY
+        };
+        self.InventoryManager.onMouseClick(mousePosition);
+    }
+
+    onMouseMove(event, self) {
+        let mousePosition = {
+            x: event.pageX,
+            y: event.pageY
+        };
+        self.InventoryManager.onMouseMove(mousePosition);
+    }
 
     events() {
         const self = this;
@@ -314,9 +355,9 @@ export default class MainGameState extends GameState {
                 console.log('goFullScreen not supported');
             }
         }
-    };
+    }
 
-    _drawUI() {
+    _drawUI(delta) {
         var tx = 10,
             ty = 0,
             dy = 40;
@@ -330,7 +371,7 @@ export default class MainGameState extends GameState {
         this.ctx.fillRect(tx, ty += dy, 102, 20);
         this.ctx.fillStyle = "lightblue";
         this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
-        
+
         ty += dy;
         dy /= 2;
 
@@ -343,6 +384,7 @@ export default class MainGameState extends GameState {
         this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
         this.ctx.fillText("shield: " + this.hero.shield, tx, ty += dy);
         this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
+        this.ctx.fillText("fps: " + delta === 0 ? 0 : Math.round(1 / delta * 10) / 10, tx, ty += dy);
     }
 
 
@@ -375,7 +417,4 @@ export default class MainGameState extends GameState {
             }
         }
     }
-
-
-
 }

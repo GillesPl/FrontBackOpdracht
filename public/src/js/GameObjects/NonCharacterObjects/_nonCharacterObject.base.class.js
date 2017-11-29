@@ -28,19 +28,6 @@ export default class NonCharacterObject {
         this.imageIndex = 0;
     }
 
-    isNear(xMin, yMin, xMax, yMax) {
-        // DON'T EDIT IF YOU DON'T UNDERSTAND! (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
-        //console.log('isNear: ' + (this.x < xMax) + ' && ' + (this.x + this.width > xMin) + ' && ' +
-         //   (this.y < yMax) + ' && ' + (this.y + this.height > yMin));
-        return (this.x < xMax && this.x + this.width > xMin &&
-            this.y < yMax && this.y + this.height > yMin);
-    }
-
-    isInObject(x, y) {
-        return (this.x < x && this.x + this.width > x &&
-            this.y < y && this.y + this.height > y);
-    }
-
     setTilesImage(image, rows, cols, increaseRatio) {
         this.setImage(image);
         this.rows = rows;
@@ -49,6 +36,19 @@ export default class NonCharacterObject {
         this.tileHeight = image.height / rows;
         this.imageIndex = 0;
         this.increaseRatio = increaseRatio;
+    }
+
+    isNear(xMin, yMin, xMax, yMax) {
+        // DON'T EDIT IF YOU DON'T UNDERSTAND! (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
+        //console.log('isNear: ' + (this.x < xMax) + ' && ' + (this.x + this.width > xMin) + ' && ' +
+        //   (this.y < yMax) + ' && ' + (this.y + this.height > yMin));
+        return (this.x < xMax && this.x + this.width > xMin &&
+            this.y < yMax && this.y + this.height > yMin);
+    }
+
+    isInObject(x, y) {
+        return (this.x < x && this.x + this.width > x &&
+            this.y < y && this.y + this.height > y);
     }
 
     increaseImageIndex(increase) {
