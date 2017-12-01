@@ -36,8 +36,11 @@ export default class MainGameState extends GameState {
             document.onmousemove = function (event) {
                 self.onMouseMove(event, self);
             };
-            document.onclick = function (event) {
-                self.onMouseClickEvent(event, self);
+            document.onmousedown = function (event) {
+                self.onMouseDown(event, self);
+            };
+            document.onmouseup = function (event) {
+                self.onMouseUp(event, self);
             };
             window.requestAnimationFrame(function (elapsed) {
                 self.draw(elapsed);
@@ -91,8 +94,13 @@ export default class MainGameState extends GameState {
         let inventoryObjects = [];
         inventoryObjects.push(new Sword(this.Loader, 2));
         inventoryObjects.push(new Shield(this.Loader, 5));
-        for (let i = 0; i < 60; i++) {
-            inventoryObjects.push(new Shield(this.Loader, 2));
+        for (let i = 0; i < 40; i++) {
+            let r = Math.floor(Math.random() * 100) % 5 + 1;
+            if (Math.random() > 0.5) {
+                inventoryObjects.push(new Shield(this.Loader, r));
+            } else {
+                inventoryObjects.push(new Sword(this.Loader, r));
+            }
         }
         this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader);
     }
@@ -312,12 +320,19 @@ export default class MainGameState extends GameState {
         this._drawUI(delta);
     }
 
-    onMouseClickEvent(event, self) {
+    onMouseDown(event, self) {
         let mousePosition = {
             x: event.pageX,
             y: event.pageY
         };
-        self.InventoryManager.onMouseClick(mousePosition);
+        self.InventoryManager.onMouseDown(mousePosition);
+    }
+    onMouseUp(event, self) {
+        let mousePosition = {
+            x: event.pageX,
+            y: event.pageY
+        };
+        self.InventoryManager.onMouseUp(mousePosition);
     }
 
     onMouseMove(event, self) {

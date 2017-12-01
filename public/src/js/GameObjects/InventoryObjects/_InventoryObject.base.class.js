@@ -22,6 +22,8 @@ export default class InventoryObject {
         this.stackLimit = stackLimit;
         this.stackCount = 1;
         this.inventoryLocation = 0;
+        this.shownLocation = 0;
+        this.isHolding = false;
     }
 
     setEquipable(area, damageOrArmor) {
@@ -56,6 +58,21 @@ export default class InventoryObject {
         }
     }
 
+    isInObject(x, y) {
+        return (this.x < x && this.x + this.width > x &&
+            this.y < y && this.y + this.height > y);
+    }
+
+    onMouseDown(mousePosition) {
+        if (this.isInObject(mousePosition.x, mousePosition.y)) {
+            this.isHolding = true;
+        }
+    }
+
+    onMouseUp(mousePosition) {
+        this.isHolding = false;
+    }
+
     getImageIndex() {
         return Math.floor(this.imageIndex);
     }
@@ -67,6 +84,10 @@ export default class InventoryObject {
     }
 
     draw(ctx, screenX, screenY, width, height) {
+        this.x = screenX;
+        this.y = screenY;
+        this.width = width;
+        this.height = height;
         if (this.image === null) {
             this.ctx.fillText("Object", this.x, this.y);
             this.ctx.fillStyle = "purple";

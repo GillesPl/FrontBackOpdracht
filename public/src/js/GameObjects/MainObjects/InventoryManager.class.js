@@ -5,9 +5,11 @@ export default class InventoryManager {
         this.inventory = inventoryObjects;
         let i = 0;
         this.inventory.forEach(inventoryObject => {
+            inventoryObject.shownLocation = i;
             inventoryObject.inventoryLocation = i++;
         });
 
+        this.iterations = 8;
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
         this.backCols = 4;
@@ -19,8 +21,11 @@ export default class InventoryManager {
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
-
         this.selectedAction = 0;
+        this.mousePosition = {
+            x: 0,
+            y: 0
+        };
 
         this.STATES = {
             HIDDEN: 0,
@@ -51,64 +56,171 @@ export default class InventoryManager {
         this.inventory.push(object);
     }
 
-    onMouseClick(mousePosition) {
-        let oldState = this.state;
-        let oldSelectedAction = this.selectedAction;
-        this.iconBar.forEach(icon => {
-            if (icon.onMouseMove(mousePosition)) {
-                if (icon.isSelected) {
-                    icon.isSelected = false;
-                    this.state = this.STATES.HIDDEN;
-                } else {
-                    this.state = icon.state;
-                    icon.isSelected = true;
-                }
-            }
+    isInObject(x, y) {
+        return (this.x < x && this.x + this.width > x &&
+            this.y < y && this.y + this.height > y);
+    }
+
+    onMouseDown(mousePosition) {
+        this.inventory.forEach(inventoryObject => {
+            inventoryObject.onMouseDown(mousePosition);
+            if (inventoryObject.isHolding) {}
         });
-        if (oldState != this.state) {
+
+        this.mousePosition = mousePosition;
+    }
+
+    onMouseUp(mousePosition) {
+        this.moveInventory(mousePosition, true);
+
+        let holdingObject = false;
+        this.inventory.forEach(inventoryObject => {
+            if (inventoryObject.isHolding) {
+                holdingObject = true;
+            }
+            inventoryObject.onMouseUp(mousePosition);
+        });
+
+        if (!holdingObject) {
+            let oldState = this.state;
+            let oldSelectedAction = this.selectedAction;
             this.iconBar.forEach(icon => {
-                if (icon.state != this.state) {
-                    icon.isSelected = false;
+                if (icon.onMouseMove(mousePosition)) {
+                    if (icon.isSelected) {
+                        icon.isSelected = false;
+                        this.state = this.STATES.HIDDEN;
+                    } else {
+                        this.state = icon.state;
+                        icon.isSelected = true;
+                    }
                 }
             });
-        }
-        this.actionBarIcons.forEach(icon => {
-            if (icon.onMouseMove(mousePosition)) {
-                icon.isSelected = true;
-                this.selectedAction = icon.state;
+            if (oldState != this.state) {
+                this.iconBar.forEach(icon => {
+                    if (icon.state != this.state) {
+                        icon.isSelected = false;
+                    }
+                });
             }
-        });
-        if (this.selectedAction !== oldSelectedAction) {
             this.actionBarIcons.forEach(icon => {
-                if (this.selectedAction !== icon.state) {
-                    icon.isSelected = false;
+                if (icon.onMouseMove(mousePosition)) {
+                    icon.isSelected = true;
+                    this.selectedAction = icon.state;
                 }
             });
+            if (this.selectedAction !== oldSelectedAction) {
+                this.actionBarIcons.forEach(icon => {
+                    if (this.selectedAction !== icon.state) {
+                        icon.isSelected = false;
+                    }
+                });
+            }
         }
     }
 
     onMouseMove(mousePosition, mousePressed) {
+        let isHolding = false;
         this.iconBar.forEach(icon => {
             icon.onMouseMove(mousePosition);
         });
         this.actionBarIcons.forEach(icon => {
             icon.onMouseMove(mousePosition);
         });
+        this.inventory.forEach(inventoryObject => {
+            if (inventoryObject.isHolding) {
+                isHolding = true;
+            }
+        });
+        this.mousePosition = mousePosition;
+        if (isHolding) {
+            if (this.isInObject(mousePosition.x, mousePosition.y)) {
+                this.holdingInObject = true;
+                this.moveInventory(mousePosition, false);
+            } else {
+                this.holdingInObject = false;
+            }
+        }
+    }
+
+    moveInventory(mousePosition, binding) {
+        let drawWidth = (this.width / (this.iterations + 1));
+        let drawHeight = ((this.height - this.yTop) / (this.iterations + 1));
+        let tempX = Math.floor((mousePosition.x - this.x - drawWidth / 2) / drawWidth);
+        let tempY = Math.floor((mousePosition.y - this.y - drawHeight / 2) / drawHeight);
+        let position = tempX + tempY * this.iterations;
+        let emptyPosition = position;
+        let originalPosition;
+        let untilPosition;
+        //console.log('x: ' + tempX + ', y: ' + tempY + ', pos: ' + position);
+
+        this.inventory.forEach(inventoryObject => { // Get original position
+            if (inventoryObject.isHolding) {
+                originalPosition = inventoryObject.inventoryLocation;
+                //console.log(originalPosition + ", " + position);
+            }
+        });
+
+        let positionsBetween = [];
+        if (position < originalPosition) {
+            for (let i = position; i < originalPosition; i++) {
+                positionsBetween.push(i);
+            }
+        } else if (position > originalPosition) {
+            for (let i = position; i > originalPosition; i--) {
+                positionsBetween.push(i);
+            }
+        }
+        this.inventory.forEach(inventoryObject => { // Get empty position
+            positionsBetween.forEach(posBetween => {
+                if (inventoryObject.inventoryLocation === posBetween) {
+                    positionsBetween.splice(positionsBetween.indexOf(posBetween), 1); // remove from array
+                }
+            });
+        });
+
+        if (positionsBetween.length === 0) {
+            untilPosition = originalPosition;
+        } else {
+            untilPosition = positionsBetween[0];
+        }
+
+        this.inventory.forEach(inventoryObject => {
+            if (inventoryObject.isHolding) {
+                inventoryObject.shownLocation = position;
+                if (binding) {
+                    inventoryObject.inventoryLocation = position;
+                }
+            } else {
+                if (position < untilPosition && inventoryObject.inventoryLocation >= position && inventoryObject.inventoryLocation < untilPosition) {
+                    inventoryObject.shownLocation = inventoryObject.inventoryLocation + 1;
+                } else if (position > untilPosition && inventoryObject.inventoryLocation <= position && inventoryObject.inventoryLocation > untilPosition) {
+                    inventoryObject.shownLocation = inventoryObject.inventoryLocation - 1;
+                } else {
+                    inventoryObject.shownLocation = inventoryObject.inventoryLocation;
+                }
+                if (binding) {
+                    inventoryObject.inventoryLocation = inventoryObject.shownLocation;
+                }
+            }
+        });
     }
 
     draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
-        //ctx.fillRect(xIcon, yIcon, width, height);
-        let iterations = 8;
-        let drawWidth = Math.round(width / iterations * 5) / 5;
-        let drawHeight = Math.round(height / (iterations + 1));
+        let drawWidth = Math.round(width / this.iterations * 5) / 5;
+        let drawHeight = Math.round(height / (this.iterations + 1));
+        this.yTop = yIcon + drawHeight;
+
+        this.x = xIcon;
+        this.y = this.yTop;
+        this.width = width;
+        this.height = height;
 
         if (this.state !== this.STATES.HIDDEN) {
-            let yTop = yIcon + drawHeight;
-            this.drawBack(ctx, xIcon, yTop, drawWidth, drawHeight, iterations);
+            this.drawBack(ctx, xIcon, this.yTop, drawWidth, drawHeight, this.iterations);
             if (this.state === this.STATES.CHARACTER) {
-                ctx.drawImage(this.imageCharacter, xIcon, yTop, drawWidth * iterations, drawHeight * iterations);
+                ctx.drawImage(this.imageCharacter, xIcon, this.yTop, drawWidth * this.iterations, drawHeight * this.iterations);
             } else if (this.state === this.STATES.INVENTORY) {
-                this.drawInventory(ctx, xIcon + drawWidth / 2, yTop + drawHeight / 2, drawWidth / iterations * (iterations - 1), drawHeight / iterations * (iterations - 1), iterations);
+                this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
             }
         }
 
@@ -147,8 +259,14 @@ export default class InventoryManager {
 
     drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
         this.inventory.forEach(inventoryObject => {
-            let drawX = x + Math.floor(inventoryObject.inventoryLocation % iterations) * drawWidth;
-            let drawY = y + Math.floor(inventoryObject.inventoryLocation / iterations) * drawHeight;
+            let drawX, drawY;
+            if (inventoryObject.isHolding) {
+                drawX = this.mousePosition.x;
+                drawY = this.mousePosition.y;
+            } else {
+                drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
+                drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
+            }
             inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
             ctx.font = "22px Arial";
             ctx.fillStyle = "white";
