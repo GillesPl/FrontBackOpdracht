@@ -3,6 +3,10 @@ import InventoryIcon from "./InventoryIcon.class";
 export default class InventoryManager {
     constructor(inventoryObjects, Loader) {
         this.inventory = inventoryObjects;
+        let i = 0;
+        this.inventory.forEach(inventoryObject => {
+            inventoryObject.inventoryLocation = i++;
+        });
 
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
@@ -41,6 +45,10 @@ export default class InventoryManager {
         this.inventory.forEach(inventoryObject => {
             inventoryObject.update(delta);
         });
+    }
+
+    addObject(object) {
+        this.inventory.push(object);
     }
 
     onMouseClick(mousePosition) {
@@ -95,9 +103,12 @@ export default class InventoryManager {
         let drawHeight = Math.round(height / (iterations + 1));
 
         if (this.state !== this.STATES.HIDDEN) {
-            this.drawBack(ctx, xIcon, yIcon, drawWidth, drawHeight, iterations);
+            let yTop = yIcon + drawHeight;
+            this.drawBack(ctx, xIcon, yTop, drawWidth, drawHeight, iterations);
             if (this.state === this.STATES.CHARACTER) {
-                ctx.drawImage(this.imageCharacter, xIcon, yIcon + drawHeight, drawWidth * iterations, drawHeight * iterations);
+                ctx.drawImage(this.imageCharacter, xIcon, yTop, drawWidth * iterations, drawHeight * iterations);
+            } else if (this.state === this.STATES.INVENTORY) {
+                this.drawInventory(ctx, xIcon + drawWidth / 2, yTop + drawHeight / 2, drawWidth / iterations * (iterations - 1), drawHeight / iterations * (iterations - 1), iterations);
             }
         }
 
@@ -106,9 +117,6 @@ export default class InventoryManager {
     }
 
     drawBack(ctx, x, y, drawWidth, drawHeight, iterations) {
-        let yTop = y + drawHeight;
-
-        // Top row
         for (let xx = 0; xx < iterations; xx++) {
             for (let yy = 0; yy < iterations; yy++) {
                 let xPos = 2,
@@ -130,11 +138,22 @@ export default class InventoryManager {
                     this.tileBackWidth,
                     this.tileBackHeight,
                     Math.floor(x + xx * drawWidth),
-                    Math.floor(yTop + yy * drawHeight),
+                    Math.floor(y + yy * drawHeight),
                     drawWidth + 1,
                     drawHeight + 1);
             }
         }
+    }
+
+    drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
+        this.inventory.forEach(inventoryObject => {
+            let drawX = x + Math.floor(inventoryObject.inventoryLocation % iterations) * drawWidth;
+            let drawY = y + Math.floor(inventoryObject.inventoryLocation / iterations) * drawHeight;
+            inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
+        });
     }
 
     drawIconBar(ctx, x, y, drawWidth, drawHeight) {
@@ -147,6 +166,7 @@ export default class InventoryManager {
     drawActionBar(ctx, x, y, drawWidth, drawHeight) {
         let drawX = x,
             dx = drawWidth / 10;
+        ctx.font = "14px Arial";
         ctx.fillStyle = "white";
         for (let i = 0; i < 10; i++) {
             this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);

@@ -89,8 +89,11 @@ export default class MainGameState extends GameState {
 
     loadInventoryObjects() {
         let inventoryObjects = [];
-        inventoryObjects.push(new Sword(this.Loader));
-        inventoryObjects.push(new Shield(this.Loader));
+        inventoryObjects.push(new Sword(this.Loader, 2));
+        inventoryObjects.push(new Shield(this.Loader, 5));
+        for (let i = 0; i < 60; i++) {
+            inventoryObjects.push(new Shield(this.Loader, 2));
+        }
         this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader);
     }
 

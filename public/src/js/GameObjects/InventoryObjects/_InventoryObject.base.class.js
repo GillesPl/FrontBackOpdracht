@@ -1,5 +1,5 @@
 export default class InventoryObject {
-    constructor() {
+    constructor(stackLimit) {
         this.AREAS = {
             NONE: 0,
             HEAD: 1,
@@ -19,6 +19,9 @@ export default class InventoryObject {
         this.tileHeight = 1;
         this.imageIndex = 0;
         this.increaseRatio = 1;
+        this.stackLimit = stackLimit;
+        this.stackCount = 1;
+        this.inventoryLocation = 0;
     }
 
     setEquipable(area, damageOrArmor) {
@@ -60,6 +63,25 @@ export default class InventoryObject {
     update(delta) {
         if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
             this.increaseImageIndex(delta);
+        }
+    }
+
+    draw(ctx, screenX, screenY, width, height) {
+        if (this.image === null) {
+            this.ctx.fillText("Object", this.x, this.y);
+            this.ctx.fillStyle = "purple";
+            this.ctx.fillRect(this.x, this.y, this.width, this.height);
+        } else {
+            ctx.drawImage(
+                this.image, // Image
+                (this.getImageIndex() % this.cols) * this.tileWidth, // Src x
+                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                screenX, // Target x
+                screenY, // Target y
+                width, // Target width
+                height); // Target height
         }
     }
 }

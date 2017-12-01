@@ -119,7 +119,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var InventoryObject = function () {
-    function InventoryObject() {
+    function InventoryObject(stackLimit) {
         _classCallCheck(this, InventoryObject);
 
         this.AREAS = {
@@ -141,6 +141,9 @@ var InventoryObject = function () {
         this.tileHeight = 1;
         this.imageIndex = 0;
         this.increaseRatio = 1;
+        this.stackLimit = stackLimit;
+        this.stackCount = 1;
+        this.inventoryLocation = 0;
     }
 
     _createClass(InventoryObject, [{
@@ -189,6 +192,25 @@ var InventoryObject = function () {
         value: function update(delta) {
             if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
                 this.increaseImageIndex(delta);
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, screenX, screenY, width, height) {
+            if (this.image === null) {
+                this.ctx.fillText("Object", this.x, this.y);
+                this.ctx.fillStyle = "purple";
+                this.ctx.fillRect(this.x, this.y, this.width, this.height);
+            } else {
+                ctx.drawImage(this.image, // Image
+                this.getImageIndex() % this.cols * this.tileWidth, // Src x
+                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                screenX, // Target x
+                screenY, // Target y
+                width, // Target width
+                height); // Target height
             }
         }
     }]);
@@ -458,8 +480,11 @@ var MainGameState = function (_GameState) {
         key: "loadInventoryObjects",
         value: function loadInventoryObjects() {
             var inventoryObjects = [];
-            inventoryObjects.push(new _Sword2.default(this.Loader));
-            inventoryObjects.push(new _Shield2.default(this.Loader));
+            inventoryObjects.push(new _Sword2.default(this.Loader, 2));
+            inventoryObjects.push(new _Shield2.default(this.Loader, 5));
+            for (var _i = 0; _i < 60; _i++) {
+                inventoryObjects.push(new _Shield2.default(this.Loader, 2));
+            }
             this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader);
         }
 
@@ -522,8 +547,8 @@ var MainGameState = function (_GameState) {
             client.on("user_leave", function (hero) {
                 //console.log('player left');
                 var toDeleteIndex = 0;
-                for (var _i = 0; _i < self.otherPlayers.length; _i++) {
-                    if (self.otherPlayers[_i].id === hero.id) toDeleteIndex = _i;
+                for (var _i2 = 0; _i2 < self.otherPlayers.length; _i2++) {
+                    if (self.otherPlayers[_i2].id === hero.id) toDeleteIndex = _i2;
                 }
                 self.otherPlayers.splice(i, 1);
                 //self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
@@ -637,19 +662,19 @@ var MainGameState = function (_GameState) {
             var totalLayers = this.map.layers.length;
             var self = this;
 
-            var _loop = function _loop(_i2) {
-                _this3._drawLayer(_i2);
+            var _loop = function _loop(_i3) {
+                _this3._drawLayer(_i3);
 
                 _this3.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = self.getLayersUnder(player.tileLevel);
-                    if (thisLayersUnder - 1 === _i2) {
+                    if (thisLayersUnder - 1 === _i3) {
                         player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
                     }
                 });
             };
 
-            for (var _i2 = 0; _i2 < layersUnderPlayer; _i2++) {
-                _loop(_i2);
+            for (var _i3 = 0; _i3 < layersUnderPlayer; _i3++) {
+                _loop(_i3);
             }
 
             // draw main character
@@ -661,19 +686,19 @@ var MainGameState = function (_GameState) {
 
             // draw map top layer
 
-            var _loop2 = function _loop2(_i3) {
-                _this3._drawLayer(_i3);
+            var _loop2 = function _loop2(_i4) {
+                _this3._drawLayer(_i4);
 
                 _this3.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = self.getLayersUnder(player.tileLevel);
-                    if (thisLayersUnder - 1 === _i3) {
+                    if (thisLayersUnder - 1 === _i4) {
                         player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
                     }
                 });
             };
 
-            for (var _i3 = layersUnderPlayer; _i3 < totalLayers - 1; _i3++) {
-                _loop2(_i3);
+            for (var _i4 = layersUnderPlayer; _i4 < totalLayers - 1; _i4++) {
+                _loop2(_i4);
             }
 
             this.ctx.globalAlpha = 0.5;
@@ -1132,11 +1157,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Sword = function (_InventoryObject) {
     _inherits(Sword, _InventoryObject);
 
-    function Sword(Loader) {
+    function Sword(Loader, stackCount) {
         _classCallCheck(this, Sword);
 
-        var _this = _possibleConstructorReturn(this, (Sword.__proto__ || Object.getPrototypeOf(Sword)).call(this));
+        var _this = _possibleConstructorReturn(this, (Sword.__proto__ || Object.getPrototypeOf(Sword)).call(this, 3));
 
+        _this.stackCount = stackCount;
         _this.setEquipable(_this.AREAS.ONE_HANDED, 10);
         _this.setImage(Loader.getImage('sword'));
         return _this;
@@ -1173,11 +1199,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Shield = function (_InventoryObject) {
     _inherits(Shield, _InventoryObject);
 
-    function Shield(Loader) {
+    function Shield(Loader, stackCount) {
         _classCallCheck(this, Shield);
 
-        var _this = _possibleConstructorReturn(this, (Shield.__proto__ || Object.getPrototypeOf(Shield)).call(this));
+        var _this = _possibleConstructorReturn(this, (Shield.__proto__ || Object.getPrototypeOf(Shield)).call(this, 5));
 
+        _this.stackCount = stackCount;
         _this.setEquipable(_this.AREAS.ONE_HANDED, 10);
         _this.setImage(Loader.getImage('shield'));
         return _this;
@@ -1437,6 +1464,10 @@ var InventoryManager = function () {
         _classCallCheck(this, InventoryManager);
 
         this.inventory = inventoryObjects;
+        var i = 0;
+        this.inventory.forEach(function (inventoryObject) {
+            inventoryObject.inventoryLocation = i++;
+        });
 
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
@@ -1462,9 +1493,9 @@ var InventoryManager = function () {
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
-        for (var i = 0; i < 10; i++) {
-            this.actionBarIcons.push(new _InventoryIcon2.default(i, this.imageIconBar, 0, this.tileIconBarHeight));
-            if (this.selectedAction === i) this.actionBarIcons[i].isSelected = true;
+        for (var _i = 0; _i < 10; _i++) {
+            this.actionBarIcons.push(new _InventoryIcon2.default(_i, this.imageIconBar, 0, this.tileIconBarHeight));
+            if (this.selectedAction === _i) this.actionBarIcons[_i].isSelected = true;
         }
 
         this.state = this.STATES.HIDDEN;
@@ -1476,6 +1507,11 @@ var InventoryManager = function () {
             this.inventory.forEach(function (inventoryObject) {
                 inventoryObject.update(delta);
             });
+        }
+    }, {
+        key: "addObject",
+        value: function addObject(object) {
+            this.inventory.push(object);
         }
     }, {
         key: "onMouseClick",
@@ -1535,9 +1571,12 @@ var InventoryManager = function () {
             var drawHeight = Math.round(height / (iterations + 1));
 
             if (this.state !== this.STATES.HIDDEN) {
-                this.drawBack(ctx, xIcon, yIcon, drawWidth, drawHeight, iterations);
+                var yTop = yIcon + drawHeight;
+                this.drawBack(ctx, xIcon, yTop, drawWidth, drawHeight, iterations);
                 if (this.state === this.STATES.CHARACTER) {
-                    ctx.drawImage(this.imageCharacter, xIcon, yIcon + drawHeight, drawWidth * iterations, drawHeight * iterations);
+                    ctx.drawImage(this.imageCharacter, xIcon, yTop, drawWidth * iterations, drawHeight * iterations);
+                } else if (this.state === this.STATES.INVENTORY) {
+                    this.drawInventory(ctx, xIcon + drawWidth / 2, yTop + drawHeight / 2, drawWidth / iterations * (iterations - 1), drawHeight / iterations * (iterations - 1), iterations);
                 }
             }
 
@@ -1547,9 +1586,6 @@ var InventoryManager = function () {
     }, {
         key: "drawBack",
         value: function drawBack(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var yTop = y + drawHeight;
-
-            // Top row
             for (var xx = 0; xx < iterations; xx++) {
                 for (var yy = 0; yy < iterations; yy++) {
                     var xPos = 2,
@@ -1564,9 +1600,21 @@ var InventoryManager = function () {
                     } else if (yy === iterations - 1) {
                         yPos = this.backRows - 1;
                     }
-                    ctx.drawImage(this.imageBack, this.tileBackWidth * xPos, this.tileBackHeight * yPos, this.tileBackWidth, this.tileBackHeight, Math.floor(x + xx * drawWidth), Math.floor(yTop + yy * drawHeight), drawWidth + 1, drawHeight + 1);
+                    ctx.drawImage(this.imageBack, this.tileBackWidth * xPos, this.tileBackHeight * yPos, this.tileBackWidth, this.tileBackHeight, Math.floor(x + xx * drawWidth), Math.floor(y + yy * drawHeight), drawWidth + 1, drawHeight + 1);
                 }
             }
+        }
+    }, {
+        key: "drawInventory",
+        value: function drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
+            this.inventory.forEach(function (inventoryObject) {
+                var drawX = x + Math.floor(inventoryObject.inventoryLocation % iterations) * drawWidth;
+                var drawY = y + Math.floor(inventoryObject.inventoryLocation / iterations) * drawHeight;
+                inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
+                ctx.font = "22px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
+            });
         }
     }, {
         key: "drawIconBar",
@@ -1581,6 +1629,7 @@ var InventoryManager = function () {
         value: function drawActionBar(ctx, x, y, drawWidth, drawHeight) {
             var drawX = x,
                 dx = drawWidth / 10;
+            ctx.font = "14px Arial";
             ctx.fillStyle = "white";
             for (var i = 0; i < 10; i++) {
                 this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
