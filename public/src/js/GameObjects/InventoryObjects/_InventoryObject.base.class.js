@@ -1,5 +1,5 @@
 export default class InventoryObject {
-    constructor(stackLimit) {
+    constructor(typeId, stackLimit) {
         this.AREAS = {
             NONE: 0,
             HEAD: 1,
@@ -7,11 +7,13 @@ export default class InventoryObject {
             CAPE: 3,
             BOOTS: 4,
             ONE_HANDED: 5,
-            TWO_HANDED: 6
+            OFF_HAND: 6
         };
+
+        this.typeId = typeId;
         this.area = this.AREAS.NONE;
-        this.equipable = false;
-        this.damageOrArmor = 0;
+        this.isEquipable = false;
+        this.armor = 0;
         this.image = null;
         this.rows = 1;
         this.cols = 1;
@@ -24,12 +26,21 @@ export default class InventoryObject {
         this.inventoryLocation = 0;
         this.shownLocation = 0;
         this.isHolding = false;
+        this.actionLocation = -1;
     }
 
-    setEquipable(area, damageOrArmor) {
-        this.equipable = true;
+    setEquipable(area, armor) {
+        this.isEquipable = true;
         this.area = area;
-        this.damageOrArmor = damageOrArmor;
+        this.armor = armor;
+        this.isEquiped = false;
+    }
+
+    setEquiped(equiped, emptyPosition) {
+        this.isHolding = false;
+        this.isEquiped = equiped;
+        this.inventoryLocation = emptyPosition;
+        this.shownLocation = emptyPosition;
     }
 
     setImage(image) {
