@@ -1,13 +1,36 @@
 import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
 import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
-import Sword from "../GameObjects/InventoryObjects/Sword.class";
-import Shield from "../GameObjects/InventoryObjects/Shield.class";
 import Hero from "../GameObjects/MainObjects/Hero.class";
 import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class";
 import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
+
+// inventoryItems
+import Sword_1 from "../GameObjects/InventoryObjects/Sword_1.class";
+import Sword_2 from "../GameObjects/InventoryObjects/Sword_2.class";
+import Sword_3 from "../GameObjects/InventoryObjects/Sword_3.class";
+import Shield_1 from "../GameObjects/InventoryObjects/Shield_1.class";
+import Shield_2 from "../GameObjects/InventoryObjects/Shield_2.class";
+import Shield_3 from "../GameObjects/InventoryObjects/Shield_3.class";
+import Shield_4 from "../GameObjects/InventoryObjects/Shield_4.class";
+import Axe_1 from "../GameObjects/InventoryObjects/Axe_1.class";
+import Axe_2 from "../GameObjects/InventoryObjects/Axe_2.class";
+import Axe_3 from "../GameObjects/InventoryObjects/Axe_3.class";
+import Bow_1 from "../GameObjects/InventoryObjects/Bow_1.class";
+import Bow_2 from "../GameObjects/InventoryObjects/Bow_2.class";
+import Bow_3 from "../GameObjects/InventoryObjects/Bow_3.class";
+import Mace from "../GameObjects/InventoryObjects/Mace.class";
+import Spear from "../GameObjects/InventoryObjects/Spear.class";
+import Armor_1 from "../GameObjects/InventoryObjects/Armor_1.class";
+import Armor_2 from "../GameObjects/InventoryObjects/Armor_2.class";
+import Boots_1 from "../GameObjects/InventoryObjects/Boots_1.class";
+import Boots_2 from "../GameObjects/InventoryObjects/Boots_2.class";
+import Boots_3 from "../GameObjects/InventoryObjects/Boots_3.class";
+import Helmet_1 from "../GameObjects/InventoryObjects/Helmet_1.class";
+import Helmet_2 from "../GameObjects/InventoryObjects/Helmet_2.class";
+import Coin from "../GameObjects/InventoryObjects/Coin.class";
 
 export default class MainGameState extends GameState {
     constructor(ctx, map, socket) {
@@ -92,16 +115,29 @@ export default class MainGameState extends GameState {
 
     loadInventoryObjects() {
         let inventoryObjects = [];
-        inventoryObjects.push(new Sword(this.Loader, 2));
-        inventoryObjects.push(new Shield(this.Loader, 5));
-        for (let i = 0; i < 40; i++) {
-            let r = Math.floor(Math.random() * 100) % 5 + 1;
-            if (Math.random() > 0.5) {
-                inventoryObjects.push(new Shield(this.Loader, r));
-            } else {
-                inventoryObjects.push(new Sword(this.Loader, r));
-            }
-        }
+        inventoryObjects.push(new Sword_1(this.Loader, 5));
+        inventoryObjects.push(new Sword_2(this.Loader, 5));
+        inventoryObjects.push(new Sword_3(this.Loader, 5));
+        inventoryObjects.push(new Shield_1(this.Loader, 5));
+        inventoryObjects.push(new Shield_2(this.Loader, 5));
+        inventoryObjects.push(new Shield_3(this.Loader, 5));
+        inventoryObjects.push(new Shield_4(this.Loader, 5));
+        inventoryObjects.push(new Axe_1(this.Loader, 5));
+        inventoryObjects.push(new Axe_2(this.Loader, 5));
+        inventoryObjects.push(new Axe_3(this.Loader, 5));
+        inventoryObjects.push(new Bow_1(this.Loader, 5));
+        inventoryObjects.push(new Bow_2(this.Loader, 5));
+        inventoryObjects.push(new Bow_3(this.Loader, 5));
+        inventoryObjects.push(new Mace(this.Loader, 5));
+        inventoryObjects.push(new Spear(this.Loader, 5));
+        inventoryObjects.push(new Armor_1(this.Loader, 5));
+        inventoryObjects.push(new Armor_2(this.Loader, 5));
+        inventoryObjects.push(new Boots_1(this.Loader, 5));
+        inventoryObjects.push(new Boots_2(this.Loader, 5));
+        inventoryObjects.push(new Boots_3(this.Loader, 5));
+        inventoryObjects.push(new Helmet_1(this.Loader, 5));
+        inventoryObjects.push(new Helmet_2(this.Loader, 5));
+        inventoryObjects.push(new Coin(this.Loader, 500));
         this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader);
     }
 
@@ -190,11 +226,42 @@ export default class MainGameState extends GameState {
             this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
             this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
             this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
-            this.Loader.loadImage('sword', '../../assets/sprites/Sword.png'),
-            this.Loader.loadImage('shield', '../../assets/sprites/Shield.png'),
             this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
             this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
-            this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png')
+            this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
+
+            // InventoryItems
+            this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
+            this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
+            this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
+            this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
+            this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
+            this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
+            this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
+            this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
+            this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
+            this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
+            this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
+            this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
+            this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
+            this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
+            this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
+            this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
+            this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
+            this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
+            this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
+            this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
+            this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
+            this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
+            this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
+            this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
+            this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
+            this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
+            this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
+            this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
+            this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
+            this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
+            this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')
         ];
     }
 

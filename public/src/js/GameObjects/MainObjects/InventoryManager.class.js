@@ -74,8 +74,25 @@ export default class InventoryManager {
     }
 
     update(delta) {
+        let anyUnequiped = false;
+        let allInventoryPositions = [];
         this.inventory.forEach(inventoryObject => {
-            inventoryObject.update(delta);
+            if (inventoryObject.inventoryLocation === -2) {
+                anyUnequiped = true;
+            }
+        });
+        if (anyUnequiped) {
+            for (let i = this.iterations * this.iterations - 1; i >= 0; i--) {
+                allInventoryPositions.push(i);
+            }
+            this.inventory.forEach(inventoryObject => {
+                if (allInventoryPositions.indexOf(inventoryObject.inventoryLocation) >= 0) {
+                    allInventoryPositions.splice(allInventoryPositions.indexOf(inventoryObject.inventoryLocation), 1);
+                }
+            });
+        }
+        this.inventory.forEach(inventoryObject => {
+            inventoryObject.update(delta, allInventoryPositions);
         });
     }
 
@@ -335,6 +352,7 @@ export default class InventoryManager {
             this.drawBack(ctx, xIcon, this.yTop, drawWidth, drawHeight, this.iterations);
             if (this.state === this.STATES.CHARACTER) {
                 ctx.drawImage(this.imageCharacter, xIcon, this.yTop, drawWidth * this.iterations, drawHeight * this.iterations);
+                this.drawCharacter(ctx, xIcon, this.yTop, drawWidth, drawHeight);
             } else if (this.state === this.STATES.INVENTORY) {
                 this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
             }
@@ -370,6 +388,27 @@ export default class InventoryManager {
                     drawHeight + 1);
             }
         }
+    }
+
+    drawCharacter(ctx, x, y, drawWidth, drawHeight) {
+        this.inventory.forEach(inventoryObject => {
+            if (inventoryObject.isEquiped) {
+                switch (inventoryObject.area) {
+                    case inventoryObject.AREAS.OFF_HAND:
+                        inventoryObject.draw(ctx, x + drawWidth, y + 5 * drawHeight, drawWidth, drawHeight);
+                        break;
+                    case inventoryObject.AREAS.BOOTS:
+                        inventoryObject.draw(ctx, x + 3.5 * drawWidth, y + 6.5 * drawHeight, drawWidth, drawHeight);
+                        break;
+                    case inventoryObject.AREAS.HEAD:
+                        inventoryObject.draw(ctx, x + 3.5 * drawWidth, y + 0.5 * drawHeight, drawWidth, drawHeight);
+                        break;
+                    case inventoryObject.AREAS.BODY:
+                        inventoryObject.draw(ctx, x + 6 * drawWidth, y + 5 * drawHeight, drawWidth, drawHeight);
+                        break;
+                }
+            }
+        });
     }
 
     drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {

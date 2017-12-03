@@ -1,5 +1,5 @@
 export default class InventoryObject {
-    constructor(typeId, stackLimit) {
+    constructor(typeId, stackLimit, stackCount) {
         this.AREAS = {
             NONE: 0,
             HEAD: 1,
@@ -22,7 +22,7 @@ export default class InventoryObject {
         this.imageIndex = 0;
         this.increaseRatio = 1;
         this.stackLimit = stackLimit;
-        this.stackCount = 1;
+        this.stackCount = stackCount > stackLimit ? stackLimit : stackCount;
         this.inventoryLocation = 0;
         this.shownLocation = 0;
         this.isHolding = false;
@@ -76,7 +76,11 @@ export default class InventoryObject {
 
     onMouseDown(mousePosition) {
         if (this.isInObject(mousePosition.x, mousePosition.y)) {
-            this.isHolding = true;
+            if (!this.isEquiped) {
+                this.isHolding = true;
+            } else {
+                this.setEquiped(false, -2);
+            }
         }
     }
 
@@ -88,9 +92,18 @@ export default class InventoryObject {
         return Math.floor(this.imageIndex);
     }
 
-    update(delta) {
+    update(delta, allInventoryPositions) {
         if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
             this.increaseImageIndex(delta);
+        }
+
+        if (this.inventoryLocation === -2) {
+            if (allInventoryPositions.length !== 0) {
+                this.inventoryLocation = allInventoryPositions[allInventoryPositions.length - 1];
+                this.shownLocation = allInventoryPositions[allInventoryPositions.length - 1];
+            } else {
+                this.setEquiped(true, -1);
+            }
         }
     }
 
