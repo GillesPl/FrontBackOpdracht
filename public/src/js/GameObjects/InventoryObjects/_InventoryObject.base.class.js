@@ -9,11 +9,17 @@ export default class InventoryObject {
             ONE_HANDED: 5,
             OFF_HAND: 6
         };
+        this.USES = {
+            NONE: 0,
+            HEALTH: 1
+        };
 
         this.typeId = typeId;
         this.area = this.AREAS.NONE;
+        this.usage = this.USES.NONE;
         this.isEquipable = false;
-        this.armor = 0;
+        this.isUsable = false;
+        this.strength = 0;
         this.image = null;
         this.rows = 1;
         this.cols = 1;
@@ -29,11 +35,19 @@ export default class InventoryObject {
         this.actionLocation = -1;
     }
 
-    setEquipable(area, armor) {
+    setEquipable(area, strength) {
         this.isEquipable = true;
         this.area = area;
-        this.armor = armor;
+        this.strength = strength;
         this.isEquiped = false;
+        this.isUsable = false;
+    }
+
+    setUsable(usage, strength) {
+        this.isUsable = true;
+        this.usage  = usage;
+        this.strength = strength;
+        this.isEquipable = false;
     }
 
     setEquiped(equiped, emptyPosition) {

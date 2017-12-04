@@ -6,12 +6,14 @@ canvas {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    background: url('../assets/bg.png');
+    background-repeat: repeat;
+    background-size: 64px 64px;
 }
 
 canvas {
     margin: 0 auto;
     padding: 0 auto;
-    background-color: #0ff;
 }
 
 :full-screen canvas,

@@ -31,6 +31,14 @@ import Boots_3 from "../GameObjects/InventoryObjects/Boots_3.class";
 import Helmet_1 from "../GameObjects/InventoryObjects/Helmet_1.class";
 import Helmet_2 from "../GameObjects/InventoryObjects/Helmet_2.class";
 import Coin from "../GameObjects/InventoryObjects/Coin.class";
+import Health_bottle_1 from "../GameObjects/InventoryObjects/Health_bottle_1.class";
+import Health_bottle_2 from "../GameObjects/InventoryObjects/Health_bottle_2.class";
+import Health_bottle_3 from "../GameObjects/InventoryObjects/Health_bottle_3.class";
+import Health_bottle_4 from "../GameObjects/InventoryObjects/Health_bottle_4.class";
+import Empty_bottle_1 from "../GameObjects/InventoryObjects/Empty_bottle_1.class";
+import Empty_bottle_2 from "../GameObjects/InventoryObjects/Empty_bottle_2.class";
+import Empty_bottle_3 from "../GameObjects/InventoryObjects/Empty_bottle_3.class";
+import Empty_bottle_4 from "../GameObjects/InventoryObjects/Empty_bottle_4.class";
 
 export default class MainGameState extends GameState {
     constructor(ctx, map, socket) {
@@ -138,6 +146,14 @@ export default class MainGameState extends GameState {
         inventoryObjects.push(new Helmet_1(this.Loader, 5));
         inventoryObjects.push(new Helmet_2(this.Loader, 5));
         inventoryObjects.push(new Coin(this.Loader, 500));
+        inventoryObjects.push(new Health_bottle_1(this.Loader, 5));
+        inventoryObjects.push(new Health_bottle_2(this.Loader, 5));
+        inventoryObjects.push(new Health_bottle_3(this.Loader, 5));
+        inventoryObjects.push(new Health_bottle_4(this.Loader, 5));
+        inventoryObjects.push(new Empty_bottle_1(this.Loader, 5));
+        inventoryObjects.push(new Empty_bottle_2(this.Loader, 5));
+        inventoryObjects.push(new Empty_bottle_3(this.Loader, 5));
+        inventoryObjects.push(new Empty_bottle_4(this.Loader, 5));
         this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader);
     }
 
