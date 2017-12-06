@@ -5,6 +5,7 @@ export default class NonCharacterObject {
         this.width = width; // int
         this.height = height; // int
         this.damage = damage; // int
+        this.damageDone = 0;
         this.solid = solid; // bool
         this.image = null;
         this.rows = 1;
@@ -16,7 +17,12 @@ export default class NonCharacterObject {
     }
 
     hasDamage() {
-        return (this.damage >= 0);
+        return this.damageDone > 0 ? false : this.damage >= 0;
+    }
+
+    doDamage() {
+        this.damageDone += 1;
+        return this.damage;
     }
 
     setImage(image) {
@@ -65,6 +71,9 @@ export default class NonCharacterObject {
     update(delta) {
         if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
             this.increaseImageIndex(delta);
+        }
+        if (this.damageDone > 0) {
+            this.damageDone -= delta;
         }
     }
 

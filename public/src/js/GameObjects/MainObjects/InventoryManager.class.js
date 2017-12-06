@@ -1,7 +1,7 @@
 import InventoryIcon from "./InventoryIcon.class";
 
 export default class InventoryManager {
-    constructor(inventoryObjects, Loader) {
+    constructor(inventoryObjects, Loader, hero) {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
@@ -33,6 +33,7 @@ export default class InventoryManager {
         //    inventoryObject.inventoryLocation = i++;
         //});
 
+        this.hero = hero;
         this.iterations = 8;
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
@@ -130,8 +131,12 @@ export default class InventoryManager {
                 }
             });
         }
+        this.hero.armor = 0;
         this.inventory.forEach(inventoryObject => {
             inventoryObject.update(delta, allInventoryPositions);
+            if (inventoryObject.isEquiped && inventoryObject.isEquipable) {
+                this.hero.armor += inventoryObject.strength;
+            }
         });
     }
 

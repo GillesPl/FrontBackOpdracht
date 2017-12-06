@@ -5,9 +5,10 @@ export default class Hero {
         this.y = y;
         this.Loader = Loader;
         this.debugging = false;
+        this.topText = [];
 
         this.health = 100;
-        this.shield = 100;
+        this.armor = 0;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -103,14 +104,29 @@ export default class Hero {
     }
 
     takeDamage(damage) {
-        if (this.shield > 0) {
-            this.shield -= damage;
-        } else if (this.health > 0) {
-            this.shield = 0;
-            this.health -= damage;
-        } else { // Die
-            this.shield = 100;
+        let damageTaken = damage - this.armor;
+        if (damageTaken <= 0) return; // No damage done
+
+        this.topText.push({
+            text: "-" + damageTaken,
+            fillStyle: "red",
+            time: 0
+        });
+
+        this.health -= damageTaken;
+        if (this.health <= 0) { // Die
             this.health = 100;
+        }
+    }
+
+    update(delta) {
+        if (this.topText.length > 0) {
+            this.topText.forEach(text => {
+                text.time += delta;
+                if (text.time > 2) {
+                    this.topText.splice(this.topText.indexOf(text), 1);
+                }
+            });
         }
     }
 
@@ -125,6 +141,16 @@ export default class Hero {
             this.screenY - this.height / 2, // Target y
             this.width, // Target width
             this.height); // Target height
+
+
+
+        if (this.topText.length > 0) {
+            ctx.font = "20px Arial";
+            this.topText.forEach(text => {
+                ctx.fillStyle = text.fillStyle;
+                ctx.fillText(text.text, this.screenX - 15, this.screenY - this.height * (0.3 + text.time / 2));
+            });
+        }
     }
 
     _calculateTileLevel() {

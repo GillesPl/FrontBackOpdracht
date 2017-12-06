@@ -61,7 +61,6 @@ export default class MainGameState extends GameState {
 
         this.loadassets = this.load();
         Promise.all(this.loadassets).then(function (loaded) {
-            this.loadInventoryObjects();
             this.init();
             document.onmousemove = function (event) {
                 this.onMouseMove(event);
@@ -153,7 +152,7 @@ export default class MainGameState extends GameState {
         inventoryObjects.push(new Empty_bottle_2(this.Loader, 5));
         inventoryObjects.push(new Empty_bottle_3(this.Loader, 5));
         inventoryObjects.push(new Empty_bottle_4(this.Loader, 5));
-        this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader);
+        this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader, this.hero);
     }
 
     // send map in this
@@ -164,6 +163,7 @@ export default class MainGameState extends GameState {
         this.tileAtlas = this.Loader.getImage('tiles');
         this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
+        this.loadInventoryObjects();
 
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
             this.socket.emit("new_user", this.hero.getSmallObject());
@@ -330,11 +330,12 @@ export default class MainGameState extends GameState {
             if (thisObject.hasDamage()) {
                 let playerBounds = this.hero.getPlayerBounds();
                 if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                    this.hero.takeDamage(thisObject.damage * delta);
+                    this.hero.takeDamage(thisObject.doDamage());
                 }
             }
         });
         this.InventoryManager.update(delta);
+        this.hero.update(delta);
         this.camera.update();
     }
 
@@ -490,11 +491,6 @@ export default class MainGameState extends GameState {
         this.ctx.fillStyle = "red";
         this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
 
-        this.ctx.fillStyle = "black";
-        this.ctx.fillRect(tx, ty += dy, 102, 20);
-        this.ctx.fillStyle = "lightblue";
-        this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
-
         ty += dy;
         dy /= 2;
 
@@ -505,7 +501,7 @@ export default class MainGameState extends GameState {
         this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
         this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
         this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
-        this.ctx.fillText("shield: " + this.hero.shield, tx, ty += dy);
+        this.ctx.fillText("armor: " + this.hero.armor, tx, ty += dy);
         this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
         this.ctx.fillText("fps: " + delta === 0 ? 0 : Math.round(1 / delta * 10) / 10, tx, ty += dy);
     }

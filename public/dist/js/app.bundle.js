@@ -598,7 +598,6 @@ var MainGameState = function (_GameState) {
 
         _this.loadassets = _this.load();
         Promise.all(_this.loadassets).then(function (loaded) {
-            this.loadInventoryObjects();
             this.init();
             document.onmousemove = function (event) {
                 this.onMouseMove(event);
@@ -695,7 +694,7 @@ var MainGameState = function (_GameState) {
             inventoryObjects.push(new _Empty_bottle_4.default(this.Loader, 5));
             inventoryObjects.push(new _Empty_bottle_6.default(this.Loader, 5));
             inventoryObjects.push(new _Empty_bottle_8.default(this.Loader, 5));
-            this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader);
+            this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader, this.hero);
         }
 
         // send map in this
@@ -709,6 +708,7 @@ var MainGameState = function (_GameState) {
             this.tileAtlas = this.Loader.getImage('tiles');
             this.hero = new _Hero2.default(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
+            this.loadInventoryObjects();
 
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
                 this.socket.emit("new_user", this.hero.getSmallObject());
@@ -843,11 +843,12 @@ var MainGameState = function (_GameState) {
                 if (thisObject.hasDamage()) {
                     var playerBounds = _this2.hero.getPlayerBounds();
                     if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                        _this2.hero.takeDamage(thisObject.damage * delta);
+                        _this2.hero.takeDamage(thisObject.doDamage());
                     }
                 }
             });
             this.InventoryManager.update(delta);
+            this.hero.update(delta);
             this.camera.update();
         }
     }, {
@@ -1018,11 +1019,6 @@ var MainGameState = function (_GameState) {
             this.ctx.fillStyle = "red";
             this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
 
-            this.ctx.fillStyle = "black";
-            this.ctx.fillRect(tx, ty += dy, 102, 20);
-            this.ctx.fillStyle = "lightblue";
-            this.ctx.fillRect(tx + 1, ty + 1, this.hero.shield, 18);
-
             ty += dy;
             dy /= 2;
 
@@ -1033,7 +1029,7 @@ var MainGameState = function (_GameState) {
             this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
             this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
             this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
-            this.ctx.fillText("shield: " + this.hero.shield, tx, ty += dy);
+            this.ctx.fillText("armor: " + this.hero.armor, tx, ty += dy);
             this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
             this.ctx.fillText("fps: " + delta === 0 ? 0 : Math.round(1 / delta * 10) / 10, tx, ty += dy);
         }
@@ -1310,6 +1306,7 @@ var NonCharacterObject = function () {
         this.width = width; // int
         this.height = height; // int
         this.damage = damage; // int
+        this.damageDone = 0;
         this.solid = solid; // bool
         this.image = null;
         this.rows = 1;
@@ -1323,7 +1320,13 @@ var NonCharacterObject = function () {
     _createClass(NonCharacterObject, [{
         key: "hasDamage",
         value: function hasDamage() {
-            return this.damage >= 0;
+            return this.damageDone > 0 ? false : this.damage >= 0;
+        }
+    }, {
+        key: "doDamage",
+        value: function doDamage() {
+            this.damageDone += 1;
+            return this.damage;
         }
     }, {
         key: "setImage",
@@ -1378,6 +1381,9 @@ var NonCharacterObject = function () {
             if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
                 this.increaseImageIndex(delta);
             }
+            if (this.damageDone > 0) {
+                this.damageDone -= delta;
+            }
         }
     }, {
         key: "draw",
@@ -1429,9 +1435,10 @@ var Hero = function () {
         this.y = y;
         this.Loader = Loader;
         this.debugging = false;
+        this.topText = [];
 
         this.health = 100;
-        this.shield = 100;
+        this.armor = 0;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -1528,20 +1535,40 @@ var Hero = function () {
     }, {
         key: 'takeDamage',
         value: function takeDamage(damage) {
-            if (this.shield > 0) {
-                this.shield -= damage;
-            } else if (this.health > 0) {
-                this.shield = 0;
-                this.health -= damage;
-            } else {
+            var damageTaken = damage - this.armor;
+            if (damageTaken <= 0) return; // No damage done
+
+            this.topText.push({
+                text: "-" + damageTaken,
+                fillStyle: "red",
+                time: 0
+            });
+
+            this.health -= damageTaken;
+            if (this.health <= 0) {
                 // Die
-                this.shield = 100;
                 this.health = 100;
+            }
+        }
+    }, {
+        key: 'update',
+        value: function update(delta) {
+            var _this = this;
+
+            if (this.topText.length > 0) {
+                this.topText.forEach(function (text) {
+                    text.time += delta;
+                    if (text.time > 2) {
+                        _this.topText.splice(_this.topText.indexOf(text), 1);
+                    }
+                });
             }
         }
     }, {
         key: 'draw',
         value: function draw(ctx) {
+            var _this2 = this;
+
             ctx.drawImage(this.image, // Image
             this.getImageIndex() % 4 * this.imageWidth, // Src x
             Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
@@ -1551,6 +1578,15 @@ var Hero = function () {
             this.screenY - this.height / 2, // Target y
             this.width, // Target width
             this.height); // Target height
+
+
+            if (this.topText.length > 0) {
+                ctx.font = "20px Arial";
+                this.topText.forEach(function (text) {
+                    ctx.fillStyle = text.fillStyle;
+                    ctx.fillText(text.text, _this2.screenX - 15, _this2.screenY - _this2.height * (0.3 + text.time / 2));
+                });
+            }
         }
     }, {
         key: '_calculateTileLevel',
@@ -1650,7 +1686,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var InventoryManager = function () {
-    function InventoryManager(inventoryObjects, Loader) {
+    function InventoryManager(inventoryObjects, Loader, hero) {
         var _this = this;
 
         _classCallCheck(this, InventoryManager);
@@ -1686,6 +1722,7 @@ var InventoryManager = function () {
         //    inventoryObject.inventoryLocation = i++;
         //});
 
+        this.hero = hero;
         this.iterations = 8;
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
@@ -1771,6 +1808,8 @@ var InventoryManager = function () {
     }, {
         key: "update",
         value: function update(delta) {
+            var _this3 = this;
+
             var anyUnequiped = false;
             var allInventoryPositions = [];
             this.inventory.forEach(function (inventoryObject) {
@@ -1788,8 +1827,12 @@ var InventoryManager = function () {
                     }
                 });
             }
+            this.hero.armor = 0;
             this.inventory.forEach(function (inventoryObject) {
                 inventoryObject.update(delta, allInventoryPositions);
+                if (inventoryObject.isEquiped && inventoryObject.isEquipable) {
+                    _this3.hero.armor += inventoryObject.strength;
+                }
             });
         }
     }, {
@@ -1810,10 +1853,10 @@ var InventoryManager = function () {
     }, {
         key: "onMouseDown",
         value: function onMouseDown(mousePosition) {
-            var _this3 = this;
+            var _this4 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (inventoryObject.isEquiped && _this3.state === _this3.STATES.CHARACTER || !inventoryObject.isEquiped && _this3.state === _this3.STATES.INVENTORY) {
+                if (inventoryObject.isEquiped && _this4.state === _this4.STATES.CHARACTER || !inventoryObject.isEquiped && _this4.state === _this4.STATES.INVENTORY) {
                     inventoryObject.onMouseDown(mousePosition);
                 }
             });
@@ -1824,7 +1867,7 @@ var InventoryManager = function () {
     }, {
         key: "onMouseUp",
         value: function onMouseUp(mousePosition) {
-            var _this4 = this;
+            var _this5 = this;
 
             if (this.movingObject) {
                 if (this.isInActionBar(mousePosition.x, mousePosition.y)) {
@@ -1843,16 +1886,16 @@ var InventoryManager = function () {
                     if (icon.onMouseMove(mousePosition)) {
                         if (icon.isSelected) {
                             icon.isSelected = false;
-                            _this4.state = _this4.STATES.HIDDEN;
+                            _this5.state = _this5.STATES.HIDDEN;
                         } else {
-                            _this4.state = icon.state;
+                            _this5.state = icon.state;
                             icon.isSelected = true;
                         }
                     }
                 });
                 if (oldState != this.state) {
                     this.iconBar.forEach(function (icon) {
-                        if (icon.state != _this4.state) {
+                        if (icon.state != _this5.state) {
                             icon.isSelected = false;
                         }
                     });
@@ -1860,12 +1903,12 @@ var InventoryManager = function () {
                 this.actionBarIcons.forEach(function (icon) {
                     if (icon.onMouseMove(mousePosition)) {
                         icon.isSelected = true;
-                        _this4.selectedAction = icon.state;
+                        _this5.selectedAction = icon.state;
                     }
                 });
                 if (this.selectedAction !== oldSelectedAction) {
                     this.actionBarIcons.forEach(function (icon) {
-                        if (_this4.selectedAction !== icon.state) {
+                        if (_this5.selectedAction !== icon.state) {
                             icon.isSelected = false;
                         }
                     });
@@ -1878,7 +1921,7 @@ var InventoryManager = function () {
     }, {
         key: "onMouseMove",
         value: function onMouseMove(mousePosition, mousePressed) {
-            var _this5 = this;
+            var _this6 = this;
 
             var isHolding = false;
             this.iconBar.forEach(function (icon) {
@@ -1891,7 +1934,7 @@ var InventoryManager = function () {
                 if (inventoryObject.isHolding) {
                     isHolding = true;
                     if (!inventoryObject.isInObject(mousePosition.x, mousePosition.y)) {
-                        _this5.movingObject = true;
+                        _this6.movingObject = true;
                     }
                 }
             });
@@ -2118,10 +2161,10 @@ var InventoryManager = function () {
     }, {
         key: "drawInventory",
         value: function drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this6 = this;
+            var _this7 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this6.movingObject) && inventoryObject.shownLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this7.movingObject) && inventoryObject.shownLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -2134,9 +2177,9 @@ var InventoryManager = function () {
             });
             this.inventory.forEach(function (inventoryObject) {
                 // Draw the held object on top of the others
-                if (inventoryObject.isHolding && _this6.movingObject) {
-                    var drawX = _this6.mousePosition.x;
-                    var drawY = _this6.mousePosition.y;
+                if (inventoryObject.isHolding && _this7.movingObject) {
+                    var drawX = _this7.mousePosition.x;
+                    var drawY = _this7.mousePosition.y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
                     if (inventoryObject.stackCount != 1) {
                         ctx.font = "22px Arial";
@@ -2149,10 +2192,10 @@ var InventoryManager = function () {
     }, {
         key: "drawActionBarItems",
         value: function drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this7 = this;
+            var _this8 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this7.movingObject) && inventoryObject.actionLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this8.movingObject) && inventoryObject.actionLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                     var drawY = y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -2731,7 +2774,7 @@ var Shield_2 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Shield_2.__proto__ || Object.getPrototypeOf(Shield_2)).call(this, "shield_2", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.OFF_HAND, 10);
+        _this.setEquipable(_this.AREAS.OFF_HAND, 15);
         _this.setImage(Loader.getImage('shield_2'));
         return _this;
     }
@@ -2772,7 +2815,7 @@ var Shield_3 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Shield_3.__proto__ || Object.getPrototypeOf(Shield_3)).call(this, "shield_3", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.OFF_HAND, 10);
+        _this.setEquipable(_this.AREAS.OFF_HAND, 25);
         _this.setImage(Loader.getImage('shield_3'));
         return _this;
     }
@@ -2813,7 +2856,7 @@ var Shield_4 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.OFF_HAND, 10);
+        _this.setEquipable(_this.AREAS.OFF_HAND, 50);
         _this.setTilesImage(Loader.getImage('shield_4'), 4, 4, 16);
         return _this;
     }
@@ -3174,7 +3217,7 @@ var Armor_1 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Armor_1.__proto__ || Object.getPrototypeOf(Armor_1)).call(this, "armor_1", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.BODY, 10);
+        _this.setEquipable(_this.AREAS.BODY, 20);
         _this.setImage(Loader.getImage('armor_1'));
         return _this;
     }
@@ -3215,7 +3258,7 @@ var Armor_2 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Armor_2.__proto__ || Object.getPrototypeOf(Armor_2)).call(this, "armor_2", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.BODY, 20);
+        _this.setEquipable(_this.AREAS.BODY, 40);
         _this.setImage(Loader.getImage('armor_2'));
         return _this;
     }
@@ -3256,7 +3299,7 @@ var Boots_1 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Boots_1.__proto__ || Object.getPrototypeOf(Boots_1)).call(this, "boots_1", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.BOOTS, 10);
+        _this.setEquipable(_this.AREAS.BOOTS, 4);
         _this.setImage(Loader.getImage('boots_1'));
         return _this;
     }
@@ -3297,7 +3340,7 @@ var Boots_2 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Boots_2.__proto__ || Object.getPrototypeOf(Boots_2)).call(this, "boots_2", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.BOOTS, 10);
+        _this.setEquipable(_this.AREAS.BOOTS, 8);
         _this.setImage(Loader.getImage('boots_2'));
         return _this;
     }
@@ -3338,7 +3381,7 @@ var Boots_3 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Boots_3.__proto__ || Object.getPrototypeOf(Boots_3)).call(this, "boots_3", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.BOOTS, 10);
+        _this.setEquipable(_this.AREAS.BOOTS, 20);
         _this.setImage(Loader.getImage('boots_3'));
         return _this;
     }
@@ -3420,7 +3463,7 @@ var Helmet_2 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Helmet_2.__proto__ || Object.getPrototypeOf(Helmet_2)).call(this, "helmet_2", 50, stackCount));
 
-        _this.setEquipable(_this.AREAS.HEAD, 10);
+        _this.setEquipable(_this.AREAS.HEAD, 25);
         _this.setImage(Loader.getImage('helmet_2'));
         return _this;
     }
