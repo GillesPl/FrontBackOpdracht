@@ -1,6 +1,7 @@
 import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
 import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
+import DroppedItem from "../GameObjects/NonCharacterObjects/DroppedItem.class";
 import Hero from "../GameObjects/MainObjects/Hero.class";
 import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class";
 import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
@@ -109,6 +110,17 @@ export default class MainGameState extends GameState {
             switch (object.name) {
                 case "Fire":
                     gameState.nonCharacterObjects.push(new Fire(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                    break;
+
+                case "Coin":
+                    gameState.nonCharacterObjects.push(new DroppedItem(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale,
+                        16, 16, "coin", gameState.hero, object.properties.Count));
+                    break;
+
+                case "Sword_1":
+                case "Boots_1":
+                    gameState.nonCharacterObjects.push(new DroppedItem(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale,
+                        32, 32, object.name, gameState.hero, object.properties.Count));
                     break;
 
                 default:
@@ -333,6 +345,17 @@ export default class MainGameState extends GameState {
                     this.hero.takeDamage(thisObject.doDamage());
                 }
             }
+            if (thisObject.canBePickedUp) {
+                let playerBounds = this.hero.getPlayerBounds();
+                if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
+                    let countLeft = this.InventoryManager.addObject(thisObject.value);
+                    if (countLeft === 0) {
+                        this.nonCharacterObjects.splice(this.nonCharacterObjects.indexOf(thisObject), 1);
+                    } else {
+                        thisObject.value.stackCount = countLeft;
+                    }
+                }
+            }
         });
         this.InventoryManager.update(delta);
         this.hero.update(delta);
@@ -365,31 +388,24 @@ export default class MainGameState extends GameState {
         this.ctx.imageSmoothingEnabled = false;
         // draw map background layer
         let layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
+        let objectLayersUnder = this.getLayersUnder(2);
         let totalLayers = this.map.layers.length;
 
-        for (let i = 0; i < layersUnderPlayer; i++) {
-            this._drawLayer(i);
-
-            this.otherPlayers.forEach((player) => {
-                let thisLayersUnder = this.getLayersUnder(player.tileLevel);
-                if (thisLayersUnder - 1 === i) {
-                    player.draw(this.ctx, this.camera.getScreenX(player.x), this.camera.getScreenY(player.y));
-                }
-            });
-        }
-
-        // draw main character
-        this.hero.draw(this.ctx);
-
-        this.nonCharacterObjects.forEach((thisObject) => {
-            thisObject.draw(this.ctx,
-                this.camera.getScreenX(thisObject.x),
-                this.camera.getScreenY(thisObject.y));
-        });
-
         // draw map top layer
-        for (let i = layersUnderPlayer; i < totalLayers - 1; i++) {
+        for (let i = 0; i < totalLayers - 1; i++) {
             this._drawLayer(i);
+
+            if (layersUnderPlayer === i) {
+                this.hero.draw(this.ctx);
+            }
+
+            if (objectLayersUnder - 1 === i) {
+                this.nonCharacterObjects.forEach((thisObject) => {
+                    thisObject.draw(this.ctx,
+                        this.camera.getScreenX(thisObject.x),
+                        this.camera.getScreenY(thisObject.y));
+                });
+            }
 
             this.otherPlayers.forEach((player) => {
                 let thisLayersUnder = this.getLayersUnder(player.tileLevel);

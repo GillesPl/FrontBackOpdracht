@@ -5,10 +5,7 @@ export default class InventoryManager {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
-            let lastLocation = this.addObject(inventoryObject, i);
-            if (lastLocation !== false) {
-                i++;
-            }
+            this.addObject(inventoryObject, i++);
         });
 
         //this.inventory = inventoryObjects;
@@ -161,9 +158,9 @@ export default class InventoryManager {
             newObject.shownLocation = location;
             newObject.inventoryLocation = location;
             this.inventory.push(newObject);
-            return location;
+            return 0;
         }
-        return false;
+        return newObject.stackCount;
     }
 
     isInInventory(x, y) {
@@ -406,7 +403,7 @@ export default class InventoryManager {
                     let worked = this.hero.heal(inventoryObject.strength);
                     if (worked) {
                         if (inventoryObject.usedObject !== null) {
-                            let copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));                            
+                            let copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));
                             this.addObject(copyOfObject);
                         }
                         if (inventoryObject.stackCount > 1) {

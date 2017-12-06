@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -256,7 +256,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _nonCharacterObjectBase = __webpack_require__(8);
+var _nonCharacterObjectBase = __webpack_require__(12);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
 
@@ -289,9 +289,41 @@ exports.default = Fire;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(3);
-module.exports = __webpack_require__(47);
+"use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_1 = function (_InventoryObject) {
+    _inherits(Empty_bottle_1, _InventoryObject);
+
+    function Empty_bottle_1(Loader, stackCount) {
+        _classCallCheck(this, Empty_bottle_1);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_1.__proto__ || Object.getPrototypeOf(Empty_bottle_1)).call(this, "empty_bottle_1", 50, stackCount));
+
+        _this.setImage(Loader.getImage('empty_bottle_1'));
+        return _this;
+    }
+
+    return Empty_bottle_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_1;
 
 /***/ }),
 /* 3 */
@@ -300,11 +332,139 @@ module.exports = __webpack_require__(47);
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(4);
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_2 = function (_InventoryObject) {
+    _inherits(Empty_bottle_2, _InventoryObject);
+
+    function Empty_bottle_2(Loader, stackCount) {
+        _classCallCheck(this, Empty_bottle_2);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_2.__proto__ || Object.getPrototypeOf(Empty_bottle_2)).call(this, "empty_bottle_2", 50, stackCount));
+
+        _this.setImage(Loader.getImage('empty_bottle_2'));
+        return _this;
+    }
+
+    return Empty_bottle_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_2;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_3 = function (_InventoryObject) {
+    _inherits(Empty_bottle_3, _InventoryObject);
+
+    function Empty_bottle_3(Loader, stackCount) {
+        _classCallCheck(this, Empty_bottle_3);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_3.__proto__ || Object.getPrototypeOf(Empty_bottle_3)).call(this, "empty_bottle_3", 50, stackCount));
+
+        _this.setImage(Loader.getImage('empty_bottle_3'));
+        return _this;
+    }
+
+    return Empty_bottle_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_3;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_4 = function (_InventoryObject) {
+    _inherits(Empty_bottle_4, _InventoryObject);
+
+    function Empty_bottle_4(Loader, stackCount) {
+        _classCallCheck(this, Empty_bottle_4);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_4.__proto__ || Object.getPrototypeOf(Empty_bottle_4)).call(this, "empty_bottle_4", 50, stackCount));
+
+        _this.setImage(Loader.getImage('empty_bottle_4'));
+        return _this;
+    }
+
+    return Empty_bottle_4;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_4;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(7);
+module.exports = __webpack_require__(47);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _GameStateManager = __webpack_require__(8);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _MainGameState = __webpack_require__(5);
+var _MainGameState = __webpack_require__(9);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
@@ -325,7 +485,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 })();
 
 /***/ }),
-/* 4 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -395,7 +555,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 5 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -407,11 +567,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Camera = __webpack_require__(6);
+var _Camera = __webpack_require__(10);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(7);
+var _Keyboard = __webpack_require__(11);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
@@ -419,147 +579,151 @@ var _Fire = __webpack_require__(1);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
-var _Hero = __webpack_require__(9);
+var _DroppedItem = __webpack_require__(50);
+
+var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
+
+var _Hero = __webpack_require__(13);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _InventoryManager = __webpack_require__(10);
+var _InventoryManager = __webpack_require__(14);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(12);
+var _OtherPlayer = __webpack_require__(16);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(13);
+var _Loader = __webpack_require__(17);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState2 = __webpack_require__(14);
+var _GameState2 = __webpack_require__(18);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
-var _Sword_ = __webpack_require__(15);
+var _Sword_ = __webpack_require__(19);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(16);
+var _Sword_3 = __webpack_require__(20);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(17);
+var _Sword_5 = __webpack_require__(21);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(18);
+var _Shield_ = __webpack_require__(22);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(19);
+var _Shield_3 = __webpack_require__(23);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(20);
+var _Shield_5 = __webpack_require__(24);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(21);
+var _Shield_7 = __webpack_require__(25);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(22);
+var _Axe_ = __webpack_require__(26);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(23);
+var _Axe_3 = __webpack_require__(27);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(24);
+var _Axe_5 = __webpack_require__(28);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(25);
+var _Bow_ = __webpack_require__(29);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(26);
+var _Bow_3 = __webpack_require__(30);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(27);
+var _Bow_5 = __webpack_require__(31);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(28);
+var _Mace = __webpack_require__(32);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(29);
+var _Spear = __webpack_require__(33);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(30);
+var _Armor_ = __webpack_require__(34);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(31);
+var _Armor_3 = __webpack_require__(35);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
-var _Boots_ = __webpack_require__(32);
+var _Boots_ = __webpack_require__(36);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(33);
+var _Boots_3 = __webpack_require__(37);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(34);
+var _Boots_5 = __webpack_require__(38);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(35);
+var _Helmet_ = __webpack_require__(39);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(36);
+var _Helmet_3 = __webpack_require__(40);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
-var _Coin = __webpack_require__(37);
+var _Coin = __webpack_require__(41);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(38);
+var _Health_bottle_ = __webpack_require__(42);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(39);
+var _Health_bottle_3 = __webpack_require__(43);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(40);
+var _Health_bottle_5 = __webpack_require__(44);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(41);
+var _Health_bottle_7 = __webpack_require__(45);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
-var _Empty_bottle_ = __webpack_require__(42);
+var _Empty_bottle_ = __webpack_require__(2);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
-var _Empty_bottle_3 = __webpack_require__(43);
+var _Empty_bottle_3 = __webpack_require__(3);
 
 var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
 
-var _Empty_bottle_5 = __webpack_require__(44);
+var _Empty_bottle_5 = __webpack_require__(4);
 
 var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 
-var _Empty_bottle_7 = __webpack_require__(45);
+var _Empty_bottle_7 = __webpack_require__(5);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
@@ -652,6 +816,15 @@ var MainGameState = function (_GameState) {
                 switch (object.name) {
                     case "Fire":
                         gameState.nonCharacterObjects.push(new _Fire2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                        break;
+
+                    case "Coin":
+                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale, 16, 16, "coin", gameState.hero, object.properties.Count));
+                        break;
+
+                    case "Sword_1":
+                    case "Boots_1":
+                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale, 32, 32, object.name, gameState.hero, object.properties.Count));
                         break;
 
                     default:
@@ -848,6 +1021,17 @@ var MainGameState = function (_GameState) {
                         _this2.hero.takeDamage(thisObject.doDamage());
                     }
                 }
+                if (thisObject.canBePickedUp) {
+                    var _playerBounds = _this2.hero.getPlayerBounds();
+                    if (thisObject.isNear(_playerBounds.xMin, _playerBounds.yMin, _playerBounds.xMax, _playerBounds.yMax)) {
+                        var countLeft = _this2.InventoryManager.addObject(thisObject.value);
+                        if (countLeft === 0) {
+                            _this2.nonCharacterObjects.splice(_this2.nonCharacterObjects.indexOf(thisObject), 1);
+                        } else {
+                            thisObject.value.stackCount = countLeft;
+                        }
+                    }
+                }
             });
             this.InventoryManager.update(delta);
             this.hero.update(delta);
@@ -884,10 +1068,23 @@ var MainGameState = function (_GameState) {
             this.ctx.imageSmoothingEnabled = false;
             // draw map background layer
             var layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
+            var objectLayersUnder = this.getLayersUnder(2);
             var totalLayers = this.map.layers.length;
+
+            // draw map top layer
 
             var _loop = function _loop(_i2) {
                 _this3._drawLayer(_i2);
+
+                if (layersUnderPlayer === _i2) {
+                    _this3.hero.draw(_this3.ctx);
+                }
+
+                if (objectLayersUnder - 1 === _i2) {
+                    _this3.nonCharacterObjects.forEach(function (thisObject) {
+                        thisObject.draw(_this3.ctx, _this3.camera.getScreenX(thisObject.x), _this3.camera.getScreenY(thisObject.y));
+                    });
+                }
 
                 _this3.otherPlayers.forEach(function (player) {
                     var thisLayersUnder = _this3.getLayersUnder(player.tileLevel);
@@ -897,32 +1094,8 @@ var MainGameState = function (_GameState) {
                 });
             };
 
-            for (var _i2 = 0; _i2 < layersUnderPlayer; _i2++) {
+            for (var _i2 = 0; _i2 < totalLayers - 1; _i2++) {
                 _loop(_i2);
-            }
-
-            // draw main character
-            this.hero.draw(this.ctx);
-
-            this.nonCharacterObjects.forEach(function (thisObject) {
-                thisObject.draw(_this3.ctx, _this3.camera.getScreenX(thisObject.x), _this3.camera.getScreenY(thisObject.y));
-            });
-
-            // draw map top layer
-
-            var _loop2 = function _loop2(_i3) {
-                _this3._drawLayer(_i3);
-
-                _this3.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = _this3.getLayersUnder(player.tileLevel);
-                    if (thisLayersUnder - 1 === _i3) {
-                        player.draw(_this3.ctx, _this3.camera.getScreenX(player.x), _this3.camera.getScreenY(player.y));
-                    }
-                });
-            };
-
-            for (var _i3 = layersUnderPlayer; _i3 < totalLayers - 1; _i3++) {
-                _loop2(_i3);
             }
 
             this.ctx.globalAlpha = 0.5;
@@ -1074,7 +1247,7 @@ var MainGameState = function (_GameState) {
 exports.default = MainGameState;
 
 /***/ }),
-/* 6 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1166,7 +1339,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 7 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1285,7 +1458,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 8 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1317,6 +1490,7 @@ var NonCharacterObject = function () {
         this.tileHeight = 1;
         this.imageIndex = 0;
         this.increaseRatio = 1;
+        this.canBePickedUp = false;
     }
 
     _createClass(NonCharacterObject, [{
@@ -1414,7 +1588,7 @@ var NonCharacterObject = function () {
 exports.default = NonCharacterObject;
 
 /***/ }),
-/* 9 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1684,7 +1858,7 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1696,7 +1870,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _InventoryIcon = __webpack_require__(11);
+var _InventoryIcon = __webpack_require__(15);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
@@ -1713,10 +1887,7 @@ var InventoryManager = function () {
         this.inventory = [];
         var i = 0;
         inventoryObjects.forEach(function (inventoryObject) {
-            var lastLocation = _this.addObject(inventoryObject, i);
-            if (lastLocation !== false) {
-                i++;
-            }
+            _this.addObject(inventoryObject, i++);
         });
 
         //this.inventory = inventoryObjects;
@@ -1878,9 +2049,9 @@ var InventoryManager = function () {
                 newObject.shownLocation = location;
                 newObject.inventoryLocation = location;
                 this.inventory.push(newObject);
-                return location;
+                return 0;
             }
-            return false;
+            return newObject.stackCount;
         }
     }, {
         key: "isInInventory",
@@ -2303,7 +2474,7 @@ var InventoryManager = function () {
 exports.default = InventoryManager;
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2369,7 +2540,7 @@ var InventoryIcon = function () {
 exports.default = InventoryIcon;
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2550,7 +2721,7 @@ var OtherPlayer = function () {
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2603,7 +2774,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2648,7 +2819,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2689,7 +2860,7 @@ var Sword_1 = function (_InventoryObject) {
 exports.default = Sword_1;
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2730,7 +2901,7 @@ var Sword_2 = function (_InventoryObject) {
 exports.default = Sword_2;
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2771,7 +2942,7 @@ var Sword_3 = function (_InventoryObject) {
 exports.default = Sword_3;
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2812,7 +2983,7 @@ var Shield_1 = function (_InventoryObject) {
 exports.default = Shield_1;
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2853,7 +3024,7 @@ var Shield_2 = function (_InventoryObject) {
 exports.default = Shield_2;
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2894,7 +3065,7 @@ var Shield_3 = function (_InventoryObject) {
 exports.default = Shield_3;
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2935,7 +3106,7 @@ var Shield_4 = function (_InventoryObject) {
 exports.default = Shield_4;
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2975,7 +3146,7 @@ var Axe_1 = function (_InventoryObject) {
 exports.default = Axe_1;
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3015,7 +3186,7 @@ var Axe_2 = function (_InventoryObject) {
 exports.default = Axe_2;
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3055,7 +3226,7 @@ var Axe_3 = function (_InventoryObject) {
 exports.default = Axe_3;
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3095,7 +3266,7 @@ var Bow_1 = function (_InventoryObject) {
 exports.default = Bow_1;
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3135,7 +3306,7 @@ var Bow_2 = function (_InventoryObject) {
 exports.default = Bow_2;
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3175,7 +3346,7 @@ var Bow_3 = function (_InventoryObject) {
 exports.default = Bow_3;
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3215,7 +3386,7 @@ var Mace = function (_InventoryObject) {
 exports.default = Mace;
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3255,7 +3426,7 @@ var Spear = function (_InventoryObject) {
 exports.default = Spear;
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3296,7 +3467,7 @@ var Armor_1 = function (_InventoryObject) {
 exports.default = Armor_1;
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3337,7 +3508,7 @@ var Armor_2 = function (_InventoryObject) {
 exports.default = Armor_2;
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3378,7 +3549,7 @@ var Boots_1 = function (_InventoryObject) {
 exports.default = Boots_1;
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3419,7 +3590,7 @@ var Boots_2 = function (_InventoryObject) {
 exports.default = Boots_2;
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3460,7 +3631,7 @@ var Boots_3 = function (_InventoryObject) {
 exports.default = Boots_3;
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3501,7 +3672,7 @@ var Helmet_1 = function (_InventoryObject) {
 exports.default = Helmet_1;
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3542,7 +3713,7 @@ var Helmet_2 = function (_InventoryObject) {
 exports.default = Helmet_2;
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3582,7 +3753,7 @@ var Coin = function (_InventoryObject) {
 exports.default = Coin;
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3596,7 +3767,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(42);
+var _Empty_bottle_ = __webpack_require__(2);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -3627,7 +3798,7 @@ var Health_bottle_1 = function (_InventoryObject) {
 exports.default = Health_bottle_1;
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3641,7 +3812,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(43);
+var _Empty_bottle_ = __webpack_require__(3);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -3672,7 +3843,7 @@ var Health_bottle_2 = function (_InventoryObject) {
 exports.default = Health_bottle_2;
 
 /***/ }),
-/* 40 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3686,7 +3857,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(44);
+var _Empty_bottle_ = __webpack_require__(4);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -3717,7 +3888,7 @@ var Health_bottle_3 = function (_InventoryObject) {
 exports.default = Health_bottle_3;
 
 /***/ }),
-/* 41 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3731,7 +3902,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(45);
+var _Empty_bottle_ = __webpack_require__(5);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -3760,166 +3931,6 @@ var Health_bottle_4 = function (_InventoryObject) {
 }(_InventoryObjectBase2.default);
 
 exports.default = Health_bottle_4;
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_1 = function (_InventoryObject) {
-    _inherits(Empty_bottle_1, _InventoryObject);
-
-    function Empty_bottle_1(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_1);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_1.__proto__ || Object.getPrototypeOf(Empty_bottle_1)).call(this, "empty_bottle_1", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_1'));
-        return _this;
-    }
-
-    return Empty_bottle_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_1;
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_2 = function (_InventoryObject) {
-    _inherits(Empty_bottle_2, _InventoryObject);
-
-    function Empty_bottle_2(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_2);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_2.__proto__ || Object.getPrototypeOf(Empty_bottle_2)).call(this, "empty_bottle_2", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_2'));
-        return _this;
-    }
-
-    return Empty_bottle_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_2;
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_3 = function (_InventoryObject) {
-    _inherits(Empty_bottle_3, _InventoryObject);
-
-    function Empty_bottle_3(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_3);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_3.__proto__ || Object.getPrototypeOf(Empty_bottle_3)).call(this, "empty_bottle_3", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_3'));
-        return _this;
-    }
-
-    return Empty_bottle_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_3;
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_4 = function (_InventoryObject) {
-    _inherits(Empty_bottle_4, _InventoryObject);
-
-    function Empty_bottle_4(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_4);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_4.__proto__ || Object.getPrototypeOf(Empty_bottle_4)).call(this, "empty_bottle_4", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_4'));
-        return _this;
-    }
-
-    return Empty_bottle_4;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_4;
 
 /***/ }),
 /* 46 */
@@ -4110,6 +4121,80 @@ exports.default = Map;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 48 */,
+/* 49 */,
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _nonCharacterObjectBase = __webpack_require__(12);
+
+var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
+
+var _Coin = __webpack_require__(41);
+
+var _Coin2 = _interopRequireDefault(_Coin);
+
+var _Sword_ = __webpack_require__(19);
+
+var _Sword_2 = _interopRequireDefault(_Sword_);
+
+var _Boots_ = __webpack_require__(36);
+
+var _Boots_2 = _interopRequireDefault(_Boots_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DroppedItem = function (_NonCharacterObject) {
+    _inherits(DroppedItem, _NonCharacterObject);
+
+    function DroppedItem(Loader, x, y, width, height, type, hero, count) {
+        _classCallCheck(this, DroppedItem);
+
+        var _this = _possibleConstructorReturn(this, (DroppedItem.__proto__ || Object.getPrototypeOf(DroppedItem)).call(this, x, y, width, height, 0, false));
+
+        switch (type) {
+            case "coin":
+                _this.setImage(Loader.getImage('coin'));
+                _this.value = new _Coin2.default(Loader, count);
+                break;
+
+            case "Sword_1":
+                _this.setImage(Loader.getImage('sword_1'));
+                _this.value = new _Sword_2.default(Loader, count);
+                break;
+
+            case "Boots_1":
+                _this.setImage(Loader.getImage('boots_1'));
+                _this.value = new _Boots_2.default(Loader, count);
+                break;
+
+            default:
+                throw new Error("type '" + type + "' not found in DroppedItem");
+        }
+
+        _this.canBePickedUp = true;
+        return _this;
+    }
+
+    return DroppedItem;
+}(_nonCharacterObjectBase2.default);
+
+exports.default = DroppedItem;
 
 /***/ })
 /******/ ]);

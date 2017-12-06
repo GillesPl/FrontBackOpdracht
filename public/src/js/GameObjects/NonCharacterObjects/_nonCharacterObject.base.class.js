@@ -14,6 +14,7 @@ export default class NonCharacterObject {
         this.tileHeight = 1;
         this.imageIndex = 0;
         this.increaseRatio = 1;
+        this.canBePickedUp = false;
     }
 
     hasDamage() {
