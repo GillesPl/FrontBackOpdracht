@@ -2814,7 +2814,7 @@ var Shield_4 = function (_InventoryObject) {
         var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount));
 
         _this.setEquipable(_this.AREAS.OFF_HAND, 10);
-        _this.setImage(Loader.getImage('shield_4'));
+        _this.setTilesImage(Loader.getImage('shield_4'), 4, 4, 16);
         return _this;
     }
 
