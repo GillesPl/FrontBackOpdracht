@@ -5,24 +5,9 @@ export default class InventoryManager {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
-            this.inventory.forEach(oldObject => {
-                if (inventoryObject.stackCount > 0) {
-                    if (oldObject.typeId === inventoryObject.typeId && oldObject.stackCount < oldObject.stackLimit) {
-                        let max = oldObject.stackLimit - oldObject.stackCount;
-                        if (inventoryObject.stackCount > max) {
-                            inventoryObject.stackCount -= max;
-                            oldObject.stackCount += max;
-                        } else {
-                            oldObject.stackCount += inventoryObject.stackCount;
-                            inventoryObject.stackCount = 0;
-                        }
-                    }
-                }
-            });
-            if (inventoryObject.stackCount > 0) {
-                inventoryObject.shownLocation = i;
-                inventoryObject.inventoryLocation = i++;
-                this.inventory.push(inventoryObject);
+            let lastLocation = this.addObject(inventoryObject, i);
+            if (lastLocation !== false) {
+                i++;
             }
         });
 
@@ -113,35 +98,72 @@ export default class InventoryManager {
         });
     }
 
+    getEmptyPosition() {
+        let allInventoryPositions = [];
+        for (let i = this.iterations * this.iterations - 1; i >= 0; i--) {
+            allInventoryPositions.push(i);
+        }
+        this.inventory.forEach(inventoryObject => {
+            if (allInventoryPositions.indexOf(inventoryObject.inventoryLocation) >= 0) {
+                allInventoryPositions.splice(allInventoryPositions.indexOf(inventoryObject.inventoryLocation), 1);
+            }
+        });
+
+        if (allInventoryPositions.length > 0) {
+            return allInventoryPositions[allInventoryPositions.length - 1];
+        } else {
+            return false;
+        }
+    }
+
     update(delta) {
         let anyUnequiped = false;
-        let allInventoryPositions = [];
+        let position = false;
         this.inventory.forEach(inventoryObject => {
             if (inventoryObject.inventoryLocation === -2) {
                 anyUnequiped = true;
             }
         });
         if (anyUnequiped) {
-            for (let i = this.iterations * this.iterations - 1; i >= 0; i--) {
-                allInventoryPositions.push(i);
-            }
-            this.inventory.forEach(inventoryObject => {
-                if (allInventoryPositions.indexOf(inventoryObject.inventoryLocation) >= 0) {
-                    allInventoryPositions.splice(allInventoryPositions.indexOf(inventoryObject.inventoryLocation), 1);
-                }
-            });
+            position = this.getEmptyPosition();
         }
         this.hero.armor = 0;
         this.inventory.forEach(inventoryObject => {
-            inventoryObject.update(delta, allInventoryPositions);
+            inventoryObject.update(delta, position);
             if (inventoryObject.isEquiped && inventoryObject.isEquipable) {
                 this.hero.armor += inventoryObject.strength;
             }
         });
     }
 
-    addObject(object) {
-        this.inventory.push(object);
+    addObject(newObject, location) {
+        if (location === undefined || location === -1) {
+            location = this.getEmptyPosition();
+        }
+
+        this.inventory.forEach(oldObject => {
+            if (newObject.stackCount > 0) {
+                if (oldObject.typeId === newObject.typeId && oldObject.stackCount < oldObject.stackLimit) {
+                    //console.log(oldObject);
+                    //console.log(newObject);
+                    let max = oldObject.stackLimit - oldObject.stackCount;
+                    if (newObject.stackCount > max) {
+                        newObject.stackCount -= max;
+                        oldObject.stackCount += max;
+                    } else {
+                        oldObject.stackCount += newObject.stackCount;
+                        newObject.stackCount = 0;
+                    }
+                }
+            }
+        });
+        if (newObject.stackCount > 0) {
+            newObject.shownLocation = location;
+            newObject.inventoryLocation = location;
+            this.inventory.push(newObject);
+            return location;
+        }
+        return false;
     }
 
     isInInventory(x, y) {
@@ -175,6 +197,7 @@ export default class InventoryManager {
             }
         } else if (!this.isInActionBar(mousePosition.x, mousePosition.y)) {
             this.equipObject();
+            this.useObject();
         }
 
         if (!this.movingObject) {
@@ -373,6 +396,28 @@ export default class InventoryManager {
             });
             toEquip.setEquiped(true, -1);
         }
+    }
+
+    useObject() {
+        this.inventory.forEach(inventoryObject => {
+            if (inventoryObject.isHolding && inventoryObject.isUsable) {
+                //console.log(inventoryObject);
+                if (inventoryObject.usage === inventoryObject.USES.HEALTH) {
+                    let worked = this.hero.heal(inventoryObject.strength);
+                    if (worked) {
+                        if (inventoryObject.usedObject !== null) {
+                            let copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));                            
+                            this.addObject(copyOfObject);
+                        }
+                        if (inventoryObject.stackCount > 1) {
+                            inventoryObject.stackCount--;
+                        } else {
+                            this.inventory.splice(this.inventory.indexOf(inventoryObject), 1);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {

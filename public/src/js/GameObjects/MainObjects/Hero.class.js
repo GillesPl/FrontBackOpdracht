@@ -8,6 +8,7 @@ export default class Hero {
         this.topText = [];
 
         this.health = 100;
+        this.maxHealth = 100;
         this.armor = 0;
 
         this.imageIndex = 0;
@@ -117,6 +118,21 @@ export default class Hero {
         if (this.health <= 0) { // Die
             this.health = 100;
         }
+    }
+
+    heal(extraHealth) {
+        let maxExtra = this.maxHealth - this.health;
+        let healthTaken = maxExtra < extraHealth ? maxExtra : extraHealth;
+        if (healthTaken <= 0) return false; // No health gain
+
+        this.topText.push({
+            text: "+" + healthTaken,
+            fillStyle: "green",
+            time: 0
+        });
+
+        this.health += healthTaken;
+        return true;
     }
 
     update(delta) {

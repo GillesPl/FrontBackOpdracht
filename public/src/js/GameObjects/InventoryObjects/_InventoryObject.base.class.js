@@ -17,6 +17,7 @@ export default class InventoryObject {
         this.typeId = typeId;
         this.area = this.AREAS.NONE;
         this.usage = this.USES.NONE;
+        this.usedObject = null;
         this.isEquipable = false;
         this.isUsable = false;
         this.strength = 0;
@@ -43,10 +44,11 @@ export default class InventoryObject {
         this.isUsable = false;
     }
 
-    setUsable(usage, strength) {
+    setUsable(usage, strength, usedObject) {
         this.isUsable = true;
-        this.usage  = usage;
+        this.usage = usage;
         this.strength = strength;
+        this.usedObject = usedObject;
         this.isEquipable = false;
     }
 
@@ -106,15 +108,15 @@ export default class InventoryObject {
         return Math.floor(this.imageIndex);
     }
 
-    update(delta, allInventoryPositions) {
+    update(delta, emptyPosition) {
         if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
             this.increaseImageIndex(delta);
         }
 
         if (this.inventoryLocation === -2) {
-            if (allInventoryPositions.length !== 0) {
-                this.inventoryLocation = allInventoryPositions[allInventoryPositions.length - 1];
-                this.shownLocation = allInventoryPositions[allInventoryPositions.length - 1];
+            if (emptyPosition !== false) {
+                this.inventoryLocation = emptyPosition;
+                this.shownLocation = emptyPosition;
             } else {
                 this.setEquiped(true, -1);
             }

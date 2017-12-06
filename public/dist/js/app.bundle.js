@@ -99,6 +99,7 @@ var InventoryObject = function () {
         this.typeId = typeId;
         this.area = this.AREAS.NONE;
         this.usage = this.USES.NONE;
+        this.usedObject = null;
         this.isEquipable = false;
         this.isUsable = false;
         this.strength = 0;
@@ -128,10 +129,11 @@ var InventoryObject = function () {
         }
     }, {
         key: "setUsable",
-        value: function setUsable(usage, strength) {
+        value: function setUsable(usage, strength, usedObject) {
             this.isUsable = true;
             this.usage = usage;
             this.strength = strength;
+            this.usedObject = usedObject;
             this.isEquipable = false;
         }
     }, {
@@ -199,15 +201,15 @@ var InventoryObject = function () {
         }
     }, {
         key: "update",
-        value: function update(delta, allInventoryPositions) {
+        value: function update(delta, emptyPosition) {
             if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
                 this.increaseImageIndex(delta);
             }
 
             if (this.inventoryLocation === -2) {
-                if (allInventoryPositions.length !== 0) {
-                    this.inventoryLocation = allInventoryPositions[allInventoryPositions.length - 1];
-                    this.shownLocation = allInventoryPositions[allInventoryPositions.length - 1];
+                if (emptyPosition !== false) {
+                    this.inventoryLocation = emptyPosition;
+                    this.shownLocation = emptyPosition;
                 } else {
                     this.setEquiped(true, -1);
                 }
@@ -1438,6 +1440,7 @@ var Hero = function () {
         this.topText = [];
 
         this.health = 100;
+        this.maxHealth = 100;
         this.armor = 0;
 
         this.imageIndex = 0;
@@ -1549,6 +1552,22 @@ var Hero = function () {
                 // Die
                 this.health = 100;
             }
+        }
+    }, {
+        key: 'heal',
+        value: function heal(extraHealth) {
+            var maxExtra = this.maxHealth - this.health;
+            var healthTaken = maxExtra < extraHealth ? maxExtra : extraHealth;
+            if (healthTaken <= 0) return false; // No health gain
+
+            this.topText.push({
+                text: "+" + healthTaken,
+                fillStyle: "green",
+                time: 0
+            });
+
+            this.health += healthTaken;
+            return true;
         }
     }, {
         key: 'update',
@@ -1694,24 +1713,9 @@ var InventoryManager = function () {
         this.inventory = [];
         var i = 0;
         inventoryObjects.forEach(function (inventoryObject) {
-            _this.inventory.forEach(function (oldObject) {
-                if (inventoryObject.stackCount > 0) {
-                    if (oldObject.typeId === inventoryObject.typeId && oldObject.stackCount < oldObject.stackLimit) {
-                        var max = oldObject.stackLimit - oldObject.stackCount;
-                        if (inventoryObject.stackCount > max) {
-                            inventoryObject.stackCount -= max;
-                            oldObject.stackCount += max;
-                        } else {
-                            oldObject.stackCount += inventoryObject.stackCount;
-                            inventoryObject.stackCount = 0;
-                        }
-                    }
-                }
-            });
-            if (inventoryObject.stackCount > 0) {
-                inventoryObject.shownLocation = i;
-                inventoryObject.inventoryLocation = i++;
-                _this.inventory.push(inventoryObject);
+            var lastLocation = _this.addObject(inventoryObject, i);
+            if (lastLocation !== false) {
+                i++;
             }
         });
 
@@ -1806,30 +1810,42 @@ var InventoryManager = function () {
             });
         }
     }, {
+        key: "getEmptyPosition",
+        value: function getEmptyPosition() {
+            var allInventoryPositions = [];
+            for (var i = this.iterations * this.iterations - 1; i >= 0; i--) {
+                allInventoryPositions.push(i);
+            }
+            this.inventory.forEach(function (inventoryObject) {
+                if (allInventoryPositions.indexOf(inventoryObject.inventoryLocation) >= 0) {
+                    allInventoryPositions.splice(allInventoryPositions.indexOf(inventoryObject.inventoryLocation), 1);
+                }
+            });
+
+            if (allInventoryPositions.length > 0) {
+                return allInventoryPositions[allInventoryPositions.length - 1];
+            } else {
+                return false;
+            }
+        }
+    }, {
         key: "update",
         value: function update(delta) {
             var _this3 = this;
 
             var anyUnequiped = false;
-            var allInventoryPositions = [];
+            var position = false;
             this.inventory.forEach(function (inventoryObject) {
                 if (inventoryObject.inventoryLocation === -2) {
                     anyUnequiped = true;
                 }
             });
             if (anyUnequiped) {
-                for (var i = this.iterations * this.iterations - 1; i >= 0; i--) {
-                    allInventoryPositions.push(i);
-                }
-                this.inventory.forEach(function (inventoryObject) {
-                    if (allInventoryPositions.indexOf(inventoryObject.inventoryLocation) >= 0) {
-                        allInventoryPositions.splice(allInventoryPositions.indexOf(inventoryObject.inventoryLocation), 1);
-                    }
-                });
+                position = this.getEmptyPosition();
             }
             this.hero.armor = 0;
             this.inventory.forEach(function (inventoryObject) {
-                inventoryObject.update(delta, allInventoryPositions);
+                inventoryObject.update(delta, position);
                 if (inventoryObject.isEquiped && inventoryObject.isEquipable) {
                     _this3.hero.armor += inventoryObject.strength;
                 }
@@ -1837,8 +1853,34 @@ var InventoryManager = function () {
         }
     }, {
         key: "addObject",
-        value: function addObject(object) {
-            this.inventory.push(object);
+        value: function addObject(newObject, location) {
+            if (location === undefined || location === -1) {
+                location = this.getEmptyPosition();
+            }
+
+            this.inventory.forEach(function (oldObject) {
+                if (newObject.stackCount > 0) {
+                    if (oldObject.typeId === newObject.typeId && oldObject.stackCount < oldObject.stackLimit) {
+                        //console.log(oldObject);
+                        //console.log(newObject);
+                        var max = oldObject.stackLimit - oldObject.stackCount;
+                        if (newObject.stackCount > max) {
+                            newObject.stackCount -= max;
+                            oldObject.stackCount += max;
+                        } else {
+                            oldObject.stackCount += newObject.stackCount;
+                            newObject.stackCount = 0;
+                        }
+                    }
+                }
+            });
+            if (newObject.stackCount > 0) {
+                newObject.shownLocation = location;
+                newObject.inventoryLocation = location;
+                this.inventory.push(newObject);
+                return location;
+            }
+            return false;
         }
     }, {
         key: "isInInventory",
@@ -1877,6 +1919,7 @@ var InventoryManager = function () {
                 }
             } else if (!this.isInActionBar(mousePosition.x, mousePosition.y)) {
                 this.equipObject();
+                this.useObject();
             }
 
             if (!this.movingObject) {
@@ -2085,6 +2128,31 @@ var InventoryManager = function () {
             }
         }
     }, {
+        key: "useObject",
+        value: function useObject() {
+            var _this7 = this;
+
+            this.inventory.forEach(function (inventoryObject) {
+                if (inventoryObject.isHolding && inventoryObject.isUsable) {
+                    //console.log(inventoryObject);
+                    if (inventoryObject.usage === inventoryObject.USES.HEALTH) {
+                        var worked = _this7.hero.heal(inventoryObject.strength);
+                        if (worked) {
+                            if (inventoryObject.usedObject !== null) {
+                                var copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));
+                                _this7.addObject(copyOfObject);
+                            }
+                            if (inventoryObject.stackCount > 1) {
+                                inventoryObject.stackCount--;
+                            } else {
+                                _this7.inventory.splice(_this7.inventory.indexOf(inventoryObject), 1);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }, {
         key: "draw",
         value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
             var drawWidth = Math.round(width / this.iterations * 5) / 5;
@@ -2161,10 +2229,10 @@ var InventoryManager = function () {
     }, {
         key: "drawInventory",
         value: function drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this7 = this;
+            var _this8 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this7.movingObject) && inventoryObject.shownLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this8.movingObject) && inventoryObject.shownLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -2177,9 +2245,9 @@ var InventoryManager = function () {
             });
             this.inventory.forEach(function (inventoryObject) {
                 // Draw the held object on top of the others
-                if (inventoryObject.isHolding && _this7.movingObject) {
-                    var drawX = _this7.mousePosition.x;
-                    var drawY = _this7.mousePosition.y;
+                if (inventoryObject.isHolding && _this8.movingObject) {
+                    var drawX = _this8.mousePosition.x;
+                    var drawY = _this8.mousePosition.y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
                     if (inventoryObject.stackCount != 1) {
                         ctx.font = "22px Arial";
@@ -2192,10 +2260,10 @@ var InventoryManager = function () {
     }, {
         key: "drawActionBarItems",
         value: function drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this8 = this;
+            var _this9 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this8.movingObject) && inventoryObject.actionLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.actionLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                     var drawY = y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -3528,6 +3596,10 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
+var _Empty_bottle_ = __webpack_require__(42);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3544,7 +3616,7 @@ var Health_bottle_1 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_1.__proto__ || Object.getPrototypeOf(Health_bottle_1)).call(this, "health_bottle_1", 50, stackCount));
 
-        _this.setUsable(_this.USES.health, 10);
+        _this.setUsable(_this.USES.HEALTH, 10, new _Empty_bottle_2.default(Loader, 1));
         _this.setImage(Loader.getImage('health_bottle_1'));
         return _this;
     }
@@ -3569,6 +3641,10 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
+var _Empty_bottle_ = __webpack_require__(43);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3585,7 +3661,7 @@ var Health_bottle_2 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_2.__proto__ || Object.getPrototypeOf(Health_bottle_2)).call(this, "health_bottle_2", 50, stackCount));
 
-        _this.setUsable(_this.USES.health, 10);
+        _this.setUsable(_this.USES.HEALTH, 25, new _Empty_bottle_2.default(Loader, 1));
         _this.setImage(Loader.getImage('health_bottle_2'));
         return _this;
     }
@@ -3610,6 +3686,10 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
+var _Empty_bottle_ = __webpack_require__(44);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3626,7 +3706,7 @@ var Health_bottle_3 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_3.__proto__ || Object.getPrototypeOf(Health_bottle_3)).call(this, "health_bottle_3", 50, stackCount));
 
-        _this.setUsable(_this.USES.health, 10);
+        _this.setUsable(_this.USES.HEALTH, 50, new _Empty_bottle_2.default(Loader, 1));
         _this.setImage(Loader.getImage('health_bottle_3'));
         return _this;
     }
@@ -3651,6 +3731,10 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
+var _Empty_bottle_ = __webpack_require__(45);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3667,7 +3751,7 @@ var Health_bottle_4 = function (_InventoryObject) {
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_4.__proto__ || Object.getPrototypeOf(Health_bottle_4)).call(this, "health_bottle_4", 50, stackCount));
 
-        _this.setUsable(_this.USES.health, 10);
+        _this.setUsable(_this.USES.HEALTH, 100, new _Empty_bottle_2.default(Loader, 1));
         _this.setImage(Loader.getImage('health_bottle_4'));
         return _this;
     }
