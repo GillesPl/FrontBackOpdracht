@@ -600,23 +600,22 @@ var MainGameState = function (_GameState) {
         Promise.all(_this.loadassets).then(function (loaded) {
             this.loadInventoryObjects();
             this.init();
-            var self = this;
             document.onmousemove = function (event) {
-                self.onMouseMove(event, self);
-            };
+                this.onMouseMove(event);
+            }.bind(this);
             document.onmousedown = function (event) {
-                self.onMouseDown(event, self);
-            };
+                this.onMouseDown(event);
+            }.bind(this);
             document.onmouseup = function (event) {
-                self.onMouseUp(event, self);
-            };
+                this.onMouseUp(event);
+            }.bind(this);
             window.requestAnimationFrame(function (elapsed) {
-                self.draw(elapsed);
-            });
+                this.draw(elapsed);
+            }.bind(this));
             //window.oncontextmenu = function () {
-            //    self.showCustomMenu();
+            //    this.showCustomMenu();
             //    return false; // cancel default menu
-            //};
+            //}.bind(this);
         }.bind(_this));
         return _this;
     }
@@ -704,20 +703,29 @@ var MainGameState = function (_GameState) {
     }, {
         key: "init",
         value: function init() {
-            this.Keyboard = new _Keyboard2.default();
-            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S]);
+            this.Keyboard = new _Keyboard2.default(this);
+            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.E, this.Keyboard.R]);
 
             this.tileAtlas = this.Loader.getImage('tiles');
             this.hero = new _Hero2.default(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
 
-            var self = this;
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
-                self.socket.emit("new_user", self.hero.getSmallObject());
-                self.loadSocket(self.socket);
-                self.loadNonCharacterObjects(objects, self);
-            });
+                this.socket.emit("new_user", this.hero.getSmallObject());
+                this.loadSocket(this.socket);
+                this.loadNonCharacterObjects(objects, this);
+            }.bind(this));
             this.events();
+        }
+    }, {
+        key: "numPressed",
+        value: function numPressed(num) {
+            this.InventoryManager.numPressed(num);
+        }
+    }, {
+        key: "keyPressed",
+        value: function keyPressed(keyCode) {
+            this.InventoryManager.keyPressed(keyCode, this.Keyboard);
         }
     }, {
         key: "retryConnectOnFailure",
@@ -874,15 +882,14 @@ var MainGameState = function (_GameState) {
             // draw map background layer
             var layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
             var totalLayers = this.map.layers.length;
-            var self = this;
 
             var _loop = function _loop(_i2) {
                 _this3._drawLayer(_i2);
 
                 _this3.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                    var thisLayersUnder = _this3.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
-                        player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
+                        player.draw(_this3.ctx, _this3.camera.getScreenX(player.x), _this3.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -904,9 +911,9 @@ var MainGameState = function (_GameState) {
                 _this3._drawLayer(_i3);
 
                 _this3.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                    var thisLayersUnder = _this3.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i3) {
-                        player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
+                        player.draw(_this3.ctx, _this3.camera.getScreenX(player.x), _this3.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -924,55 +931,54 @@ var MainGameState = function (_GameState) {
         }
     }, {
         key: "onMouseDown",
-        value: function onMouseDown(event, self) {
+        value: function onMouseDown(event) {
             var mousePosition = {
                 x: event.pageX,
                 y: event.pageY
             };
-            self.InventoryManager.onMouseDown(mousePosition);
+            this.InventoryManager.onMouseDown(mousePosition);
         }
     }, {
         key: "onMouseUp",
-        value: function onMouseUp(event, self) {
+        value: function onMouseUp(event) {
             var mousePosition = {
                 x: event.pageX,
                 y: event.pageY
             };
-            self.InventoryManager.onMouseUp(mousePosition);
+            this.InventoryManager.onMouseUp(mousePosition);
         }
     }, {
         key: "onMouseMove",
-        value: function onMouseMove(event, self) {
+        value: function onMouseMove(event) {
             var mousePosition = {
                 x: event.pageX,
                 y: event.pageY
             };
-            self.InventoryManager.onMouseMove(mousePosition);
+            this.InventoryManager.onMouseMove(mousePosition);
         }
     }, {
         key: "events",
         value: function events() {
-            var self = this;
             document.addEventListener("keypress", function (event) {
                 if (event.key === 'f') {
-                    self.fullscreen();
+                    this.fullscreen();
                 }
-            }, false);
+            }, this);
             document.addEventListener("fullscreenchange", function () {
-                self.fullscreenState = document.fullscreen;
-            }, false);
+                this.fullscreenState = document.fullscreen;
+            }, this);
 
             document.addEventListener("mozfullscreenchange", function () {
-                self.fullscreenState = document.mozFullScreen;
-            }, false);
+                this.fullscreenState = document.mozFullScreen;
+            }, this);
 
             document.addEventListener("webkitfullscreenchange", function () {
-                self.fullscreenState = document.webkitIsFullScreen;
-            }, false);
+                this.fullscreenState = document.webkitIsFullScreen;
+            }, this);
 
             document.addEventListener("msfullscreenchange", function () {
-                self.fullscreenState = document.msFullscreenElement;
-            }, false);
+                this.fullscreenState = document.msFullscreenElement;
+            }, this);
         }
     }, {
         key: "fullscreen",
@@ -1177,9 +1183,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Keyboard = function () {
-    function Keyboard() {
+    function Keyboard(mainGameState) {
         _classCallCheck(this, Keyboard);
 
+        this.mainGameState = mainGameState;
         this.LEFT = 37;
         this.RIGHT = 39;
         this.UP = 38;
@@ -1189,15 +1196,34 @@ var Keyboard = function () {
         this.S = 83;
         this.D = 68;
         this.F = 70;
+        this.E = 69;
+        this.R = 82;
+        this._nums = [];
+        for (var i = 0; i <= 9; i++) {
+            this._nums.push({
+                key: 48 + i,
+                num: i,
+                isDown: false
+            });
+            this._nums.push({ // numpad
+                key: 96 + i,
+                num: i,
+                isDown: false
+            });
+        }
         this._keys = {};
+        this._callbackKeys = {};
     }
 
     _createClass(Keyboard, [{
         key: 'listenForEvents',
-        value: function listenForEvents(keys) {
+        value: function listenForEvents(keys, callbackKeys) {
             window.addEventListener('keydown', this._onKeyDown.bind(this));
             window.addEventListener('keyup', this._onKeyUp.bind(this));
 
+            callbackKeys.forEach(function (key) {
+                this._callbackKeys[key] = false;
+            }.bind(this));
             keys.forEach(function (key) {
                 this._keys[key] = false;
             }.bind(this));
@@ -1209,15 +1235,40 @@ var Keyboard = function () {
             if (keyCode in this._keys) {
                 event.preventDefault();
                 this._keys[keyCode] = true;
+            } else if (keyCode in this._callbackKeys) {
+                event.preventDefault();
+                if (!this._callbackKeys[keyCode]) {
+                    this._callbackKeys[keyCode] = true;
+                    this.mainGameState.keyPressed(keyCode);
+                }
+            } else {
+                var self = this;
+                this._nums.forEach(function (num) {
+                    if (num.key === keyCode) {
+                        event.preventDefault();
+                        if (!num.isDown) {
+                            num.isDown = true;
+                            self.mainGameState.numPressed(num.num);
+                        }
+                    }
+                });
             }
         }
     }, {
         key: '_onKeyUp',
         value: function _onKeyUp(event) {
             var keyCode = event.keyCode;
+            //console.log('key pressed: ' + keyCode);
             if (keyCode in this._keys) {
                 event.preventDefault();
                 this._keys[keyCode] = false;
+            } else if (keyCode in this._callbackKeys) {
+                event.preventDefault();
+                this._callbackKeys[keyCode] = false;
+            } else {
+                this._nums.forEach(function (num) {
+                    if (num.key === keyCode) num.isDown = false;
+                });
             }
         }
     }, {
@@ -1664,15 +1715,60 @@ var InventoryManager = function () {
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
-        for (var _i = 0; _i < 10; _i++) {
-            this.actionBarIcons.push(new _InventoryIcon2.default(_i, this.imageIconBar, 0, this.tileIconBarHeight));
-            if (this.selectedAction === _i) this.actionBarIcons[_i].isSelected = true;
+        for (var _i = 1; _i <= 10; _i++) {
+            this.actionBarIcons.push(new _InventoryIcon2.default(_i === 10 ? 0 : _i, this.imageIconBar, 0, this.tileIconBarHeight));
+            if (this.selectedAction === (_i === 10 ? 0 : _i)) this.actionBarIcons[_i === 10 ? 0 : _i].isSelected = true;
         }
 
         this.state = this.STATES.HIDDEN;
     }
 
     _createClass(InventoryManager, [{
+        key: "numPressed",
+        value: function numPressed(num) {
+            if (num >= 0 && num <= 9) {
+                this.actionBarIcons.forEach(function (actionIcon) {
+                    if (actionIcon.state === num) {
+                        actionIcon.isSelected = true;
+                    } else {
+                        actionIcon.isSelected = false;
+                    }
+                });
+            }
+        }
+    }, {
+        key: "keyPressed",
+        value: function keyPressed(keyCode, keyboard) {
+            var _this2 = this;
+
+            var checkState = this.STATES.HIDDEN;
+
+            if (keyCode === keyboard.E) {
+                checkState = this.STATES.INVENTORY;
+            } else if (keyCode === keyboard.R) {
+                checkState = this.STATES.CHARACTER;
+            }
+            this.iconBar.forEach(function (icon) {
+                if (icon.state === checkState) {
+                    var oldState = _this2.state;
+                    if (icon.isSelected) {
+                        icon.isSelected = false;
+                        _this2.state = _this2.STATES.HIDDEN;
+                    } else {
+                        _this2.state = icon.state;
+                        icon.isSelected = true;
+                    }
+                    if (oldState != _this2.state) {
+                        _this2.iconBar.forEach(function (icon) {
+                            if (icon.state != _this2.state) {
+                                icon.isSelected = false;
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }, {
         key: "update",
         value: function update(delta) {
             var anyUnequiped = false;
@@ -1714,10 +1810,10 @@ var InventoryManager = function () {
     }, {
         key: "onMouseDown",
         value: function onMouseDown(mousePosition) {
-            var _this2 = this;
+            var _this3 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (inventoryObject.isEquiped && _this2.state === _this2.STATES.CHARACTER || !inventoryObject.isEquiped && _this2.state === _this2.STATES.INVENTORY) {
+                if (inventoryObject.isEquiped && _this3.state === _this3.STATES.CHARACTER || !inventoryObject.isEquiped && _this3.state === _this3.STATES.INVENTORY) {
                     inventoryObject.onMouseDown(mousePosition);
                 }
             });
@@ -1728,7 +1824,7 @@ var InventoryManager = function () {
     }, {
         key: "onMouseUp",
         value: function onMouseUp(mousePosition) {
-            var _this3 = this;
+            var _this4 = this;
 
             if (this.movingObject) {
                 if (this.isInActionBar(mousePosition.x, mousePosition.y)) {
@@ -1747,16 +1843,16 @@ var InventoryManager = function () {
                     if (icon.onMouseMove(mousePosition)) {
                         if (icon.isSelected) {
                             icon.isSelected = false;
-                            _this3.state = _this3.STATES.HIDDEN;
+                            _this4.state = _this4.STATES.HIDDEN;
                         } else {
-                            _this3.state = icon.state;
+                            _this4.state = icon.state;
                             icon.isSelected = true;
                         }
                     }
                 });
                 if (oldState != this.state) {
                     this.iconBar.forEach(function (icon) {
-                        if (icon.state != _this3.state) {
+                        if (icon.state != _this4.state) {
                             icon.isSelected = false;
                         }
                     });
@@ -1764,12 +1860,12 @@ var InventoryManager = function () {
                 this.actionBarIcons.forEach(function (icon) {
                     if (icon.onMouseMove(mousePosition)) {
                         icon.isSelected = true;
-                        _this3.selectedAction = icon.state;
+                        _this4.selectedAction = icon.state;
                     }
                 });
                 if (this.selectedAction !== oldSelectedAction) {
                     this.actionBarIcons.forEach(function (icon) {
-                        if (_this3.selectedAction !== icon.state) {
+                        if (_this4.selectedAction !== icon.state) {
                             icon.isSelected = false;
                         }
                     });
@@ -1782,7 +1878,7 @@ var InventoryManager = function () {
     }, {
         key: "onMouseMove",
         value: function onMouseMove(mousePosition, mousePressed) {
-            var _this4 = this;
+            var _this5 = this;
 
             var isHolding = false;
             this.iconBar.forEach(function (icon) {
@@ -1795,7 +1891,7 @@ var InventoryManager = function () {
                 if (inventoryObject.isHolding) {
                     isHolding = true;
                     if (!inventoryObject.isInObject(mousePosition.x, mousePosition.y)) {
-                        _this4.movingObject = true;
+                        _this5.movingObject = true;
                     }
                 }
             });
@@ -2022,10 +2118,10 @@ var InventoryManager = function () {
     }, {
         key: "drawInventory",
         value: function drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this5 = this;
+            var _this6 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this5.movingObject) && inventoryObject.shownLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this6.movingObject) && inventoryObject.shownLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -2038,9 +2134,9 @@ var InventoryManager = function () {
             });
             this.inventory.forEach(function (inventoryObject) {
                 // Draw the held object on top of the others
-                if (inventoryObject.isHolding && _this5.movingObject) {
-                    var drawX = _this5.mousePosition.x;
-                    var drawY = _this5.mousePosition.y;
+                if (inventoryObject.isHolding && _this6.movingObject) {
+                    var drawX = _this6.mousePosition.x;
+                    var drawY = _this6.mousePosition.y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
                     if (inventoryObject.stackCount != 1) {
                         ctx.font = "22px Arial";
@@ -2053,10 +2149,10 @@ var InventoryManager = function () {
     }, {
         key: "drawActionBarItems",
         value: function drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this6 = this;
+            var _this7 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this6.movingObject) && inventoryObject.actionLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this7.movingObject) && inventoryObject.actionLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                     var drawY = y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -2085,7 +2181,7 @@ var InventoryManager = function () {
             ctx.fillStyle = "white";
             for (var i = 0; i < 10; i++) {
                 this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
-                ctx.fillText(i === 9 ? 0 : i + 1, drawX + dx / 2 + i * dx, y + drawHeight / 2);
+                ctx.fillText(this.actionBarIcons[i].state, drawX + dx / 2 + i * dx, y + drawHeight / 2);
             }
         }
     }]);
@@ -2137,13 +2233,20 @@ var InventoryIcon = function () {
             this.height = height;
 
             var tileY = 0;
-            if (this.isSelected && this.mouseOver) {
-                tileY = 3;
-            } else if (this.isSelected) {
-                tileY = 2;
-            } else if (this.mouseOver) {
-                tileY = 1;
+            if (this.isSelected) {
+                tileY += 2;
             }
+            if (this.mouseOver) {
+                tileY += 1;
+            }
+
+            //if (this.isSelected && this.mouseOver) {
+            //    tileY = 3;
+            //} else if (this.isSelected) {
+            //    tileY = 2;
+            //} else if (this.mouseOver) {
+            //    tileY = 1;
+            //}
 
             ctx.drawImage(this.image, this.tileX * this.tileWidth, tileY * this.tileWidth, this.tileWidth, this.tileWidth, x, y, width, height);
         }

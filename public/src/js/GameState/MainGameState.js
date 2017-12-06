@@ -63,23 +63,22 @@ export default class MainGameState extends GameState {
         Promise.all(this.loadassets).then(function (loaded) {
             this.loadInventoryObjects();
             this.init();
-            let self = this;
             document.onmousemove = function (event) {
-                self.onMouseMove(event, self);
-            };
+                this.onMouseMove(event);
+            }.bind(this);
             document.onmousedown = function (event) {
-                self.onMouseDown(event, self);
-            };
+                this.onMouseDown(event);
+            }.bind(this);
             document.onmouseup = function (event) {
-                self.onMouseUp(event, self);
-            };
+                this.onMouseUp(event);
+            }.bind(this);
             window.requestAnimationFrame(function (elapsed) {
-                self.draw(elapsed);
-            });
+                this.draw(elapsed);
+            }.bind(this));
             //window.oncontextmenu = function () {
-            //    self.showCustomMenu();
+            //    this.showCustomMenu();
             //    return false; // cancel default menu
-            //};
+            //}.bind(this);
         }.bind(this));
     }
 
@@ -159,20 +158,27 @@ export default class MainGameState extends GameState {
 
     // send map in this
     init() {
-        this.Keyboard = new Keyboard();
-        this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S]);
+        this.Keyboard = new Keyboard(this);
+        this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.E, this.Keyboard.R]);
 
         this.tileAtlas = this.Loader.getImage('tiles');
         this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
 
-        let self = this;
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
-            self.socket.emit("new_user", self.hero.getSmallObject());
-            self.loadSocket(self.socket);
-            self.loadNonCharacterObjects(objects, self);
-        });
+            this.socket.emit("new_user", this.hero.getSmallObject());
+            this.loadSocket(this.socket);
+            this.loadNonCharacterObjects(objects, this);
+        }.bind(this));
         this.events();
+    }
+
+    numPressed(num) {
+        this.InventoryManager.numPressed(num);
+    }
+
+    keyPressed(keyCode) {
+        this.InventoryManager.keyPressed(keyCode, this.Keyboard);
     }
 
     retryConnectOnFailure(retryInMilliseconds, socket, self) {
@@ -359,15 +365,14 @@ export default class MainGameState extends GameState {
         // draw map background layer
         let layersUnderPlayer = this.getLayersUnder(this.hero.tileLevel);
         let totalLayers = this.map.layers.length;
-        let self = this;
 
         for (let i = 0; i < layersUnderPlayer; i++) {
             this._drawLayer(i);
 
             this.otherPlayers.forEach((player) => {
-                let thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                let thisLayersUnder = this.getLayersUnder(player.tileLevel);
                 if (thisLayersUnder - 1 === i) {
-                    player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
+                    player.draw(this.ctx, this.camera.getScreenX(player.x), this.camera.getScreenY(player.y));
                 }
             });
         }
@@ -386,9 +391,9 @@ export default class MainGameState extends GameState {
             this._drawLayer(i);
 
             this.otherPlayers.forEach((player) => {
-                let thisLayersUnder = self.getLayersUnder(player.tileLevel);
+                let thisLayersUnder = this.getLayersUnder(player.tileLevel);
                 if (thisLayersUnder - 1 === i) {
-                    player.draw(self.ctx, self.camera.getScreenX(player.x), self.camera.getScreenY(player.y));
+                    player.draw(this.ctx, this.camera.getScreenX(player.x), this.camera.getScreenY(player.y));
                 }
             });
         }
@@ -403,51 +408,50 @@ export default class MainGameState extends GameState {
         this._drawUI(delta);
     }
 
-    onMouseDown(event, self) {
+    onMouseDown(event) {
         let mousePosition = {
             x: event.pageX,
             y: event.pageY
         };
-        self.InventoryManager.onMouseDown(mousePosition);
+        this.InventoryManager.onMouseDown(mousePosition);
     }
-    onMouseUp(event, self) {
+    onMouseUp(event) {
         let mousePosition = {
             x: event.pageX,
             y: event.pageY
         };
-        self.InventoryManager.onMouseUp(mousePosition);
+        this.InventoryManager.onMouseUp(mousePosition);
     }
 
-    onMouseMove(event, self) {
+    onMouseMove(event) {
         let mousePosition = {
             x: event.pageX,
             y: event.pageY
         };
-        self.InventoryManager.onMouseMove(mousePosition);
+        this.InventoryManager.onMouseMove(mousePosition);
     }
 
     events() {
-        const self = this;
         document.addEventListener("keypress", function (event) {
             if (event.key === 'f') {
-                self.fullscreen();
+                this.fullscreen();
             }
-        }, false);
+        }, this);
         document.addEventListener("fullscreenchange", function () {
-            self.fullscreenState = document.fullscreen;
-        }, false);
+            this.fullscreenState = document.fullscreen;
+        }, this);
 
         document.addEventListener("mozfullscreenchange", function () {
-            self.fullscreenState = document.mozFullScreen;
-        }, false);
+            this.fullscreenState = document.mozFullScreen;
+        }, this);
 
         document.addEventListener("webkitfullscreenchange", function () {
-            self.fullscreenState = document.webkitIsFullScreen;
-        }, false);
+            this.fullscreenState = document.webkitIsFullScreen;
+        }, this);
 
         document.addEventListener("msfullscreenchange", function () {
-            self.fullscreenState = document.msFullscreenElement;
-        }, false);
+            this.fullscreenState = document.msFullscreenElement;
+        }, this);
     }
 
 

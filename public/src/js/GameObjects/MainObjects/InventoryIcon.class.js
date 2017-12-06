@@ -21,13 +21,20 @@ export default class InventoryIcon {
         this.height = height;
 
         let tileY = 0;
-        if (this.isSelected && this.mouseOver) {
-            tileY = 3;
-        } else if (this.isSelected) {
-            tileY = 2;
-        } else if (this.mouseOver) {
-            tileY = 1;
+        if (this.isSelected) {
+            tileY += 2;
         }
+        if (this.mouseOver) {
+            tileY += 1;
+        }
+
+        //if (this.isSelected && this.mouseOver) {
+        //    tileY = 3;
+        //} else if (this.isSelected) {
+        //    tileY = 2;
+        //} else if (this.mouseOver) {
+        //    tileY = 1;
+        //}
 
         ctx.drawImage(
             this.image,

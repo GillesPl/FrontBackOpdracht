@@ -26,8 +26,6 @@ export default class InventoryManager {
             }
         });
 
-
-
         //this.inventory = inventoryObjects;
         //let i = 0;
         //this.inventory.forEach(inventoryObject => {
@@ -64,13 +62,54 @@ export default class InventoryManager {
         this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
-        for (let i = 0; i < 10; i++) {
-            this.actionBarIcons.push(new InventoryIcon(i, this.imageIconBar, 0, this.tileIconBarHeight));
-            if (this.selectedAction === i)
-                this.actionBarIcons[i].isSelected = true;
+        for (let i = 1; i <= 10; i++) {
+            this.actionBarIcons.push(new InventoryIcon(i === 10 ? 0 : i, this.imageIconBar, 0, this.tileIconBarHeight));
+            if (this.selectedAction === (i === 10 ? 0 : i))
+                this.actionBarIcons[i === 10 ? 0 : i].isSelected = true;
         }
 
         this.state = this.STATES.HIDDEN;
+    }
+
+    numPressed(num) {
+        if (num >= 0 && num <= 9) {
+            this.actionBarIcons.forEach(actionIcon => {
+                if (actionIcon.state === num) {
+                    actionIcon.isSelected = true;
+                } else {
+                    actionIcon.isSelected = false;
+                }
+            });
+        }
+    }
+
+    keyPressed(keyCode, keyboard) {
+        let checkState = this.STATES.HIDDEN;
+
+        if (keyCode === keyboard.E) {
+            checkState = this.STATES.INVENTORY;
+        } else if (keyCode === keyboard.R) {
+            checkState = this.STATES.CHARACTER;
+        }
+        this.iconBar.forEach(icon => {
+            if (icon.state === checkState) {
+                let oldState = this.state;
+                if (icon.isSelected) {
+                    icon.isSelected = false;
+                    this.state = this.STATES.HIDDEN;
+                } else {
+                    this.state = icon.state;
+                    icon.isSelected = true;
+                }
+                if (oldState != this.state) {
+                    this.iconBar.forEach(icon => {
+                        if (icon.state != this.state) {
+                            icon.isSelected = false;
+                        }
+                    });
+                }
+            }
+        });
     }
 
     update(delta) {
@@ -467,7 +506,7 @@ export default class InventoryManager {
         ctx.fillStyle = "white";
         for (let i = 0; i < 10; i++) {
             this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
-            ctx.fillText(i === 9 ? 0 : i + 1, drawX + dx / 2 + i * dx, y + drawHeight / 2);
+            ctx.fillText(this.actionBarIcons[i].state, drawX + dx / 2 + i * dx, y + drawHeight / 2);
         }
     }
 }
