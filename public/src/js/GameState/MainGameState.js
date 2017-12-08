@@ -101,7 +101,7 @@ export default class MainGameState extends GameState {
 
         // compute delta elapsed in seconds -- also cap it
         let delta = (elapsed - this._previousElapsed) / 1000.0;
-        delta = Math.min(delta, 0.25); // maximum delta of 250 ms
+        //delta = Math.min(delta, 0.25); // maximum delta of 250 ms
         this._previousElapsed = elapsed;
 
         //var in update == delta, see commented code above
