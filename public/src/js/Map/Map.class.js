@@ -18,6 +18,7 @@ export default class Map {
     loadMap(src, camera, hero, callback) {
         let map = this;
         let objects = [];
+        let enemies = [];
         this.loadJSON(src, function (data) {
             //console.log(data);
             map.cols = data.width;
@@ -29,9 +30,15 @@ export default class Map {
                 if (layer.type === "tilelayer") {
                     map.layers.push(layer.data);
                 } else if (layer.type === "objectgroup") {
-                    layer.objects.forEach(object => {
-                        objects.push(object);
-                    });
+                    if (layer.name === "Objects") {
+                        layer.objects.forEach(object => {
+                            objects.push(object);
+                        });
+                    } else if (layer.name === "Enemies") {
+                        layer.objects.forEach(object => {
+                            enemies.push(object);
+                        });
+                    }
                     // objects.concat(layer.objects); <- not working?
                 } else {
                     console.log("Unknown layer type: '" + layer.type + "' in layer");
@@ -42,7 +49,7 @@ export default class Map {
             camera.follow(hero);
             //console.log('#layers:' + map.layers.length);
             //console.log('#tiles horizontally in tileset:' + map.twidth);
-            callback(objects);
+            callback(objects, enemies);
         });
     }
 
@@ -80,7 +87,7 @@ export default class Map {
         } else if (level === 2) {
             solidLayers = [5, 6, 8, 13, 14];
         } else {
-            //console.log('Unknown level');
+            console.log('Unknown level');
             return false;
         }
         let map = this;

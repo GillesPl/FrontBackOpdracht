@@ -12,7 +12,7 @@ export default class DroppedItem extends NonCharacterObject {
                 this.setImage(Loader.getImage('coin'));
                 this.value = new Coin(Loader, count);
                 break;
-                
+
             case "Sword_1":
                 this.setImage(Loader.getImage('sword_1'));
                 this.value = new Sword_1(Loader, count);

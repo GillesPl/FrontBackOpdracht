@@ -2,6 +2,8 @@ import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
 import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
 import DroppedItem from "../GameObjects/NonCharacterObjects/DroppedItem.class";
+import Goblin from "../GameObjects/NPCObjects/Goblin.class";
+import Spawner from "../GameObjects/Spawners/_Spawner.base.class";
 import Hero from "../GameObjects/MainObjects/Hero.class";
 import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class";
 import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
@@ -56,6 +58,8 @@ export default class MainGameState extends GameState {
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
         this.nonCharacterObjects = [];
+        //this.NPCObjects = [];
+        this.spawners = [];
 
         this._previousElapsed = 0;
         this.isMousePressed = true;
@@ -131,6 +135,27 @@ export default class MainGameState extends GameState {
         });
     }
 
+    loadEnemies(enemies, gameState) {
+        enemies.forEach(object => {
+            switch (object.name) {
+                case "Goblins":
+                    let bounds = {
+                        x: object.x * gameState.map.scale,
+                        y: object.y * gameState.map.scale,
+                        width: object.width * gameState.map.scale,
+                        height: object.height * gameState.map.scale
+                    };
+                    gameState.spawners.push(new Spawner(bounds, object.name, gameState.Loader, object.properties.Count, gameState.map));
+                    break;
+
+                default:
+                    console.log("Object '" + object.name + "' doesn't  exist.");
+                    console.log(object);
+                    break;
+            }
+        });
+    }
+
     loadInventoryObjects() {
         let inventoryObjects = [];
         inventoryObjects.push(new Sword_1(this.Loader, 5));
@@ -177,10 +202,11 @@ export default class MainGameState extends GameState {
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
         this.loadInventoryObjects();
 
-        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects) {
+        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, enemies) {
             this.socket.emit("new_user", this.hero.getSmallObject());
             this.loadSocket(this.socket);
             this.loadNonCharacterObjects(objects, this);
+            this.loadEnemies(enemies, this);
         }.bind(this));
         this.events();
     }
@@ -263,6 +289,7 @@ export default class MainGameState extends GameState {
             this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
             this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
             this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
+            this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
@@ -357,6 +384,12 @@ export default class MainGameState extends GameState {
                 }
             }
         });
+        //this.NPCObjects.forEach(npc => {
+        //    npc.update(delta);
+        //});
+        this.spawners.forEach(spawner => {
+            spawner.update(delta);
+        });
         this.InventoryManager.update(delta);
         this.hero.update(delta);
         this.camera.update();
@@ -404,6 +437,15 @@ export default class MainGameState extends GameState {
                     thisObject.draw(this.ctx,
                         this.camera.getScreenX(thisObject.x),
                         this.camera.getScreenY(thisObject.y));
+                });
+
+                //this.NPCObjects.forEach(npc => {
+                //    npc.draw(this.ctx,
+                //        this.camera.getScreenX(npc.x),
+                //        this.camera.getScreenY(npc.y));
+                //});
+                this.spawners.forEach(spawner => {
+                    spawner.draw(this.ctx, this.camera);
                 });
             }
 
