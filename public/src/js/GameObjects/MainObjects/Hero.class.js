@@ -3,6 +3,8 @@ export default class Hero {
         this.map = map;
         this.x = x;
         this.y = y;
+        this.startX = x;
+        this.startY = y;
         this.Loader = Loader;
         this.debugging = false;
         this.topText = [];
@@ -30,6 +32,11 @@ export default class Hero {
 
         this.action = this.STATE.STOP;
         this.image = this.Loader.getImage('hero');
+        this.deathAnimation = this.Loader.getImage('death');
+        this.deathAnimationCols = 5;
+        this.deathAnimationRows = 3;
+        this.deadTime = 0;
+        this.dead = false;
 
         this.speed = 256;
         this.id = this.generateId();
@@ -80,6 +87,7 @@ export default class Hero {
 
 
     move(delta, dirx, diry) {
+        if (this.dead) return;
         this._calculateTileLevel();
 
         this._calculateImageState(dirx, diry, delta * 8);
@@ -101,10 +109,33 @@ export default class Hero {
     }
 
     getImageIndex() {
+        if (this.dead) return (Math.floor(this.deadTime / 2 * (this.deathAnimationCols * this.deathAnimationRows)));
         return this.imageState + 4 * Math.floor(this.imageIndex);
     }
 
+    setDirection(state) {
+        switch (state) {
+            case this.STATE.RUNNINGEAST:
+                this._calculateImageState(1, 0, 0);
+                break;
+            case this.STATE.RUNNINGNORTH:
+                this._calculateImageState(0, -1, 0);
+                break;
+            case this.STATE.RUNNINGSOUTH:
+                this._calculateImageState(0, 1, 0);
+                break;
+            case this.STATE.RUNNINGWEST:
+                this._calculateImageState(-1, 0, 0);
+                break;
+
+            default:
+                this._calculateImageState(0, 0, 0);
+                break;
+        }
+    }
+
     takeDamage(damage) {
+        if (this.dead) return;
         let damageTaken = damage - this.armor;
         if (damageTaken <= 0) return; // No damage done
 
@@ -116,11 +147,17 @@ export default class Hero {
 
         this.health -= damageTaken;
         if (this.health <= 0) { // Die
-            this.health = 100;
+            this.die();
         }
     }
 
+    die() {
+        this.deadTime = 0;
+        this.dead = true;
+    }
+
     heal(extraHealth) {
+        if (this.dead) return;
         let maxExtra = this.maxHealth - this.health;
         let healthTaken = maxExtra < extraHealth ? maxExtra : extraHealth;
         if (healthTaken <= 0) return false; // No health gain
@@ -136,36 +173,69 @@ export default class Hero {
     }
 
     update(delta) {
-        if (this.topText.length > 0) {
-            this.topText.forEach(text => {
-                text.time += delta;
-                if (text.time > 2) {
-                    this.topText.splice(this.topText.indexOf(text), 1);
-                }
-            });
+        if (this.dead) {
+            if (this.deadTime >= 2) {
+                this.dead = false;
+                this.x = this.startX;
+                this.y = this.startY;
+                this.health = this.maxHealth;
+                this.topText = [];
+                this.topText.push({
+                    text: "died",
+                    fillStyle: "black",
+                    time: 0
+                });
+
+            } else {
+                this.deadTime += delta;
+            }
+        } else {
+            if (this.topText.length > 0) {
+                this.topText.forEach(text => {
+                    text.time += delta;
+                    if (text.time > 2) {
+                        this.topText.splice(this.topText.indexOf(text), 1);
+                    }
+                });
+            }
         }
     }
 
     draw(ctx) {
-        ctx.drawImage(
-            this.image, // Image
-            (this.getImageIndex() % 4) * this.imageWidth, // Src x
-            Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
-            this.imageWidth, // Src width
-            this.imageHeight, // Src height
-            this.screenX - this.width / 2, // Target x
-            this.screenY - this.height / 2, // Target y
-            this.width, // Target width
-            this.height); // Target height
+        if (this.dead) {
+            let width = this.deathAnimation.width / this.deathAnimationCols;
+            let height = this.deathAnimation.height / this.deathAnimationRows;
+            ctx.drawImage(
+                this.deathAnimation, // Image
+                (this.getImageIndex() % this.deathAnimationCols) * width, // Src x
+                Math.floor(this.getImageIndex() / this.deathAnimationCols) * height, // Src y
+                width, // Src width
+                height, // Src height
+                this.screenX - this.width / 2, // Target x
+                this.screenY - this.height / 2, // Target y
+                this.width, // Target width
+                this.height); // Target height
+        } else {
+            ctx.drawImage(
+                this.image, // Image
+                (this.getImageIndex() % 4) * this.imageWidth, // Src x
+                Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+                this.imageWidth, // Src width
+                this.imageHeight, // Src height
+                this.screenX - this.width / 2, // Target x
+                this.screenY - this.height / 2, // Target y
+                this.width, // Target width
+                this.height); // Target height
 
 
 
-        if (this.topText.length > 0) {
-            ctx.font = "20px Arial";
-            this.topText.forEach(text => {
-                ctx.fillStyle = text.fillStyle;
-                ctx.fillText(text.text, this.screenX - 15, this.screenY - this.height * (0.3 + text.time / 2));
-            });
+            if (this.topText.length > 0) {
+                ctx.font = "20px Arial";
+                this.topText.forEach(text => {
+                    ctx.fillStyle = text.fillStyle;
+                    ctx.fillText(text.text, this.screenX - 15, this.screenY - this.height * (0.3 + text.time / 2));
+                });
+            }
         }
     }
 

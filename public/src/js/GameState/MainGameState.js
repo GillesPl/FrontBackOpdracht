@@ -60,6 +60,7 @@ export default class MainGameState extends GameState {
         this.nonCharacterObjects = [];
         //this.NPCObjects = [];
         this.spawners = [];
+        this.projectiles = [];
 
         this._previousElapsed = 0;
         this.isMousePressed = true;
@@ -189,7 +190,7 @@ export default class MainGameState extends GameState {
         inventoryObjects.push(new Empty_bottle_2(this.Loader, 5));
         inventoryObjects.push(new Empty_bottle_3(this.Loader, 5));
         inventoryObjects.push(new Empty_bottle_4(this.Loader, 5));
-        this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader, this.hero);
+        this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader, this.hero, this.projectiles, this.map);
     }
 
     // send map in this
@@ -284,12 +285,14 @@ export default class MainGameState extends GameState {
     load() {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
             this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
+            this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
             this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
             this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
             this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
             this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
             this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
             this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
+            this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
@@ -360,9 +363,16 @@ export default class MainGameState extends GameState {
             }
 
         }
+
         this.hero.move(delta, dirx, diry);
         this.otherPlayers.forEach((player) => {
             player.move(delta);
+        });
+        this.projectiles.forEach(projectile => {
+            projectile.update(delta);
+            if (projectile.destroyed) {
+                this.projectiles.splice(this.projectiles.indexOf(projectile), 1);
+            }
         });
         this.nonCharacterObjects.forEach((thisObject) => {
             thisObject.update(delta);
@@ -446,6 +456,10 @@ export default class MainGameState extends GameState {
                 //});
                 this.spawners.forEach(spawner => {
                     spawner.draw(this.ctx, this.camera);
+                });
+
+                this.projectiles.forEach(projectile => {
+                    projectile.draw(this.ctx, this.camera.getScreenX(projectile.x), this.camera.getScreenY(projectile.y));
                 });
             }
 

@@ -3,22 +3,22 @@ export default class Loader {
         this.images = {};
     }
 
-    loadImage(key,src) {
+    loadImage(key, src) {
         let img = new Image();
-        
-            let d = new Promise(function (resolve, reject) {
-                img.onload = function () {
-                    this.images[key] = img;
-                    resolve(img);
-                }.bind(this);
-        
-                img.onerror = function () {
-                    reject('Could not load image: ' + src);
-                };
-            }.bind(this));
-        
-            img.src = src;
-            return d;
+
+        let d = new Promise(function (resolve, reject) {
+            img.onload = function () {
+                this.images[key] = img;
+                resolve(img);
+            }.bind(this);
+
+            img.onerror = function () {
+                reject('Could not load image: ' + src);
+            };
+        }.bind(this));
+
+        img.src = src;
+        return d;
     }
 
     getImage(key) {

@@ -13,10 +13,17 @@ export default class InventoryObject {
             NONE: 0,
             HEALTH: 1
         };
+        this.WEAPONTYPES = {
+            NONE: 0,
+            RANGED: 1,
+            MELEE: 2
+        };
 
         this.typeId = typeId;
         this.area = this.AREAS.NONE;
         this.usage = this.USES.NONE;
+        this.weapontype = this.WEAPONTYPES.NONE;
+        this.createObjectName = "none";
         this.usedObject = null;
         this.isEquipable = false;
         this.isUsable = false;
@@ -49,6 +56,14 @@ export default class InventoryObject {
         this.usage = usage;
         this.strength = strength;
         this.usedObject = usedObject;
+        this.isEquipable = false;
+    }
+
+    setWeapon(type, strength, createObjectName) {
+        this.weapontype = type;
+        this.strength = strength;
+        this.createObjectName = createObjectName;
+        this.isUsable = false;
         this.isEquipable = false;
     }
 

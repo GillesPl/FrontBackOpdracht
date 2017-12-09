@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -95,10 +95,17 @@ var InventoryObject = function () {
             NONE: 0,
             HEALTH: 1
         };
+        this.WEAPONTYPES = {
+            NONE: 0,
+            RANGED: 1,
+            MELEE: 2
+        };
 
         this.typeId = typeId;
         this.area = this.AREAS.NONE;
         this.usage = this.USES.NONE;
+        this.weapontype = this.WEAPONTYPES.NONE;
+        this.createObjectName = "none";
         this.usedObject = null;
         this.isEquipable = false;
         this.isUsable = false;
@@ -134,6 +141,15 @@ var InventoryObject = function () {
             this.usage = usage;
             this.strength = strength;
             this.usedObject = usedObject;
+            this.isEquipable = false;
+        }
+    }, {
+        key: "setWeapon",
+        value: function setWeapon(type, strength, createObjectName) {
+            this.weapontype = type;
+            this.strength = strength;
+            this.createObjectName = createObjectName;
+            this.isUsable = false;
             this.isEquipable = false;
         }
     }, {
@@ -274,7 +290,7 @@ var Fire = function (_NonCharacterObject) {
     function Fire(Loader, x, y) {
         _classCallCheck(this, Fire);
 
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 50, false));
+        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 45, false));
 
         _this.setTilesImage(Loader.getImage('fire'), 1, 5, 12);
         return _this;
@@ -548,6 +564,46 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _NPCObjectBase = __webpack_require__(18);
+
+var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Fire = function (_NPCObject) {
+    _inherits(Fire, _NPCObject);
+
+    function Fire(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Fire);
+
+        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
+
+        _this.setTilesImage(Loader.getImage('goblin'), 4, 4, 4);
+        return _this;
+    }
+
+    return Fire;
+}(_NPCObjectBase2.default);
+
+exports.default = Fire;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
@@ -578,7 +634,7 @@ var Empty_bottle_1 = function (_InventoryObject) {
 exports.default = Empty_bottle_1;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -618,7 +674,7 @@ var Empty_bottle_2 = function (_InventoryObject) {
 exports.default = Empty_bottle_2;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -658,7 +714,7 @@ var Empty_bottle_3 = function (_InventoryObject) {
 exports.default = Empty_bottle_3;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -698,29 +754,29 @@ var Empty_bottle_4 = function (_InventoryObject) {
 exports.default = Empty_bottle_4;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
-module.exports = __webpack_require__(50);
+__webpack_require__(12);
+module.exports = __webpack_require__(51);
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(12);
+var _GameStateManager = __webpack_require__(13);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _MainGameState = __webpack_require__(13);
+var _MainGameState = __webpack_require__(14);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(49);
+var _Map = __webpack_require__(50);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -737,7 +793,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 })();
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -807,7 +863,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -819,11 +875,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Camera = __webpack_require__(14);
+var _Camera = __webpack_require__(15);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(15);
+var _Keyboard = __webpack_require__(16);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
@@ -831,35 +887,35 @@ var _Fire = __webpack_require__(1);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
-var _DroppedItem = __webpack_require__(16);
+var _DroppedItem = __webpack_require__(17);
 
 var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
 
-var _Goblin = __webpack_require__(17);
+var _Goblin = __webpack_require__(6);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _SpawnerBase = __webpack_require__(53);
+var _SpawnerBase = __webpack_require__(19);
 
 var _SpawnerBase2 = _interopRequireDefault(_SpawnerBase);
 
-var _Hero = __webpack_require__(19);
+var _Hero = __webpack_require__(20);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _InventoryManager = __webpack_require__(20);
+var _InventoryManager = __webpack_require__(21);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(22);
+var _OtherPlayer = __webpack_require__(23);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(23);
+var _Loader = __webpack_require__(24);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState2 = __webpack_require__(24);
+var _GameState2 = __webpack_require__(25);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
@@ -867,67 +923,67 @@ var _Sword_ = __webpack_require__(4);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(25);
+var _Sword_3 = __webpack_require__(26);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(26);
+var _Sword_5 = __webpack_require__(27);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(27);
+var _Shield_ = __webpack_require__(28);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(28);
+var _Shield_3 = __webpack_require__(29);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(29);
+var _Shield_5 = __webpack_require__(30);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(30);
+var _Shield_7 = __webpack_require__(31);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(31);
+var _Axe_ = __webpack_require__(32);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(32);
+var _Axe_3 = __webpack_require__(33);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(33);
+var _Axe_5 = __webpack_require__(34);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(34);
+var _Bow_ = __webpack_require__(35);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(35);
+var _Bow_3 = __webpack_require__(36);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(36);
+var _Bow_5 = __webpack_require__(37);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(37);
+var _Mace = __webpack_require__(38);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(38);
+var _Spear = __webpack_require__(39);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(39);
+var _Armor_ = __webpack_require__(40);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(40);
+var _Armor_3 = __webpack_require__(41);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
@@ -935,19 +991,19 @@ var _Boots_ = __webpack_require__(5);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(41);
+var _Boots_3 = __webpack_require__(42);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(42);
+var _Boots_5 = __webpack_require__(43);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(43);
+var _Helmet_ = __webpack_require__(44);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(44);
+var _Helmet_3 = __webpack_require__(45);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
@@ -955,35 +1011,35 @@ var _Coin = __webpack_require__(3);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(45);
+var _Health_bottle_ = __webpack_require__(46);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(46);
+var _Health_bottle_3 = __webpack_require__(47);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(47);
+var _Health_bottle_5 = __webpack_require__(48);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(48);
+var _Health_bottle_7 = __webpack_require__(49);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
-var _Empty_bottle_ = __webpack_require__(6);
+var _Empty_bottle_ = __webpack_require__(7);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
-var _Empty_bottle_3 = __webpack_require__(7);
+var _Empty_bottle_3 = __webpack_require__(8);
 
 var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
 
-var _Empty_bottle_5 = __webpack_require__(8);
+var _Empty_bottle_5 = __webpack_require__(9);
 
 var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 
-var _Empty_bottle_7 = __webpack_require__(9);
+var _Empty_bottle_7 = __webpack_require__(10);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
@@ -1020,6 +1076,7 @@ var MainGameState = function (_GameState) {
         _this.nonCharacterObjects = [];
         //this.NPCObjects = [];
         _this.spawners = [];
+        _this.projectiles = [];
 
         _this._previousElapsed = 0;
         _this.isMousePressed = true;
@@ -1064,7 +1121,7 @@ var MainGameState = function (_GameState) {
 
             // compute delta elapsed in seconds -- also cap it
             var delta = (elapsed - this._previousElapsed) / 1000.0;
-            delta = Math.min(delta, 0.25); // maximum delta of 250 ms
+            //delta = Math.min(delta, 0.25); // maximum delta of 250 ms
             this._previousElapsed = elapsed;
 
             //var in update == delta, see commented code above
@@ -1153,7 +1210,7 @@ var MainGameState = function (_GameState) {
             inventoryObjects.push(new _Empty_bottle_4.default(this.Loader, 5));
             inventoryObjects.push(new _Empty_bottle_6.default(this.Loader, 5));
             inventoryObjects.push(new _Empty_bottle_8.default(this.Loader, 5));
-            this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader, this.hero);
+            this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader, this.hero, this.projectiles, this.map);
         }
 
         // send map in this
@@ -1252,7 +1309,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')];
@@ -1294,9 +1351,16 @@ var MainGameState = function (_GameState) {
                     this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
             }
+
             this.hero.move(delta, dirx, diry);
             this.otherPlayers.forEach(function (player) {
                 player.move(delta);
+            });
+            this.projectiles.forEach(function (projectile) {
+                projectile.update(delta);
+                if (projectile.destroyed) {
+                    _this2.projectiles.splice(_this2.projectiles.indexOf(projectile), 1);
+                }
             });
             this.nonCharacterObjects.forEach(function (thisObject) {
                 thisObject.update(delta);
@@ -1383,6 +1447,10 @@ var MainGameState = function (_GameState) {
                     //});
                     _this3.spawners.forEach(function (spawner) {
                         spawner.draw(_this3.ctx, _this3.camera);
+                    });
+
+                    _this3.projectiles.forEach(function (projectile) {
+                        projectile.draw(_this3.ctx, _this3.camera.getScreenX(projectile.x), _this3.camera.getScreenY(projectile.y));
                     });
                 }
 
@@ -1547,7 +1615,7 @@ var MainGameState = function (_GameState) {
 exports.default = MainGameState;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1639,7 +1707,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1758,7 +1826,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1828,46 +1896,6 @@ var DroppedItem = function (_NonCharacterObject) {
 }(_nonCharacterObjectBase2.default);
 
 exports.default = DroppedItem;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _NPCObjectBase = __webpack_require__(18);
-
-var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Fire = function (_NPCObject) {
-    _inherits(Fire, _NPCObject);
-
-    function Fire(Loader, x, y, map, bounds) {
-        _classCallCheck(this, Fire);
-
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
-
-        _this.setTilesImage(Loader.getImage('goblin'), 4, 4, 4);
-        return _this;
-    }
-
-    return Fire;
-}(_NPCObjectBase2.default);
-
-exports.default = Fire;
 
 /***/ }),
 /* 18 */
@@ -2165,6 +2193,100 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Goblin = __webpack_require__(6);
+
+var _Goblin2 = _interopRequireDefault(_Goblin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Spawner = function () {
+    function Spawner(bounds, type, Loader, count, map) {
+        _classCallCheck(this, Spawner);
+
+        this.tileLevel = 0;
+        this.bounds = bounds;
+        this.type = type;
+        this.Loader = Loader;
+        this.count = count;
+        this.map = map;
+        this.units = [];
+        for (var i = 0; i < count; i++) {
+            this.units.push(this.createOfType(type));
+        }
+    }
+
+    _createClass(Spawner, [{
+        key: "update",
+        value: function update(delta) {
+            var _this = this;
+
+            this.units.forEach(function (unit) {
+                unit.update(delta, _this.units);
+                if (unit.health <= 0) {
+                    _this.units.splice(_this.units.indexOf(unit), 1);
+                }
+            });
+            if (this.units.length < this.count) {
+                this.units.push(this.createOfType(type));
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, camera) {
+            this.units.forEach(function (unit) {
+                unit.draw(ctx, camera.getScreenX(unit.x), camera.getScreenY(unit.y));
+            });
+        }
+    }, {
+        key: "createOfType",
+        value: function createOfType(type) {
+            var x = void 0,
+                y = void 0,
+                collision = void 0,
+                unit = void 0;
+            do {
+                x = Math.random() * this.bounds.width + this.bounds.x;
+                y = Math.random() * this.bounds.height + this.bounds.y;
+                switch (type) {
+                    case "Goblins":
+                        unit = new _Goblin2.default(this.Loader, x, y, this.map, this.bounds);
+                        break;
+
+                    default:
+                        console.log('Cannot create unit of type ' + type);
+                        return null;
+                }
+
+                var left = x;
+                var right = x + this.map.drawSize - 1;
+                var top = y;
+                var bottom = y + this.map.drawSize - 1;
+                collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel) || unit.unitsOverlap(this.units);
+            } while (collision);
+            return unit;
+        }
+    }]);
+
+    return Spawner;
+}();
+
+exports.default = Spawner;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Hero = function () {
@@ -2174,6 +2296,8 @@ var Hero = function () {
         this.map = map;
         this.x = x;
         this.y = y;
+        this.startX = x;
+        this.startY = y;
         this.Loader = Loader;
         this.debugging = false;
         this.topText = [];
@@ -2201,6 +2325,11 @@ var Hero = function () {
 
         this.action = this.STATE.STOP;
         this.image = this.Loader.getImage('hero');
+        this.deathAnimation = this.Loader.getImage('death');
+        this.deathAnimationCols = 5;
+        this.deathAnimationRows = 3;
+        this.deadTime = 0;
+        this.dead = false;
 
         this.speed = 256;
         this.id = this.generateId();
@@ -2250,6 +2379,7 @@ var Hero = function () {
     }, {
         key: 'move',
         value: function move(delta, dirx, diry) {
+            if (this.dead) return;
             this._calculateTileLevel();
 
             this._calculateImageState(dirx, diry, delta * 8);
@@ -2272,11 +2402,35 @@ var Hero = function () {
     }, {
         key: 'getImageIndex',
         value: function getImageIndex() {
+            if (this.dead) return Math.floor(this.deadTime / 2 * (this.deathAnimationCols * this.deathAnimationRows));
             return this.imageState + 4 * Math.floor(this.imageIndex);
+        }
+    }, {
+        key: 'setDirection',
+        value: function setDirection(state) {
+            switch (state) {
+                case this.STATE.RUNNINGEAST:
+                    this._calculateImageState(1, 0, 0);
+                    break;
+                case this.STATE.RUNNINGNORTH:
+                    this._calculateImageState(0, -1, 0);
+                    break;
+                case this.STATE.RUNNINGSOUTH:
+                    this._calculateImageState(0, 1, 0);
+                    break;
+                case this.STATE.RUNNINGWEST:
+                    this._calculateImageState(-1, 0, 0);
+                    break;
+
+                default:
+                    this._calculateImageState(0, 0, 0);
+                    break;
+            }
         }
     }, {
         key: 'takeDamage',
         value: function takeDamage(damage) {
+            if (this.dead) return;
             var damageTaken = damage - this.armor;
             if (damageTaken <= 0) return; // No damage done
 
@@ -2289,12 +2443,19 @@ var Hero = function () {
             this.health -= damageTaken;
             if (this.health <= 0) {
                 // Die
-                this.health = 100;
+                this.die();
             }
+        }
+    }, {
+        key: 'die',
+        value: function die() {
+            this.deadTime = 0;
+            this.dead = true;
         }
     }, {
         key: 'heal',
         value: function heal(extraHealth) {
+            if (this.dead) return;
             var maxExtra = this.maxHealth - this.health;
             var healthTaken = maxExtra < extraHealth ? maxExtra : extraHealth;
             if (healthTaken <= 0) return false; // No health gain
@@ -2313,13 +2474,30 @@ var Hero = function () {
         value: function update(delta) {
             var _this = this;
 
-            if (this.topText.length > 0) {
-                this.topText.forEach(function (text) {
-                    text.time += delta;
-                    if (text.time > 2) {
-                        _this.topText.splice(_this.topText.indexOf(text), 1);
-                    }
-                });
+            if (this.dead) {
+                if (this.deadTime >= 2) {
+                    this.dead = false;
+                    this.x = this.startX;
+                    this.y = this.startY;
+                    this.health = this.maxHealth;
+                    this.topText = [];
+                    this.topText.push({
+                        text: "died",
+                        fillStyle: "black",
+                        time: 0
+                    });
+                } else {
+                    this.deadTime += delta;
+                }
+            } else {
+                if (this.topText.length > 0) {
+                    this.topText.forEach(function (text) {
+                        text.time += delta;
+                        if (text.time > 2) {
+                            _this.topText.splice(_this.topText.indexOf(text), 1);
+                        }
+                    });
+                }
             }
         }
     }, {
@@ -2327,23 +2505,37 @@ var Hero = function () {
         value: function draw(ctx) {
             var _this2 = this;
 
-            ctx.drawImage(this.image, // Image
-            this.getImageIndex() % 4 * this.imageWidth, // Src x
-            Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
-            this.imageWidth, // Src width
-            this.imageHeight, // Src height
-            this.screenX - this.width / 2, // Target x
-            this.screenY - this.height / 2, // Target y
-            this.width, // Target width
-            this.height); // Target height
+            if (this.dead) {
+                var width = this.deathAnimation.width / this.deathAnimationCols;
+                var height = this.deathAnimation.height / this.deathAnimationRows;
+                ctx.drawImage(this.deathAnimation, // Image
+                this.getImageIndex() % this.deathAnimationCols * width, // Src x
+                Math.floor(this.getImageIndex() / this.deathAnimationCols) * height, // Src y
+                width, // Src width
+                height, // Src height
+                this.screenX - this.width / 2, // Target x
+                this.screenY - this.height / 2, // Target y
+                this.width, // Target width
+                this.height); // Target height
+            } else {
+                ctx.drawImage(this.image, // Image
+                this.getImageIndex() % 4 * this.imageWidth, // Src x
+                Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+                this.imageWidth, // Src width
+                this.imageHeight, // Src height
+                this.screenX - this.width / 2, // Target x
+                this.screenY - this.height / 2, // Target y
+                this.width, // Target width
+                this.height); // Target height
 
 
-            if (this.topText.length > 0) {
-                ctx.font = "20px Arial";
-                this.topText.forEach(function (text) {
-                    ctx.fillStyle = text.fillStyle;
-                    ctx.fillText(text.text, _this2.screenX - 15, _this2.screenY - _this2.height * (0.3 + text.time / 2));
-                });
+                if (this.topText.length > 0) {
+                    ctx.font = "20px Arial";
+                    this.topText.forEach(function (text) {
+                        ctx.fillStyle = text.fillStyle;
+                        ctx.fillText(text.text, _this2.screenX - 15, _this2.screenY - _this2.height * (0.3 + text.time / 2));
+                    });
+                }
             }
         }
     }, {
@@ -2423,7 +2615,7 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2435,16 +2627,20 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _InventoryIcon = __webpack_require__(21);
+var _InventoryIcon = __webpack_require__(22);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
+
+var _Arrow_ = __webpack_require__(54);
+
+var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var InventoryManager = function () {
-    function InventoryManager(inventoryObjects, Loader, hero) {
+    function InventoryManager(inventoryObjects, Loader, hero, projectiles, map) {
         var _this = this;
 
         _classCallCheck(this, InventoryManager);
@@ -2466,16 +2662,19 @@ var InventoryManager = function () {
         this.iterations = 8;
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
+        this.projectiles = projectiles;
+        this.map = map;
         this.backCols = 4;
         this.backRows = 4;
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.imageIconBar = Loader.getImage("iconbar");
+        this.Loader = Loader;
         this.iconBarCols = 3;
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
-        this.selectedAction = 0;
+        this.selectedAction = 1;
         this.mousePosition = {
             x: 0,
             y: 0
@@ -2493,7 +2692,7 @@ var InventoryManager = function () {
 
         this.actionBarIcons = [];
         for (var _i = 1; _i <= 10; _i++) {
-            this.actionBarIcons.push(new _InventoryIcon2.default(_i === 10 ? 0 : _i, this.imageIconBar, 0, this.tileIconBarHeight));
+            this.actionBarIcons[_i === 10 ? 0 : _i] = new _InventoryIcon2.default(_i === 10 ? 0 : _i, this.imageIconBar, 0, this.tileIconBarHeight);
             if (this.selectedAction === (_i === 10 ? 0 : _i)) this.actionBarIcons[_i === 10 ? 0 : _i].isSelected = true;
         }
 
@@ -2503,10 +2702,13 @@ var InventoryManager = function () {
     _createClass(InventoryManager, [{
         key: "numPressed",
         value: function numPressed(num) {
+            var _this2 = this;
+
             if (num >= 0 && num <= 9) {
                 this.actionBarIcons.forEach(function (actionIcon) {
                     if (actionIcon.state === num) {
                         actionIcon.isSelected = true;
+                        _this2.selectedAction = actionIcon.state;
                     } else {
                         actionIcon.isSelected = false;
                     }
@@ -2516,7 +2718,7 @@ var InventoryManager = function () {
     }, {
         key: "keyPressed",
         value: function keyPressed(keyCode, keyboard) {
-            var _this2 = this;
+            var _this3 = this;
 
             var checkState = this.STATES.HIDDEN;
 
@@ -2527,17 +2729,17 @@ var InventoryManager = function () {
             }
             this.iconBar.forEach(function (icon) {
                 if (icon.state === checkState) {
-                    var oldState = _this2.state;
+                    var oldState = _this3.state;
                     if (icon.isSelected) {
                         icon.isSelected = false;
-                        _this2.state = _this2.STATES.HIDDEN;
+                        _this3.state = _this3.STATES.HIDDEN;
                     } else {
-                        _this2.state = icon.state;
+                        _this3.state = icon.state;
                         icon.isSelected = true;
                     }
-                    if (oldState != _this2.state) {
-                        _this2.iconBar.forEach(function (icon) {
-                            if (icon.state != _this2.state) {
+                    if (oldState != _this3.state) {
+                        _this3.iconBar.forEach(function (icon) {
+                            if (icon.state != _this3.state) {
                                 icon.isSelected = false;
                             }
                         });
@@ -2567,7 +2769,7 @@ var InventoryManager = function () {
     }, {
         key: "update",
         value: function update(delta) {
-            var _this3 = this;
+            var _this4 = this;
 
             var anyUnequiped = false;
             var position = false;
@@ -2583,7 +2785,7 @@ var InventoryManager = function () {
             this.inventory.forEach(function (inventoryObject) {
                 inventoryObject.update(delta, position);
                 if (inventoryObject.isEquiped && inventoryObject.isEquipable) {
-                    _this3.hero.armor += inventoryObject.strength;
+                    _this4.hero.armor += inventoryObject.strength;
                 }
             });
         }
@@ -2631,10 +2833,10 @@ var InventoryManager = function () {
     }, {
         key: "onMouseDown",
         value: function onMouseDown(mousePosition) {
-            var _this4 = this;
+            var _this5 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (inventoryObject.isEquiped && _this4.state === _this4.STATES.CHARACTER || !inventoryObject.isEquiped && _this4.state === _this4.STATES.INVENTORY) {
+                if (inventoryObject.isEquiped && _this5.state === _this5.STATES.CHARACTER || !inventoryObject.isEquiped && _this5.state === _this5.STATES.INVENTORY) {
                     inventoryObject.onMouseDown(mousePosition);
                 }
             });
@@ -2645,7 +2847,7 @@ var InventoryManager = function () {
     }, {
         key: "onMouseUp",
         value: function onMouseUp(mousePosition) {
-            var _this5 = this;
+            var _this6 = this;
 
             if (this.movingObject) {
                 if (this.isInActionBar(mousePosition.x, mousePosition.y)) {
@@ -2665,16 +2867,16 @@ var InventoryManager = function () {
                     if (icon.onMouseMove(mousePosition)) {
                         if (icon.isSelected) {
                             icon.isSelected = false;
-                            _this5.state = _this5.STATES.HIDDEN;
+                            _this6.state = _this6.STATES.HIDDEN;
                         } else {
-                            _this5.state = icon.state;
+                            _this6.state = icon.state;
                             icon.isSelected = true;
                         }
                     }
                 });
                 if (oldState != this.state) {
                     this.iconBar.forEach(function (icon) {
-                        if (icon.state != _this5.state) {
+                        if (icon.state != _this6.state) {
                             icon.isSelected = false;
                         }
                     });
@@ -2682,13 +2884,40 @@ var InventoryManager = function () {
                 this.actionBarIcons.forEach(function (icon) {
                     if (icon.onMouseMove(mousePosition)) {
                         icon.isSelected = true;
-                        _this5.selectedAction = icon.state;
+                        _this6.selectedAction = icon.state;
                     }
                 });
                 if (this.selectedAction !== oldSelectedAction) {
                     this.actionBarIcons.forEach(function (icon) {
-                        if (_this5.selectedAction !== icon.state) {
+                        if (_this6.selectedAction !== icon.state) {
                             icon.isSelected = false;
+                        }
+                    });
+                }
+                if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) && !this.isInActionBar(mousePosition.x, mousePosition.y)) {
+                    this.inventory.forEach(function (inventoryObject) {
+                        var location = _this6.selectedAction - 1;
+                        if (location < 0) location = 9;
+                        if (inventoryObject.actionLocation === location) {
+                            if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.RANGED) {
+                                console.log('bow used, creating ' + inventoryObject.createObjectName);
+                                switch (inventoryObject.createObjectName) {
+                                    case 'Arrow_1':
+                                        var angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166
+                                        _this6.projectiles.push(new _Arrow_2.default(_this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, _this6.map, _this6.map.drawSize * 0.5));
+                                        console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                                        if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
+                                            _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
+                                        } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
+                                            _this6.hero.setDirection(_this6.hero.STATE.RUNNINGNORTH);
+                                        } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
+                                            _this6.hero.setDirection(_this6.hero.STATE.RUNNINGSOUTH);
+                                        } else {
+                                            _this6.hero.setDirection(_this6.hero.STATE.RUNNINGWEST);
+                                        }
+                                        break;
+                                }
+                            }
                         }
                     });
                 }
@@ -2700,7 +2929,7 @@ var InventoryManager = function () {
     }, {
         key: "onMouseMove",
         value: function onMouseMove(mousePosition, mousePressed) {
-            var _this6 = this;
+            var _this7 = this;
 
             var isHolding = false;
             this.iconBar.forEach(function (icon) {
@@ -2713,7 +2942,7 @@ var InventoryManager = function () {
                 if (inventoryObject.isHolding) {
                     isHolding = true;
                     if (!inventoryObject.isInObject(mousePosition.x, mousePosition.y)) {
-                        _this6.movingObject = true;
+                        _this7.movingObject = true;
                     }
                 }
             });
@@ -2866,22 +3095,22 @@ var InventoryManager = function () {
     }, {
         key: "useObject",
         value: function useObject() {
-            var _this7 = this;
+            var _this8 = this;
 
             this.inventory.forEach(function (inventoryObject) {
                 if (inventoryObject.isHolding && inventoryObject.isUsable) {
                     //console.log(inventoryObject);
                     if (inventoryObject.usage === inventoryObject.USES.HEALTH) {
-                        var worked = _this7.hero.heal(inventoryObject.strength);
+                        var worked = _this8.hero.heal(inventoryObject.strength);
                         if (worked) {
                             if (inventoryObject.usedObject !== null) {
                                 var copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));
-                                _this7.addObject(copyOfObject);
+                                _this8.addObject(copyOfObject);
                             }
                             if (inventoryObject.stackCount > 1) {
                                 inventoryObject.stackCount--;
                             } else {
-                                _this7.inventory.splice(_this7.inventory.indexOf(inventoryObject), 1);
+                                _this8.inventory.splice(_this8.inventory.indexOf(inventoryObject), 1);
                             }
                         }
                     }
@@ -2965,10 +3194,10 @@ var InventoryManager = function () {
     }, {
         key: "drawInventory",
         value: function drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this8 = this;
+            var _this9 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this8.movingObject) && inventoryObject.shownLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.shownLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -2981,9 +3210,9 @@ var InventoryManager = function () {
             });
             this.inventory.forEach(function (inventoryObject) {
                 // Draw the held object on top of the others
-                if (inventoryObject.isHolding && _this8.movingObject) {
-                    var drawX = _this8.mousePosition.x;
-                    var drawY = _this8.mousePosition.y;
+                if (inventoryObject.isHolding && _this9.movingObject) {
+                    var drawX = _this9.mousePosition.x;
+                    var drawY = _this9.mousePosition.y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
                     if (inventoryObject.stackCount != 1) {
                         ctx.font = "22px Arial";
@@ -2996,10 +3225,10 @@ var InventoryManager = function () {
     }, {
         key: "drawActionBarItems",
         value: function drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this9 = this;
+            var _this10 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.actionLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this10.movingObject) && inventoryObject.actionLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                     var drawY = y;
                     inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
@@ -3027,8 +3256,9 @@ var InventoryManager = function () {
             ctx.font = "14px Arial";
             ctx.fillStyle = "white";
             for (var i = 0; i < 10; i++) {
-                this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
-                ctx.fillText(this.actionBarIcons[i].state, drawX + dx / 2 + i * dx, y + drawHeight / 2);
+                var xPos = (i === 0 ? 9 : i - 1) * dx;
+                this.actionBarIcons[i].draw(ctx, drawX + xPos, y, dx, drawHeight);
+                ctx.fillText(this.actionBarIcons[i].state, drawX + dx / 2 + xPos, y + drawHeight / 2);
             }
         }
     }]);
@@ -3039,7 +3269,7 @@ var InventoryManager = function () {
 exports.default = InventoryManager;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3105,7 +3335,7 @@ var InventoryIcon = function () {
 exports.default = InventoryIcon;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3286,7 +3516,7 @@ var OtherPlayer = function () {
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3339,7 +3569,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3384,7 +3614,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3425,7 +3655,7 @@ var Sword_2 = function (_InventoryObject) {
 exports.default = Sword_2;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3466,7 +3696,7 @@ var Sword_3 = function (_InventoryObject) {
 exports.default = Sword_3;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3507,7 +3737,7 @@ var Shield_1 = function (_InventoryObject) {
 exports.default = Shield_1;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3548,7 +3778,7 @@ var Shield_2 = function (_InventoryObject) {
 exports.default = Shield_2;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3589,7 +3819,7 @@ var Shield_3 = function (_InventoryObject) {
 exports.default = Shield_3;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3630,7 +3860,7 @@ var Shield_4 = function (_InventoryObject) {
 exports.default = Shield_4;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3670,7 +3900,7 @@ var Axe_1 = function (_InventoryObject) {
 exports.default = Axe_1;
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3710,7 +3940,7 @@ var Axe_2 = function (_InventoryObject) {
 exports.default = Axe_2;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3750,7 +3980,7 @@ var Axe_3 = function (_InventoryObject) {
 exports.default = Axe_3;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3781,6 +4011,7 @@ var Bow_1 = function (_InventoryObject) {
         var _this = _possibleConstructorReturn(this, (Bow_1.__proto__ || Object.getPrototypeOf(Bow_1)).call(this, "bow_1", 10, stackCount));
 
         _this.setImage(Loader.getImage('bow_1'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 10, "Arrow_1");
         return _this;
     }
 
@@ -3790,7 +4021,7 @@ var Bow_1 = function (_InventoryObject) {
 exports.default = Bow_1;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3821,6 +4052,7 @@ var Bow_2 = function (_InventoryObject) {
         var _this = _possibleConstructorReturn(this, (Bow_2.__proto__ || Object.getPrototypeOf(Bow_2)).call(this, "bow_2", 10, stackCount));
 
         _this.setImage(Loader.getImage('bow_2'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 20, "Arrow_1");
         return _this;
     }
 
@@ -3830,7 +4062,7 @@ var Bow_2 = function (_InventoryObject) {
 exports.default = Bow_2;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3861,6 +4093,7 @@ var Bow_3 = function (_InventoryObject) {
         var _this = _possibleConstructorReturn(this, (Bow_3.__proto__ || Object.getPrototypeOf(Bow_3)).call(this, "bow_3", 10, stackCount));
 
         _this.setImage(Loader.getImage('bow_3'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 40, "Arrow_1");
         return _this;
     }
 
@@ -3870,7 +4103,7 @@ var Bow_3 = function (_InventoryObject) {
 exports.default = Bow_3;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3910,7 +4143,7 @@ var Mace = function (_InventoryObject) {
 exports.default = Mace;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3950,7 +4183,7 @@ var Spear = function (_InventoryObject) {
 exports.default = Spear;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3991,7 +4224,7 @@ var Armor_1 = function (_InventoryObject) {
 exports.default = Armor_1;
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4032,7 +4265,7 @@ var Armor_2 = function (_InventoryObject) {
 exports.default = Armor_2;
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4073,7 +4306,7 @@ var Boots_2 = function (_InventoryObject) {
 exports.default = Boots_2;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4114,7 +4347,7 @@ var Boots_3 = function (_InventoryObject) {
 exports.default = Boots_3;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4155,7 +4388,7 @@ var Helmet_1 = function (_InventoryObject) {
 exports.default = Helmet_1;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4196,7 +4429,7 @@ var Helmet_2 = function (_InventoryObject) {
 exports.default = Helmet_2;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4210,7 +4443,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(6);
+var _Empty_bottle_ = __webpack_require__(7);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4241,7 +4474,7 @@ var Health_bottle_1 = function (_InventoryObject) {
 exports.default = Health_bottle_1;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4255,7 +4488,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(7);
+var _Empty_bottle_ = __webpack_require__(8);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4286,7 +4519,7 @@ var Health_bottle_2 = function (_InventoryObject) {
 exports.default = Health_bottle_2;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4300,7 +4533,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(8);
+var _Empty_bottle_ = __webpack_require__(9);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4331,7 +4564,7 @@ var Health_bottle_3 = function (_InventoryObject) {
 exports.default = Health_bottle_3;
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4345,7 +4578,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(9);
+var _Empty_bottle_ = __webpack_require__(10);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4376,7 +4609,7 @@ var Health_bottle_4 = function (_InventoryObject) {
 exports.default = Health_bottle_4;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4486,6 +4719,9 @@ var Map = function () {
                 solidLayers = [3, 4, 5, 6, 8, 13];
             } else if (level === 2) {
                 solidLayers = [5, 6, 8, 13, 14];
+            } else if (level === 99) {
+                // Flying objects
+                solidLayers = [5, 6, 8, 13];
             } else {
                 console.log('Unknown level');
                 return false;
@@ -4567,15 +4803,55 @@ var Map = function () {
 exports.default = Map;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 51 */,
 /* 52 */,
-/* 53 */
+/* 53 */,
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _ProjectileBase = __webpack_require__(55);
+
+var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Arrow_1 = function (_Projectile) {
+    _inherits(Arrow_1, _Projectile);
+
+    function Arrow_1(Loader, x, y, angleInRadians, map, drawSize) {
+        _classCallCheck(this, Arrow_1);
+
+        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, x, y, angleInRadians, 10, drawSize, drawSize, map));
+
+        _this.setImage(Loader.getImage('arrow_1'));
+        return _this;
+    }
+
+    return Arrow_1;
+}(_ProjectileBase2.default);
+
+exports.default = Arrow_1;
+
+/***/ }),
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4587,86 +4863,107 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Goblin = __webpack_require__(17);
-
-var _Goblin2 = _interopRequireDefault(_Goblin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Spawner = function () {
-    function Spawner(bounds, type, Loader, count, map) {
-        _classCallCheck(this, Spawner);
+var Projectile = function () {
+    function Projectile(x, y, angleInRadians, strength, width, height, map) {
+        _classCallCheck(this, Projectile);
 
-        this.tileLevel = 0;
-        this.bounds = bounds;
-        this.type = type;
-        this.Loader = Loader;
-        this.count = count;
+        this.x = x;
+        this.y = y;
+        this.strength = strength;
+        this.angleInRadians = angleInRadians;
+        this.width = width;
+        this.height = height;
         this.map = map;
-        this.units = [];
-        for (var i = 0; i < count; i++) {
-            this.units.push(this.createOfType(type));
-        }
+
+        this.image = null;
+        this.rows = 1;
+        this.cols = 1;
+        this.tileWidth = 1;
+        this.tileHeight = 1;
+        this.imageIndex = 0;
+        this.increaseRatio = 1;
+        this.speed = 512;
+        this.destroyed = false;
     }
 
-    _createClass(Spawner, [{
+    _createClass(Projectile, [{
+        key: "setImage",
+        value: function setImage(image) {
+            this.image = image; // image
+            this.rows = 1;
+            this.cols = 1;
+            this.tileWidth = image.width;
+            this.tileHeight = image.height;
+            this.imageIndex = 0;
+        }
+    }, {
+        key: "setTilesImage",
+        value: function setTilesImage(image, rows, cols, increaseRatio) {
+            this.setImage(image);
+            this.rows = rows;
+            this.cols = cols;
+            this.tileWidth = image.width / cols;
+            this.tileHeight = image.height / rows;
+            this.imageIndex = 0;
+            this.increaseRatio = increaseRatio;
+        }
+    }, {
+        key: "increaseImageIndex",
+        value: function increaseImageIndex(increase) {
+            this.imageIndex += increase * this.increaseRatio;
+            if (this.imageIndex >= this.rows * this.cols) {
+                this.imageIndex -= this.rows * this.cols;
+            }
+        }
+    }, {
+        key: "getImageIndex",
+        value: function getImageIndex() {
+            return Math.floor(this.imageIndex);
+        }
+    }, {
         key: "update",
         value: function update(delta) {
-            var _this = this;
-
-            this.units.forEach(function (unit) {
-                unit.update(delta, _this.units);
-                if (unit.health <= 0) {
-                    _this.units.splice(_this.units.indexOf(unit), 1);
-                }
-            });
-            if (this.units.length < this.count) {
-                this.units.push(this.createOfType(type));
+            if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
+                this.increaseImageIndex(delta);
+            }
+            this.x += Math.cos(this.angleInRadians) * this.speed * delta;
+            this.y += Math.sin(this.angleInRadians) * this.speed * delta;
+            if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
+                this.destroyed = true;
             }
         }
     }, {
         key: "draw",
-        value: function draw(ctx, camera) {
-            this.units.forEach(function (unit) {
-                unit.draw(ctx, camera.getScreenX(unit.x), camera.getScreenY(unit.y));
-            });
+        value: function draw(ctx, screenX, screenY) {
+            if (this.image === null) {
+                ctx.fillText("Object", screenX, screenY);
+                ctx.fillStyle = "purple";
+                ctx.fillRect(screenX, screenY, this.width, this.height);
+            } else {
+                this.drawRotatedImage(ctx, this.image, screenX, screenY, this.width, this.height, this.getImageIndex() % this.cols * this.tileWidth, // Src x
+                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                this.angleInRadians + Math.PI / 4 * 5);
+            }
         }
     }, {
-        key: "createOfType",
-        value: function createOfType(type) {
-            var x = void 0,
-                y = void 0,
-                collision = void 0,
-                unit = void 0;
-            do {
-                x = Math.random() * this.bounds.width + this.bounds.x;
-                y = Math.random() * this.bounds.height + this.bounds.y;
-                switch (type) {
-                    case "Goblins":
-                        unit = new _Goblin2.default(this.Loader, x, y, this.map, this.bounds);
-                        break;
-
-                    default:
-                        console.log('Cannot create unit of type ' + type);
-                        return null;
-                }
-
-                var left = x;
-                var right = x + this.map.drawSize - 1;
-                var top = y;
-                var bottom = y + this.map.drawSize - 1;
-                collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel) || unit.unitsOverlap(this.units);
-            } while (collision);
-            return unit;
+        key: "drawRotatedImage",
+        value: function drawRotatedImage(ctx, image, x, y, width, height, sourceX, sourceY, sourceWidth, sourceHeight, angleInRadians) {
+            ctx.translate(x, y);
+            ctx.rotate(angleInRadians);
+            ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, -width / 2, -height / 2, width, height);
+            ctx.rotate(-angleInRadians);
+            ctx.translate(-x, -y);
         }
     }]);
 
-    return Spawner;
+    return Projectile;
 }();
 
-exports.default = Spawner;
+exports.default = Projectile;
 
 /***/ })
 /******/ ]);

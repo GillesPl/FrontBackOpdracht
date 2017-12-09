@@ -1,7 +1,8 @@
 import InventoryIcon from "./InventoryIcon.class";
+import Arrow_1 from "../Projectiles/Arrow_1.class";
 
 export default class InventoryManager {
-    constructor(inventoryObjects, Loader, hero) {
+    constructor(inventoryObjects, Loader, hero, projectiles, map) {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
@@ -19,16 +20,19 @@ export default class InventoryManager {
         this.iterations = 8;
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
+        this.projectiles = projectiles;
+        this.map = map;
         this.backCols = 4;
         this.backRows = 4;
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.imageIconBar = Loader.getImage("iconbar");
+        this.Loader = Loader;
         this.iconBarCols = 3;
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
-        this.selectedAction = 0;
+        this.selectedAction = 1;
         this.mousePosition = {
             x: 0,
             y: 0
@@ -46,7 +50,7 @@ export default class InventoryManager {
 
         this.actionBarIcons = [];
         for (let i = 1; i <= 10; i++) {
-            this.actionBarIcons.push(new InventoryIcon(i === 10 ? 0 : i, this.imageIconBar, 0, this.tileIconBarHeight));
+            this.actionBarIcons[i === 10 ? 0 : i] = new InventoryIcon(i === 10 ? 0 : i, this.imageIconBar, 0, this.tileIconBarHeight);
             if (this.selectedAction === (i === 10 ? 0 : i))
                 this.actionBarIcons[i === 10 ? 0 : i].isSelected = true;
         }
@@ -59,6 +63,7 @@ export default class InventoryManager {
             this.actionBarIcons.forEach(actionIcon => {
                 if (actionIcon.state === num) {
                     actionIcon.isSelected = true;
+                    this.selectedAction = actionIcon.state;
                 } else {
                     actionIcon.isSelected = false;
                 }
@@ -228,6 +233,34 @@ export default class InventoryManager {
                 this.actionBarIcons.forEach(icon => {
                     if (this.selectedAction !== icon.state) {
                         icon.isSelected = false;
+                    }
+                });
+            }
+            if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) &&
+                !this.isInActionBar(mousePosition.x, mousePosition.y)) {
+                this.inventory.forEach(inventoryObject => {
+                    let location = this.selectedAction - 1;
+                    if (location < 0) location = 9;
+                    if (inventoryObject.actionLocation === location) {
+                        if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.RANGED) {
+                            console.log('bow used, creating ' + inventoryObject.createObjectName);
+                            switch (inventoryObject.createObjectName) {
+                                case 'Arrow_1':
+                                    let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
+                                    this.projectiles.push(new Arrow_1(this.Loader, this.hero.x, this.hero.y, angleInRadians, this.map, this.map.drawSize * 0.5));
+                                    console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                                    if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
+                                        this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
+                                    } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
+                                        this.hero.setDirection(this.hero.STATE.RUNNINGNORTH);
+                                    } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
+                                        this.hero.setDirection(this.hero.STATE.RUNNINGSOUTH);
+                                    } else {
+                                        this.hero.setDirection(this.hero.STATE.RUNNINGWEST);
+                                    }
+                                    break;
+                            }
+                        }
                     }
                 });
             }
@@ -552,8 +585,9 @@ export default class InventoryManager {
         ctx.font = "14px Arial";
         ctx.fillStyle = "white";
         for (let i = 0; i < 10; i++) {
-            this.actionBarIcons[i].draw(ctx, drawX + i * dx, y, dx, drawHeight);
-            ctx.fillText(this.actionBarIcons[i].state, drawX + dx / 2 + i * dx, y + drawHeight / 2);
+            let xPos = (i === 0 ? 9 : i - 1) * dx;
+            this.actionBarIcons[i].draw(ctx, drawX + xPos, y, dx, drawHeight);
+            ctx.fillText(this.actionBarIcons[i].state, drawX + dx / 2 + xPos, y + drawHeight / 2);
         }
     }
 }

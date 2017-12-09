@@ -86,6 +86,8 @@ export default class Map {
             solidLayers = [3, 4, 5, 6, 8, 13];
         } else if (level === 2) {
             solidLayers = [5, 6, 8, 13, 14];
+        } else if (level === 99) { // Flying objects
+            solidLayers = [5, 6, 8, 13];
         } else {
             console.log('Unknown level');
             return false;
