@@ -248,7 +248,7 @@ export default class InventoryManager {
                                 case 'Arrow_1':
                                     let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
                                     this.projectiles.push(new Arrow_1(this.Loader, this.hero.x, this.hero.y, angleInRadians, this.map, this.map.drawSize * 0.5));
-                                    console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                                    //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                     if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                         this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
                                     } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {

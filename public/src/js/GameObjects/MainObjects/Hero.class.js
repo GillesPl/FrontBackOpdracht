@@ -36,6 +36,7 @@ export default class Hero {
         this.deathAnimationCols = 5;
         this.deathAnimationRows = 3;
         this.deadTime = 0;
+        this.totalDeadTime = 1;
         this.dead = false;
 
         this.speed = 256;
@@ -109,7 +110,7 @@ export default class Hero {
     }
 
     getImageIndex() {
-        if (this.dead) return (Math.floor(this.deadTime / 2 * (this.deathAnimationCols * this.deathAnimationRows)));
+        if (this.dead) return (Math.floor(this.deadTime / this.totalDeadTime * (this.deathAnimationCols * this.deathAnimationRows)));
         return this.imageState + 4 * Math.floor(this.imageIndex);
     }
 
@@ -174,7 +175,7 @@ export default class Hero {
 
     update(delta) {
         if (this.dead) {
-            if (this.deadTime >= 2) {
+            if (this.deadTime >= this.totalDeadTime) {
                 this.dead = false;
                 this.x = this.startX;
                 this.y = this.startY;

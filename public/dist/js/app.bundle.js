@@ -2329,6 +2329,7 @@ var Hero = function () {
         this.deathAnimationCols = 5;
         this.deathAnimationRows = 3;
         this.deadTime = 0;
+        this.totalDeadTime = 1;
         this.dead = false;
 
         this.speed = 256;
@@ -2402,7 +2403,7 @@ var Hero = function () {
     }, {
         key: 'getImageIndex',
         value: function getImageIndex() {
-            if (this.dead) return Math.floor(this.deadTime / 2 * (this.deathAnimationCols * this.deathAnimationRows));
+            if (this.dead) return Math.floor(this.deadTime / this.totalDeadTime * (this.deathAnimationCols * this.deathAnimationRows));
             return this.imageState + 4 * Math.floor(this.imageIndex);
         }
     }, {
@@ -2475,7 +2476,7 @@ var Hero = function () {
             var _this = this;
 
             if (this.dead) {
-                if (this.deadTime >= 2) {
+                if (this.deadTime >= this.totalDeadTime) {
                     this.dead = false;
                     this.x = this.startX;
                     this.y = this.startY;
@@ -2905,7 +2906,7 @@ var InventoryManager = function () {
                                     case 'Arrow_1':
                                         var angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166
                                         _this6.projectiles.push(new _Arrow_2.default(_this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, _this6.map, _this6.map.drawSize * 0.5));
-                                        console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                                        //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                         if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                             _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
                                         } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
