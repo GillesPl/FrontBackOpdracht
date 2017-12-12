@@ -325,7 +325,7 @@ export default class InventoryManager {
 
         if (position !== originalPosition) {
             if (originalPosition === -1) {
-                for (let i = position; i < this.inventory.length; i++) {
+                for (let i = position; i < this.iterations * this.iterations; i++) {
                     positionsBetween.push(i);
                 }
             } else if (position < originalPosition) {

@@ -3103,7 +3103,7 @@ var InventoryManager = function () {
 
             if (position !== originalPosition) {
                 if (originalPosition === -1) {
-                    for (var i = position; i < this.inventory.length; i++) {
+                    for (var i = position; i < this.iterations * this.iterations; i++) {
                         positionsBetween.push(i);
                     }
                 } else if (position < originalPosition) {
