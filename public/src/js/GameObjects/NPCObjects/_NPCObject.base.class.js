@@ -91,7 +91,6 @@ export default class NPCObject {
     }
 
     isHit(projectiles) {
-
         for (let i = 0; i < projectiles.length; i++) {
             const projectile = projectiles[i];
             if (this.isInObject(projectile.x, projectile.y)) {

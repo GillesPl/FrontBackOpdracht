@@ -249,7 +249,7 @@ export default class InventoryManager {
                                 switch (inventoryObject.createObjectName) {
                                     case 'Arrow_1':
                                         let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                        this.projectiles.push(new Arrow_1(this.Loader, this.hero.x, this.hero.y, angleInRadians, this.map, this.map.drawSize * 0.5));
+                                        this.projectiles.push(new Arrow_1(this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map, this.map.drawSize * 0.5));
                                         //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                         if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                             this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
@@ -288,6 +288,7 @@ export default class InventoryManager {
                     this.movingObject = true;
                 }
             }
+            inventoryObject.onMouseMove(mousePosition);
         });
         this.mousePosition = mousePosition;
         if (isHolding) {
@@ -312,6 +313,8 @@ export default class InventoryManager {
 
         let originalPosition;
         let untilPosition;
+        let position = tempX + tempY * this.iterations;
+        let positionsBetween = [];
 
         this.inventory.forEach(inventoryObject => { // Get original position
             if (inventoryObject.isHolding) {
@@ -320,12 +323,12 @@ export default class InventoryManager {
             }
         });
 
-        let position = tempX + tempY * this.iterations;
-
-        let positionsBetween = [];
-
         if (position !== originalPosition) {
-            if (position < originalPosition) {
+            if (originalPosition === -1) {
+                for (let i = position; i < this.inventory.length; i++) {
+                    positionsBetween.push(i);
+                }
+            } else if (position < originalPosition) {
                 for (let i = position; i < originalPosition; i++) {
                     positionsBetween.push(i);
                 }
@@ -378,13 +381,10 @@ export default class InventoryManager {
         let drawWidth = this.widthAction / 10;
         let drawHeight = this.heightAction;
         let position = Math.floor((mousePosition.x - this.xAction) / drawWidth);
-        let originalPosition = 0;
         let objectAtPosition = null;
 
         this.inventory.forEach(inventoryObject => { // Get original position
-            if (inventoryObject.isHolding) {
-                originalPosition = inventoryObject.actionLocation;
-            } else if (inventoryObject.actionLocation === position) {
+            if (inventoryObject.actionLocation === position) {
                 objectAtPosition = inventoryObject;
             }
         });
@@ -392,8 +392,8 @@ export default class InventoryManager {
         if (position < 0) position = 0;
         if (position > 9) position = 9;
 
-        if (binding) {
-            this.inventory.forEach(inventoryObject => { // Get original position
+        this.inventory.forEach(inventoryObject => {
+            if (binding) {
                 if (inventoryObject.isHolding) {
                     if (objectAtPosition !== null) {
                         let t = inventoryObject.actionLocation;
@@ -408,10 +408,12 @@ export default class InventoryManager {
                         inventoryObject.actionLocation = position;
                         inventoryObject.inventoryLocation = -1;
                         inventoryObject.shownLocation = -1;
+                        console.log(inventoryObject);
                     }
                 }
-            });
-        }
+            }
+            inventoryObject.shownLocation = inventoryObject.inventoryLocation;
+        });
     }
 
     equipObject() {
@@ -535,29 +537,35 @@ export default class InventoryManager {
 
     drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
         this.inventory.forEach(inventoryObject => {
-            if (!(inventoryObject.isHolding && this.movingObject) && inventoryObject.shownLocation >= 0) {
+            if (!(inventoryObject.isHolding && this.movingObject) && inventoryObject.shownLocation >= 0 && !inventoryObject.isMouseInObject) {
                 let drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                 let drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
-                inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
-                if (inventoryObject.stackCount != 1) {
-                    ctx.font = "22px Arial";
-                    ctx.fillStyle = "white";
-                    ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
-                }
+                this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+            }
+        });
+        this.inventory.forEach(inventoryObject => {
+            if (!(inventoryObject.isHolding && this.movingObject) && inventoryObject.shownLocation >= 0 && inventoryObject.isMouseInObject) {
+                let drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
+                let drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
+                this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
             }
         });
         this.inventory.forEach(inventoryObject => { // Draw the held object on top of the others
             if (inventoryObject.isHolding && this.movingObject) {
                 let drawX = this.mousePosition.x;
                 let drawY = this.mousePosition.y;
-                inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
-                if (inventoryObject.stackCount != 1) {
-                    ctx.font = "22px Arial";
-                    ctx.fillStyle = "white";
-                    ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
-                }
+                this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
             }
         });
+    }
+
+    drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight) {
+        inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
+        if (inventoryObject.stackCount != 1) {
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
+        }
     }
 
     drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
@@ -565,12 +573,7 @@ export default class InventoryManager {
             if (!(inventoryObject.isHolding && this.movingObject) && inventoryObject.actionLocation >= 0) {
                 let drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                 let drawY = y;
-                inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
-                if (inventoryObject.stackCount != 1) {
-                    ctx.font = "22px Arial";
-                    ctx.fillStyle = "white";
-                    ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
-                }
+                this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
             }
         });
     }

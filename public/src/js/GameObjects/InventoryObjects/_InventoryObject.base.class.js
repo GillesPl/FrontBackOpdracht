@@ -41,6 +41,8 @@ export default class InventoryObject {
         this.inventoryLocation = 0;
         this.shownLocation = 0;
         this.isHolding = false;
+        this.isMouseInObject = false;
+        this.mouseInObjectTime = 0;
         this.actionLocation = -1;
     }
 
@@ -120,6 +122,11 @@ export default class InventoryObject {
 
     onMouseUp(mousePosition) {
         this.isHolding = false;
+        //this.shownLocation = this.inventoryLocation;
+    }
+
+    onMouseMove(mousePosition) {
+        this.isMouseInObject = this.isInObject(mousePosition.x, mousePosition.y);
     }
 
     getImageIndex() {
@@ -144,6 +151,11 @@ export default class InventoryObject {
             if (this.interval < 0) {
                 this.interval = 0;
             }
+        }
+        if (this.isMouseInObject) {
+            this.mouseInObjectTime += delta;
+        } else {
+            this.mouseInObjectTime = 0;
         }
     }
 
@@ -170,7 +182,8 @@ export default class InventoryObject {
         }
 
         if (this.interval !== 0) {
-            let angle = (this.interval / this.intervalTime) * 2 * Math.PI;
+            let percentage = (this.interval / this.intervalTime);
+            let angle = percentage * 2 * Math.PI;
 
             ctx.beginPath();
             ctx.moveTo(screenX + width, screenY + width / 2);
@@ -179,10 +192,41 @@ export default class InventoryObject {
             ctx.lineTo(screenX + width / 2 + width / 2 * Math.cos(angle), screenY + width / 2 + width / 2 * Math.sin(angle));
             ctx.moveTo(screenX + width / 2, screenY + width / 2);
             ctx.arc(screenX + width / 2, screenY + width / 2, width / 2, 0, angle);
-            ctx.fillStyle = "black";
-            ctx.globalAlpha = 0.4;
+            ctx.fillStyle = 'rgb(' + percentage * 200 + 55 + ', ' + (1 - percentage) * 200 + 55 + ', 60, 0.8)';
             ctx.fill();
             ctx.closePath();
+        }
+
+        if (this.mouseInObjectTime > 0.5 && !this.isHolding) {
+            ctx.globalAlpha = (this.mouseInObjectTime > 1.5) ? 0.8 : (this.mouseInObjectTime - 0.5) * 0.8;
+            let borderWidth = 3;
+            ctx.fillStyle = "#a7815a";
+            ctx.fillRect(screenX - width * 2.5 - borderWidth, screenY - borderWidth, width * 2.5 + 2 * borderWidth, height * 2 + 2 * borderWidth);
+            ctx.fillStyle = "#97714a";
+            ctx.fillRect(screenX - width * 2.5, screenY, width * 2.5, height * 2);
+
+            let drawX = screenX - width * 2.5 + 8;
+            let drawY = screenY;
+            let dy = 24;
+            ctx.font = "18px Arial";
+            if (this.isEquipable) {
+                ctx.fillStyle = "#106010";
+                ctx.fillText("Equipable", drawX, drawY += dy);
+                ctx.fillStyle = "white";
+                ctx.fillText("Armor: " + this.strength, drawX, drawY += dy);
+            } else if (this.isUsable) {
+                ctx.fillStyle = "#601010";
+                ctx.fillText("Usable", drawX, drawY += dy);
+                ctx.fillStyle = "white";
+                ctx.fillText("Effect: " + this.strength, drawX, drawY += dy);
+            } else if (this.weapontype !== this.WEAPONTYPES.NONE) {
+                ctx.fillStyle = "#101060";
+                ctx.fillText("Weapon", drawX, drawY += dy);
+                ctx.fillStyle = "white";
+                ctx.fillText("Damage: " + this.strength, drawX, drawY += dy);
+                ctx.fillText("Reload time: " + this.intervalTime + "s", drawX, drawY += dy);
+                ctx.fillText("Dps: " + Math.round(this.strength / this.intervalTime * 100) / 100 + "/s", drawX, drawY += dy);
+            }
             ctx.globalAlpha = 1;
         }
     }

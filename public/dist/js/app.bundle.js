@@ -123,6 +123,8 @@ var InventoryObject = function () {
         this.inventoryLocation = 0;
         this.shownLocation = 0;
         this.isHolding = false;
+        this.isMouseInObject = false;
+        this.mouseInObjectTime = 0;
         this.actionLocation = -1;
     }
 
@@ -212,6 +214,12 @@ var InventoryObject = function () {
         key: "onMouseUp",
         value: function onMouseUp(mousePosition) {
             this.isHolding = false;
+            //this.shownLocation = this.inventoryLocation;
+        }
+    }, {
+        key: "onMouseMove",
+        value: function onMouseMove(mousePosition) {
+            this.isMouseInObject = this.isInObject(mousePosition.x, mousePosition.y);
         }
     }, {
         key: "getImageIndex",
@@ -239,6 +247,11 @@ var InventoryObject = function () {
                     this.interval = 0;
                 }
             }
+            if (this.isMouseInObject) {
+                this.mouseInObjectTime += delta;
+            } else {
+                this.mouseInObjectTime = 0;
+            }
         }
     }, {
         key: "draw",
@@ -264,7 +277,8 @@ var InventoryObject = function () {
             }
 
             if (this.interval !== 0) {
-                var angle = this.interval / this.intervalTime * 2 * Math.PI;
+                var percentage = this.interval / this.intervalTime;
+                var angle = percentage * 2 * Math.PI;
 
                 ctx.beginPath();
                 ctx.moveTo(screenX + width, screenY + width / 2);
@@ -273,10 +287,41 @@ var InventoryObject = function () {
                 ctx.lineTo(screenX + width / 2 + width / 2 * Math.cos(angle), screenY + width / 2 + width / 2 * Math.sin(angle));
                 ctx.moveTo(screenX + width / 2, screenY + width / 2);
                 ctx.arc(screenX + width / 2, screenY + width / 2, width / 2, 0, angle);
-                ctx.fillStyle = "black";
-                ctx.globalAlpha = 0.4;
+                ctx.fillStyle = 'rgb(' + percentage * 200 + 55 + ', ' + (1 - percentage) * 200 + 55 + ', 60, 0.8)';
                 ctx.fill();
                 ctx.closePath();
+            }
+
+            if (this.mouseInObjectTime > 0.5 && !this.isHolding) {
+                ctx.globalAlpha = this.mouseInObjectTime > 1.5 ? 0.8 : (this.mouseInObjectTime - 0.5) * 0.8;
+                var borderWidth = 3;
+                ctx.fillStyle = "#a7815a";
+                ctx.fillRect(screenX - width * 2.5 - borderWidth, screenY - borderWidth, width * 2.5 + 2 * borderWidth, height * 2 + 2 * borderWidth);
+                ctx.fillStyle = "#97714a";
+                ctx.fillRect(screenX - width * 2.5, screenY, width * 2.5, height * 2);
+
+                var drawX = screenX - width * 2.5 + 8;
+                var drawY = screenY;
+                var dy = 24;
+                ctx.font = "18px Arial";
+                if (this.isEquipable) {
+                    ctx.fillStyle = "#106010";
+                    ctx.fillText("Equipable", drawX, drawY += dy);
+                    ctx.fillStyle = "white";
+                    ctx.fillText("Armor: " + this.strength, drawX, drawY += dy);
+                } else if (this.isUsable) {
+                    ctx.fillStyle = "#601010";
+                    ctx.fillText("Usable", drawX, drawY += dy);
+                    ctx.fillStyle = "white";
+                    ctx.fillText("Effect: " + this.strength, drawX, drawY += dy);
+                } else if (this.weapontype !== this.WEAPONTYPES.NONE) {
+                    ctx.fillStyle = "#101060";
+                    ctx.fillText("Weapon", drawX, drawY += dy);
+                    ctx.fillStyle = "white";
+                    ctx.fillText("Damage: " + this.strength, drawX, drawY += dy);
+                    ctx.fillText("Reload time: " + this.intervalTime + "s", drawX, drawY += dy);
+                    ctx.fillText("Dps: " + Math.round(this.strength / this.intervalTime * 100) / 100 + "/s", drawX, drawY += dy);
+                }
                 ctx.globalAlpha = 1;
             }
         }
@@ -2040,7 +2085,6 @@ var NPCObject = function () {
     }, {
         key: "isHit",
         value: function isHit(projectiles) {
-
             for (var i = 0; i < projectiles.length; i++) {
                 var projectile = projectiles[i];
                 if (this.isInObject(projectile.x, projectile.y)) {
@@ -2980,7 +3024,7 @@ var InventoryManager = function () {
                                     switch (inventoryObject.createObjectName) {
                                         case 'Arrow_1':
                                             var angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                            _this6.projectiles.push(new _Arrow_2.default(_this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, _this6.map, _this6.map.drawSize * 0.5));
+                                            _this6.projectiles.push(new _Arrow_2.default(_this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, inventoryObject.strength, _this6.map, _this6.map.drawSize * 0.5));
                                             //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                             if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                                 _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
@@ -3022,6 +3066,7 @@ var InventoryManager = function () {
                         _this7.movingObject = true;
                     }
                 }
+                inventoryObject.onMouseMove(mousePosition);
             });
             this.mousePosition = mousePosition;
             if (isHolding) {
@@ -3045,6 +3090,8 @@ var InventoryManager = function () {
 
             var originalPosition = void 0;
             var untilPosition = void 0;
+            var position = tempX + tempY * this.iterations;
+            var positionsBetween = [];
 
             this.inventory.forEach(function (inventoryObject) {
                 // Get original position
@@ -3054,18 +3101,18 @@ var InventoryManager = function () {
                 }
             });
 
-            var position = tempX + tempY * this.iterations;
-
-            var positionsBetween = [];
-
             if (position !== originalPosition) {
-                if (position < originalPosition) {
-                    for (var i = position; i < originalPosition; i++) {
+                if (originalPosition === -1) {
+                    for (var i = position; i < this.inventory.length; i++) {
                         positionsBetween.push(i);
                     }
-                } else if (position > originalPosition) {
-                    for (var _i2 = position; _i2 > originalPosition; _i2--) {
+                } else if (position < originalPosition) {
+                    for (var _i2 = position; _i2 < originalPosition; _i2++) {
                         positionsBetween.push(_i2);
+                    }
+                } else if (position > originalPosition) {
+                    for (var _i3 = position; _i3 > originalPosition; _i3--) {
+                        positionsBetween.push(_i3);
                     }
                 }
                 this.inventory.forEach(function (inventoryObject) {
@@ -3114,14 +3161,11 @@ var InventoryManager = function () {
             var drawWidth = this.widthAction / 10;
             var drawHeight = this.heightAction;
             var position = Math.floor((mousePosition.x - this.xAction) / drawWidth);
-            var originalPosition = 0;
             var objectAtPosition = null;
 
             this.inventory.forEach(function (inventoryObject) {
                 // Get original position
-                if (inventoryObject.isHolding) {
-                    originalPosition = inventoryObject.actionLocation;
-                } else if (inventoryObject.actionLocation === position) {
+                if (inventoryObject.actionLocation === position) {
                     objectAtPosition = inventoryObject;
                 }
             });
@@ -3129,9 +3173,8 @@ var InventoryManager = function () {
             if (position < 0) position = 0;
             if (position > 9) position = 9;
 
-            if (binding) {
-                this.inventory.forEach(function (inventoryObject) {
-                    // Get original position
+            this.inventory.forEach(function (inventoryObject) {
+                if (binding) {
                     if (inventoryObject.isHolding) {
                         if (objectAtPosition !== null) {
                             var t = inventoryObject.actionLocation;
@@ -3146,10 +3189,12 @@ var InventoryManager = function () {
                             inventoryObject.actionLocation = position;
                             inventoryObject.inventoryLocation = -1;
                             inventoryObject.shownLocation = -1;
+                            console.log(inventoryObject);
                         }
                     }
-                });
-            }
+                }
+                inventoryObject.shownLocation = inventoryObject.inventoryLocation;
+            });
         }
     }, {
         key: "equipObject",
@@ -3274,15 +3319,17 @@ var InventoryManager = function () {
             var _this9 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.shownLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.shownLocation >= 0 && !inventoryObject.isMouseInObject) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
-                    inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
-                    if (inventoryObject.stackCount != 1) {
-                        ctx.font = "22px Arial";
-                        ctx.fillStyle = "white";
-                        ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
-                    }
+                    _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+                }
+            });
+            this.inventory.forEach(function (inventoryObject) {
+                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.shownLocation >= 0 && inventoryObject.isMouseInObject) {
+                    var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
+                    var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
+                    _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
             this.inventory.forEach(function (inventoryObject) {
@@ -3290,14 +3337,19 @@ var InventoryManager = function () {
                 if (inventoryObject.isHolding && _this9.movingObject) {
                     var drawX = _this9.mousePosition.x;
                     var drawY = _this9.mousePosition.y;
-                    inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
-                    if (inventoryObject.stackCount != 1) {
-                        ctx.font = "22px Arial";
-                        ctx.fillStyle = "white";
-                        ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
-                    }
+                    _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
+        }
+    }, {
+        key: "drawItem",
+        value: function drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight) {
+            inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
+            if (inventoryObject.stackCount != 1) {
+                ctx.font = "22px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
+            }
         }
     }, {
         key: "drawActionBarItems",
@@ -3308,12 +3360,7 @@ var InventoryManager = function () {
                 if (!(inventoryObject.isHolding && _this10.movingObject) && inventoryObject.actionLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                     var drawY = y;
-                    inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
-                    if (inventoryObject.stackCount != 1) {
-                        ctx.font = "22px Arial";
-                        ctx.fillStyle = "white";
-                        ctx.fillText(inventoryObject.stackCount, drawX, drawY + drawHeight);
-                    }
+                    _this10.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
         }
@@ -3437,10 +3484,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Arrow_1 = function (_Projectile) {
     _inherits(Arrow_1, _Projectile);
 
-    function Arrow_1(Loader, x, y, angleInRadians, map, drawSize) {
+    function Arrow_1(Loader, x, y, angleInRadians, strength, map, drawSize) {
         _classCallCheck(this, Arrow_1);
 
-        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, x, y, angleInRadians, 10, drawSize, drawSize, map));
+        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, x, y, angleInRadians, strength, drawSize, drawSize, map));
 
         _this.setImage(Loader.getImage('arrow_1'));
         return _this;
