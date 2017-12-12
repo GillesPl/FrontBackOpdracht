@@ -28,6 +28,7 @@ export default class InventoryObject {
         this.isEquipable = false;
         this.isUsable = false;
         this.strength = 0;
+        this.interval = 0;
         this.image = null;
         this.rows = 1;
         this.cols = 1;
@@ -59,12 +60,14 @@ export default class InventoryObject {
         this.isEquipable = false;
     }
 
-    setWeapon(type, strength, createObjectName) {
+    setWeapon(type, strength, intervalTime, createObjectName) {
         this.weapontype = type;
         this.strength = strength;
         this.createObjectName = createObjectName;
         this.isUsable = false;
         this.isEquipable = false;
+        this.interval = 0;
+        this.intervalTime = intervalTime;
     }
 
     setEquiped(equiped, emptyPosition) {
@@ -136,6 +139,12 @@ export default class InventoryObject {
                 this.setEquiped(true, -1);
             }
         }
+        if (this.interval !== 0) {
+            this.interval -= delta;
+            if (this.interval < 0) {
+                this.interval = 0;
+            }
+        }
     }
 
     draw(ctx, screenX, screenY, width, height) {
@@ -158,6 +167,23 @@ export default class InventoryObject {
                 screenY, // Target y
                 width, // Target width
                 height); // Target height
+        }
+
+        if (this.interval !== 0) {
+            let angle = (this.interval / this.intervalTime) * 2 * Math.PI;
+
+            ctx.beginPath();
+            ctx.moveTo(screenX + width, screenY + width / 2);
+            ctx.lineTo(screenX + width / 2, screenY + width / 2);
+            ctx.moveTo(screenX + width / 2, screenY + width / 2);
+            ctx.lineTo(screenX + width / 2 + width / 2 * Math.cos(angle), screenY + width / 2 + width / 2 * Math.sin(angle));
+            ctx.moveTo(screenX + width / 2, screenY + width / 2);
+            ctx.arc(screenX + width / 2, screenY + width / 2, width / 2, 0, angle);
+            ctx.fillStyle = "black";
+            ctx.globalAlpha = 0.4;
+            ctx.fill();
+            ctx.closePath();
+            ctx.globalAlpha = 1;
         }
     }
 }

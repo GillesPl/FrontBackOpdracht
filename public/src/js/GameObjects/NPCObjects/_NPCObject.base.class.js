@@ -21,6 +21,7 @@ export default class NPCObject {
         this.imageIndex = 0;
         this.increaseRatio = 1;
         this.canBePickedUp = false;
+        this.topText = [];
         this.STATE = {
             STOP: 0,
             RUNNINGNORTH: 1,
@@ -89,6 +90,24 @@ export default class NPCObject {
         return this.imageState + this.cols * Math.floor(this.imageIndex);
     }
 
+    isHit(projectiles) {
+
+        for (let i = 0; i < projectiles.length; i++) {
+            const projectile = projectiles[i];
+            if (this.isInObject(projectile.x, projectile.y)) {
+                let damage = projectile.doDamage()
+                this.health -= damage;
+                this.topText.push({
+                    text: "-" + damage,
+                    fillStyle: "red",
+                    time: 0
+                });
+                return true;
+            }
+        }
+        return false;
+    }
+
     update(delta, otherNPCs) {
         if (this.image !== null && (this.rows > 1 || this.cols > 1) && this.action !== this.STATE.STOP) {
             this.increaseImageIndex(delta);
@@ -128,6 +147,14 @@ export default class NPCObject {
                 }
                 this.doingAction = Math.floor(Math.random() * 2) + 1;
             }
+        }
+        if (this.topText.length > 0) {
+            this.topText.forEach(text => {
+                text.time += delta;
+                if (text.time > 2) {
+                    this.topText.splice(this.topText.indexOf(text), 1);
+                }
+            });
         }
     }
 
@@ -174,6 +201,14 @@ export default class NPCObject {
                 screenY, // Target y
                 this.width, // Target width
                 this.height); // Target height
+        }
+
+        if (this.topText.length > 0) {
+            ctx.font = "20px Arial";
+            this.topText.forEach(text => {
+                ctx.fillStyle = text.fillStyle;
+                ctx.fillText(text.text, screenX + 15, screenY - this.height * (0.3 + text.time));
+            });
         }
     }
 

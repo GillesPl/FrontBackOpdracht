@@ -398,7 +398,7 @@ export default class MainGameState extends GameState {
         //    npc.update(delta);
         //});
         this.spawners.forEach(spawner => {
-            spawner.update(delta);
+            spawner.update(delta, this.projectiles);
         });
         this.InventoryManager.update(delta);
         this.hero.update(delta);

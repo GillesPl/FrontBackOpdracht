@@ -8,21 +8,29 @@ export default class Spawner {
         this.count = count;
         this.map = map;
         this.units = [];
+        this.timeToCreate = 0;
         for (let i = 0; i < count; i++) {
             this.units.push(this.createOfType(type));
         }
     }
 
-    update(delta) {
+    update(delta, projectiles) {
+        if (this.units.length < this.count) {
+            if (this.timeToCreate < 10) {
+                this.timeToCreate += delta;
+            } else {
+                this.timeToCreate = 0;
+                this.units.push(this.createOfType(this.type));
+            }
+        }
         this.units.forEach(unit => {
             unit.update(delta, this.units);
-            if (unit.health <= 0) {
-                this.units.splice(this.units.indexOf(unit), 1);
+            if (unit.isHit(projectiles)) {
+                if (unit.health <= 0) {
+                    this.units.splice(this.units.indexOf(unit), 1);
+                }
             }
         });
-        if (this.units.length < this.count) {
-            this.units.push(this.createOfType(type));
-        }
     }
 
     draw(ctx, camera) {

@@ -49,6 +49,11 @@ export default class Projectile {
         return Math.floor(this.imageIndex);
     }
 
+    doDamage() {
+        this.destroyed = true;
+        return this.strength;
+    }
+
     update(delta) {
         if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
             this.increaseImageIndex(delta);

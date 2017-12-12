@@ -228,8 +228,6 @@ export default class Hero {
                 this.width, // Target width
                 this.height); // Target height
 
-
-
             if (this.topText.length > 0) {
                 ctx.font = "20px Arial";
                 this.topText.forEach(text => {
