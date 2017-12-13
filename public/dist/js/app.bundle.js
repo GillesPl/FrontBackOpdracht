@@ -76,13 +76,29 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _GameObjectBase = __webpack_require__(56);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var InventoryObject = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var InventoryObject = function (_GameObject) {
+    _inherits(InventoryObject, _GameObject);
+
     function InventoryObject(typeId, stackLimit, stackCount) {
         _classCallCheck(this, InventoryObject);
 
-        this.AREAS = {
+        var _this = _possibleConstructorReturn(this, (InventoryObject.__proto__ || Object.getPrototypeOf(InventoryObject)).call(this));
+
+        _this.AREAS = {
             NONE: 0,
             HEAD: 1,
             BODY: 2,
@@ -91,41 +107,35 @@ var InventoryObject = function () {
             ONE_HANDED: 5,
             OFF_HAND: 6
         };
-        this.USES = {
+        _this.USES = {
             NONE: 0,
             HEALTH: 1
         };
-        this.WEAPONTYPES = {
+        _this.WEAPONTYPES = {
             NONE: 0,
             RANGED: 1,
             MELEE: 2
         };
 
-        this.typeId = typeId;
-        this.area = this.AREAS.NONE;
-        this.usage = this.USES.NONE;
-        this.weapontype = this.WEAPONTYPES.NONE;
-        this.createObjectName = "none";
-        this.usedObject = null;
-        this.isEquipable = false;
-        this.isUsable = false;
-        this.strength = 0;
-        this.interval = 0;
-        this.image = null;
-        this.rows = 1;
-        this.cols = 1;
-        this.tileWidth = 1;
-        this.tileHeight = 1;
-        this.imageIndex = 0;
-        this.increaseRatio = 1;
-        this.stackLimit = stackLimit;
-        this.stackCount = stackCount > stackLimit ? stackLimit : stackCount;
-        this.inventoryLocation = 0;
-        this.shownLocation = 0;
-        this.isHolding = false;
-        this.isMouseInObject = false;
-        this.mouseInObjectTime = 0;
-        this.actionLocation = -1;
+        _this.typeId = typeId;
+        _this.area = _this.AREAS.NONE;
+        _this.usage = _this.USES.NONE;
+        _this.weapontype = _this.WEAPONTYPES.NONE;
+        _this.createObjectName = "none";
+        _this.usedObject = null;
+        _this.isEquipable = false;
+        _this.isUsable = false;
+        _this.strength = 0;
+        _this.interval = 0;
+        _this.stackLimit = stackLimit;
+        _this.stackCount = stackCount > stackLimit ? stackLimit : stackCount;
+        _this.inventoryLocation = 0;
+        _this.shownLocation = 0;
+        _this.isHolding = false;
+        _this.isMouseInObject = false;
+        _this.mouseInObjectTime = 0;
+        _this.actionLocation = -1;
+        return _this;
     }
 
     _createClass(InventoryObject, [{
@@ -166,40 +176,6 @@ var InventoryObject = function () {
             this.shownLocation = emptyPosition;
         }
     }, {
-        key: "setImage",
-        value: function setImage(image) {
-            this.image = image; // image
-            this.rows = 1;
-            this.cols = 1;
-            this.tileWidth = image.width;
-            this.tileHeight = image.height;
-            this.imageIndex = 0;
-        }
-    }, {
-        key: "setTilesImage",
-        value: function setTilesImage(image, rows, cols, increaseRatio) {
-            this.setImage(image);
-            this.rows = rows;
-            this.cols = cols;
-            this.tileWidth = image.width / cols;
-            this.tileHeight = image.height / rows;
-            this.imageIndex = 0;
-            this.increaseRatio = increaseRatio;
-        }
-    }, {
-        key: "increaseImageIndex",
-        value: function increaseImageIndex(increase) {
-            this.imageIndex += increase * this.increaseRatio;
-            if (this.imageIndex >= this.rows * this.cols) {
-                this.imageIndex -= this.rows * this.cols;
-            }
-        }
-    }, {
-        key: "isInObject",
-        value: function isInObject(x, y) {
-            return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
-        }
-    }, {
         key: "onMouseDown",
         value: function onMouseDown(mousePosition) {
             if (this.isInObject(mousePosition.x, mousePosition.y)) {
@@ -222,17 +198,9 @@ var InventoryObject = function () {
             this.isMouseInObject = this.isInObject(mousePosition.x, mousePosition.y);
         }
     }, {
-        key: "getImageIndex",
-        value: function getImageIndex() {
-            return Math.floor(this.imageIndex);
-        }
-    }, {
         key: "update",
         value: function update(delta, emptyPosition) {
-            if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
-                this.increaseImageIndex(delta);
-            }
-
+            _get(InventoryObject.prototype.__proto__ || Object.getPrototypeOf(InventoryObject.prototype), "update", this).call(this, delta);
             if (this.inventoryLocation === -2) {
                 if (emptyPosition !== false) {
                     this.inventoryLocation = emptyPosition;
@@ -260,21 +228,7 @@ var InventoryObject = function () {
             this.y = screenY;
             this.width = width;
             this.height = height;
-            if (this.image === null) {
-                this.ctx.fillText("Object", this.x, this.y);
-                this.ctx.fillStyle = "purple";
-                this.ctx.fillRect(this.x, this.y, this.width, this.height);
-            } else {
-                ctx.drawImage(this.image, // Image
-                this.getImageIndex() % this.cols * this.tileWidth, // Src x
-                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
-                this.tileWidth, // Src width
-                this.tileHeight, // Src height
-                screenX, // Target x
-                screenY, // Target y
-                width, // Target width
-                height); // Target height
-            }
+            _get(InventoryObject.prototype.__proto__ || Object.getPrototypeOf(InventoryObject.prototype), "draw", this).call(this, ctx, screenX, screenY);
 
             if (this.interval !== 0) {
                 var percentage = this.interval / this.intervalTime;
@@ -328,7 +282,7 @@ var InventoryObject = function () {
     }]);
 
     return InventoryObject;
-}();
+}(_GameObjectBase2.default);
 
 exports.default = InventoryObject;
 
@@ -385,27 +339,37 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _GameObjectBase = __webpack_require__(56);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var NonCharacterObject = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NonCharacterObject = function (_GameObject) {
+    _inherits(NonCharacterObject, _GameObject);
+
     function NonCharacterObject(x, y, width, height, damage, solid) {
         _classCallCheck(this, NonCharacterObject);
 
-        this.x = x; // int
-        this.y = y; // int
-        this.width = width; // int
-        this.height = height; // int
-        this.damage = damage; // int
-        this.damageDone = 0;
-        this.solid = solid; // bool
-        this.image = null;
-        this.rows = 1;
-        this.cols = 1;
-        this.tileWidth = 1;
-        this.tileHeight = 1;
-        this.imageIndex = 0;
-        this.increaseRatio = 1;
-        this.canBePickedUp = false;
+        var _this = _possibleConstructorReturn(this, (NonCharacterObject.__proto__ || Object.getPrototypeOf(NonCharacterObject)).call(this));
+
+        _this.x = x;
+        _this.y = y;
+        _this.width = width;
+        _this.height = height;
+        _this.damage = damage;
+        _this.damageDone = 0;
+        _this.solid = solid;
+        _this.canBePickedUp = false;
+        return _this;
     }
 
     _createClass(NonCharacterObject, [{
@@ -420,85 +384,17 @@ var NonCharacterObject = function () {
             return this.damage;
         }
     }, {
-        key: "setImage",
-        value: function setImage(image) {
-            this.image = image; // image
-            this.rows = 1;
-            this.cols = 1;
-            this.tileWidth = image.width;
-            this.tileHeight = image.height;
-            this.imageIndex = 0;
-        }
-    }, {
-        key: "setTilesImage",
-        value: function setTilesImage(image, rows, cols, increaseRatio) {
-            this.setImage(image);
-            this.rows = rows;
-            this.cols = cols;
-            this.tileWidth = image.width / cols;
-            this.tileHeight = image.height / rows;
-            this.imageIndex = 0;
-            this.increaseRatio = increaseRatio;
-        }
-    }, {
-        key: "isNear",
-        value: function isNear(xMin, yMin, xMax, yMax) {
-            // DON'T EDIT IF YOU DON'T UNDERSTAND! (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
-            //console.log('isNear: ' + (this.x < xMax) + ' && ' + (this.x + this.width > xMin) + ' && ' +
-            //   (this.y < yMax) + ' && ' + (this.y + this.height > yMin));
-            return this.x < xMax && this.x + this.width > xMin && this.y < yMax && this.y + this.height > yMin;
-        }
-    }, {
-        key: "isInObject",
-        value: function isInObject(x, y) {
-            return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
-        }
-    }, {
-        key: "increaseImageIndex",
-        value: function increaseImageIndex(increase) {
-            this.imageIndex += increase * this.increaseRatio;
-            if (this.imageIndex >= this.rows * this.cols) {
-                this.imageIndex -= this.rows * this.cols;
-            }
-        }
-    }, {
-        key: "getImageIndex",
-        value: function getImageIndex() {
-            return Math.floor(this.imageIndex);
-        }
-    }, {
         key: "update",
         value: function update(delta) {
-            if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
-                this.increaseImageIndex(delta);
-            }
+            _get(NonCharacterObject.prototype.__proto__ || Object.getPrototypeOf(NonCharacterObject.prototype), "update", this).call(this, delta);
             if (this.damageDone > 0) {
                 this.damageDone -= delta;
-            }
-        }
-    }, {
-        key: "draw",
-        value: function draw(ctx, screenX, screenY) {
-            if (this.image === null) {
-                this.ctx.fillText("Object", this.x, this.y);
-                this.ctx.fillStyle = "purple";
-                this.ctx.fillRect(this.x, this.y, this.width, this.height);
-            } else {
-                ctx.drawImage(this.image, // Image
-                this.getImageIndex() % this.cols * this.tileWidth, // Src x
-                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
-                this.tileWidth, // Src width
-                this.tileHeight, // Src height
-                screenX, // Target x
-                screenY, // Target y
-                this.width, // Target width
-                this.height); // Target height
             }
         }
     }]);
 
     return NonCharacterObject;
-}();
+}(_GameObjectBase2.default);
 
 exports.default = NonCharacterObject;
 
@@ -1981,35 +1877,43 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _GameObjectBase = __webpack_require__(56);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var NPCObject = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NPCObject = function (_GameObject) {
+    _inherits(NPCObject, _GameObject);
+
     function NPCObject(x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
         _classCallCheck(this, NPCObject);
 
-        this.x = x; // int
-        this.y = y; // int
-        this.width = width; // int
-        this.height = height; // int
-        this.health = health; // int
-        this.damage = damage; // int
-        this.map = map;
-        this.bounds = bounds;
-        this.tileLevel = 0;
-        this.damageDone = 0;
-        this.attackSpeed = attackSpeed;
-        this.speed = speed;
-        this.passive = passive;
-        this.image = null;
-        this.rows = 1;
-        this.cols = 1;
-        this.tileWidth = 1;
-        this.tileHeight = 1;
-        this.imageIndex = 0;
-        this.increaseRatio = 1;
-        this.canBePickedUp = false;
-        this.topText = [];
-        this.STATE = {
+        var _this = _possibleConstructorReturn(this, (NPCObject.__proto__ || Object.getPrototypeOf(NPCObject)).call(this));
+
+        _this.x = x;
+        _this.y = y;
+        _this.width = width;
+        _this.height = height;
+        _this.health = health;
+        _this.damage = damage;
+        _this.map = map;
+        _this.bounds = bounds;
+        _this.tileLevel = 0;
+        _this.damageDone = 0;
+        _this.attackSpeed = attackSpeed;
+        _this.speed = speed;
+        _this.passive = passive;
+        _this.canBePickedUp = false;
+        _this.STATE = {
             STOP: 0,
             RUNNINGNORTH: 1,
             RUNNINGEAST: 2,
@@ -2017,8 +1921,10 @@ var NPCObject = function () {
             RUNNINGWEST: 4
         };
 
-        this.action = this.STATE.STOP;
-        this.doingAction = 0;
+        _this.action = _this.STATE.STOP;
+        _this.doingAction = 0;
+        _this.imageState = 0;
+        return _this;
     }
 
     _createClass(NPCObject, [{
@@ -2033,39 +1939,21 @@ var NPCObject = function () {
             return this.damage;
         }
     }, {
-        key: "setImage",
-        value: function setImage(image) {
-            this.image = image; // image
-            this.rows = 1;
-            this.cols = 1;
-            this.tileWidth = image.width;
-            this.tileHeight = image.height;
-            this.imageIndex = 0;
-            this.imageState = 0;
+        key: "getImageIndex",
+        value: function getImageIndex() {
+            if (this.action === this.STATE.STOP) return this.imageState;
+            // else
+            return this.imageState + this.cols * Math.floor(this.imageIndex);
         }
     }, {
-        key: "setTilesImage",
-        value: function setTilesImage(image, rows, cols, increaseRatio) {
-            this.setImage(image);
-            this.rows = rows;
-            this.cols = cols;
-            this.tileWidth = image.width / cols;
-            this.tileHeight = image.height / rows;
-            this.imageIndex = 0;
-            this.increaseRatio = increaseRatio;
+        key: "getImageX",
+        value: function getImageX() {
+            return this.getImageIndex() % this.rows;
         }
     }, {
-        key: "isInObject",
-        value: function isInObject(x, y) {
-            return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
-        }
-    }, {
-        key: "isNear",
-        value: function isNear(xMin, yMin, xMax, yMax) {
-            // DON'T EDIT IF YOU DON'T UNDERSTAND! (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
-            //console.log('isNear: ' + (this.x < xMax) + ' && ' + (this.x + this.width > xMin) + ' && ' +
-            //   (this.y < yMax) + ' && ' + (this.y + this.height > yMin));
-            return this.x < xMax && this.x + this.width > xMin && this.y < yMax && this.y + this.height > yMin;
+        key: "getImageY",
+        value: function getImageY() {
+            return Math.floor(this.getImageIndex() / this.rows);
         }
     }, {
         key: "increaseImageIndex",
@@ -2074,13 +1962,6 @@ var NPCObject = function () {
             if (this.imageIndex >= this.cols) {
                 this.imageIndex -= this.cols;
             }
-        }
-    }, {
-        key: "getImageIndex",
-        value: function getImageIndex() {
-            if (this.action === this.STATE.STOP) return this.imageState;
-            // else
-            return this.imageState + this.cols * Math.floor(this.imageIndex);
         }
     }, {
         key: "isHit",
@@ -2103,11 +1984,7 @@ var NPCObject = function () {
     }, {
         key: "update",
         value: function update(delta, otherNPCs) {
-            var _this = this;
-
-            if (this.image !== null && (this.rows > 1 || this.cols > 1) && this.action !== this.STATE.STOP) {
-                this.increaseImageIndex(delta);
-            }
+            _get(NPCObject.prototype.__proto__ || Object.getPrototypeOf(NPCObject.prototype), "update", this).call(this, delta);
             if (this.damageDone > 0) {
                 this.damageDone -= delta;
             }
@@ -2144,14 +2021,6 @@ var NPCObject = function () {
                     this.doingAction = Math.floor(Math.random() * 2) + 1;
                 }
             }
-            if (this.topText.length > 0) {
-                this.topText.forEach(function (text) {
-                    text.time += delta;
-                    if (text.time > 2) {
-                        _this.topText.splice(_this.topText.indexOf(text), 1);
-                    }
-                });
-            }
         }
     }, {
         key: "move",
@@ -2180,35 +2049,6 @@ var NPCObject = function () {
             }
 
             this._collide(dirx, diry);
-        }
-    }, {
-        key: "draw",
-        value: function draw(ctx, screenX, screenY) {
-            var _this2 = this;
-
-            if (this.image === null) {
-                this.ctx.fillText("Object", this.x, this.y);
-                this.ctx.fillStyle = "purple";
-                this.ctx.fillRect(this.x, this.y, this.width, this.height);
-            } else {
-                ctx.drawImage(this.image, // Image
-                this.getImageIndex() % this.rows * this.tileWidth, // Src x
-                Math.floor(this.getImageIndex() / this.rows) * this.tileHeight, // Src y
-                this.tileWidth, // Src width
-                this.tileHeight, // Src height
-                screenX, // Target x
-                screenY, // Target y
-                this.width, // Target width
-                this.height); // Target height
-            }
-
-            if (this.topText.length > 0) {
-                ctx.font = "20px Arial";
-                this.topText.forEach(function (text) {
-                    ctx.fillStyle = text.fillStyle;
-                    ctx.fillText(text.text, screenX + 15, screenY - _this2.height * (0.3 + text.time));
-                });
-            }
         }
     }, {
         key: "unitsOverlap",
@@ -2286,7 +2126,7 @@ var NPCObject = function () {
     }]);
 
     return NPCObject;
-}();
+}(_GameObjectBase2.default);
 
 exports.default = NPCObject;
 
@@ -3189,7 +3029,7 @@ var InventoryManager = function () {
                             inventoryObject.actionLocation = position;
                             inventoryObject.inventoryLocation = -1;
                             inventoryObject.shownLocation = -1;
-                            console.log(inventoryObject);
+                            //console.log(inventoryObject);
                         }
                     }
                 }
@@ -3511,66 +3351,41 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _GameObjectBase = __webpack_require__(56);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Projectile = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Projectile = function (_GameObject) {
+    _inherits(Projectile, _GameObject);
+
     function Projectile(x, y, angleInRadians, strength, width, height, map) {
         _classCallCheck(this, Projectile);
 
-        this.x = x;
-        this.y = y;
-        this.strength = strength;
-        this.angleInRadians = angleInRadians;
-        this.width = width;
-        this.height = height;
-        this.map = map;
+        var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this));
 
-        this.image = null;
-        this.rows = 1;
-        this.cols = 1;
-        this.tileWidth = 1;
-        this.tileHeight = 1;
-        this.imageIndex = 0;
-        this.increaseRatio = 1;
-        this.speed = 512;
-        this.destroyed = false;
+        _this.x = x;
+        _this.y = y;
+        _this.strength = strength;
+        _this.angleInRadians = angleInRadians;
+        _this.width = width;
+        _this.height = height;
+        _this.map = map;
+        _this.speed = 512;
+        _this.destroyed = false;
+        return _this;
     }
 
     _createClass(Projectile, [{
-        key: "setImage",
-        value: function setImage(image) {
-            this.image = image; // image
-            this.rows = 1;
-            this.cols = 1;
-            this.tileWidth = image.width;
-            this.tileHeight = image.height;
-            this.imageIndex = 0;
-        }
-    }, {
-        key: "setTilesImage",
-        value: function setTilesImage(image, rows, cols, increaseRatio) {
-            this.setImage(image);
-            this.rows = rows;
-            this.cols = cols;
-            this.tileWidth = image.width / cols;
-            this.tileHeight = image.height / rows;
-            this.imageIndex = 0;
-            this.increaseRatio = increaseRatio;
-        }
-    }, {
-        key: "increaseImageIndex",
-        value: function increaseImageIndex(increase) {
-            this.imageIndex += increase * this.increaseRatio;
-            if (this.imageIndex >= this.rows * this.cols) {
-                this.imageIndex -= this.rows * this.cols;
-            }
-        }
-    }, {
-        key: "getImageIndex",
-        value: function getImageIndex() {
-            return Math.floor(this.imageIndex);
-        }
-    }, {
         key: "doDamage",
         value: function doDamage() {
             this.destroyed = true;
@@ -3579,9 +3394,7 @@ var Projectile = function () {
     }, {
         key: "update",
         value: function update(delta) {
-            if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
-                this.increaseImageIndex(delta);
-            }
+            _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "update", this).call(this, delta);
             this.x += Math.cos(this.angleInRadians) * this.speed * delta;
             this.y += Math.sin(this.angleInRadians) * this.speed * delta;
             if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
@@ -3591,31 +3404,21 @@ var Projectile = function () {
     }, {
         key: "draw",
         value: function draw(ctx, screenX, screenY) {
-            if (this.image === null) {
-                ctx.fillText("Object", screenX, screenY);
-                ctx.fillStyle = "purple";
-                ctx.fillRect(screenX, screenY, this.width, this.height);
-            } else {
-                this.drawRotatedImage(ctx, this.image, screenX, screenY, this.width, this.height, this.getImageIndex() % this.cols * this.tileWidth, // Src x
-                Math.floor(this.getImageIndex() / this.cols) * this.tileHeight, // Src y
+            if (this.image !== null) {
+                this.drawRotatedImage(ctx, this.image, this.getImageX() * this.tileWidth, // Src x
+                this.getImageY() * this.tileHeight, // Src y
                 this.tileWidth, // Src width
                 this.tileHeight, // Src height
-                this.angleInRadians + Math.PI / 4 * 5);
+                screenX, screenY, this.width, this.height, this.angleInRadians + Math.PI / 4 * 5 // The image is rotated
+                );
+            } else {
+                _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "draw", this).call(this, ctx, screenX, screenY);
             }
-        }
-    }, {
-        key: "drawRotatedImage",
-        value: function drawRotatedImage(ctx, image, x, y, width, height, sourceX, sourceY, sourceWidth, sourceHeight, angleInRadians) {
-            ctx.translate(x, y);
-            ctx.rotate(angleInRadians);
-            ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, -width / 2, -height / 2, width, height);
-            ctx.rotate(-angleInRadians);
-            ctx.translate(-x, -y);
         }
     }]);
 
     return Projectile;
-}();
+}(_GameObjectBase2.default);
 
 exports.default = Projectile;
 
@@ -5092,6 +4895,154 @@ exports.default = Map;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 54 */,
+/* 55 */,
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GameObject = function () {
+    function GameObject() {
+        _classCallCheck(this, GameObject);
+
+        this.image = null;
+        this.rows = 1;
+        this.cols = 1;
+        this.tileWidth = 1;
+        this.tileHeight = 1;
+        this.imageIndex = 0;
+        this.increaseRatio = 1;
+        this.topText = [];
+    }
+
+    _createClass(GameObject, [{
+        key: "setImage",
+        value: function setImage(image) {
+            this.image = image; // image
+            this.rows = 1;
+            this.cols = 1;
+            this.tileWidth = image.width;
+            this.tileHeight = image.height;
+            this.imageIndex = 0;
+        }
+    }, {
+        key: "setTilesImage",
+        value: function setTilesImage(image, rows, cols, increaseRatio) {
+            this.setImage(image);
+            this.rows = rows;
+            this.cols = cols;
+            this.tileWidth = image.width / cols;
+            this.tileHeight = image.height / rows;
+            this.imageIndex = 0;
+            this.increaseRatio = increaseRatio;
+        }
+    }, {
+        key: "increaseImageIndex",
+        value: function increaseImageIndex(increase) {
+            this.imageIndex += increase * this.increaseRatio;
+            if (this.imageIndex >= this.rows * this.cols) {
+                this.imageIndex -= this.rows * this.cols;
+            }
+        }
+    }, {
+        key: "isInObject",
+        value: function isInObject(x, y) {
+            return this.x < x && this.x + this.width > x && this.y < y && this.y + this.height > y;
+        }
+    }, {
+        key: "isNear",
+        value: function isNear(xMin, yMin, xMax, yMax) {
+            // (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
+            return this.x < xMax && this.x + this.width > xMin && this.y < yMax && this.y + this.height > yMin;
+        }
+    }, {
+        key: "getImageIndex",
+        value: function getImageIndex() {
+            return Math.floor(this.imageIndex);
+        }
+    }, {
+        key: "getImageX",
+        value: function getImageX() {
+            return this.getImageIndex() % this.cols;
+        }
+    }, {
+        key: "getImageY",
+        value: function getImageY() {
+            return Math.floor(this.getImageIndex() / this.cols);
+        }
+    }, {
+        key: "update",
+        value: function update(delta) {
+            var _this = this;
+
+            if (this.image !== null && (this.rows > 1 || this.cols > 1)) {
+                this.increaseImageIndex(delta);
+            }
+            if (this.topText.length > 0) {
+                this.topText.forEach(function (text) {
+                    text.time += delta;
+                    if (text.time > 1) {
+                        _this.topText.splice(_this.topText.indexOf(text), 1);
+                    }
+                });
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, screenX, screenY) {
+            var _this2 = this;
+
+            if (this.image === null) {
+                this.ctx.fillText("Object", screenX, screenY);
+                this.ctx.fillStyle = "purple";
+                this.ctx.fillRect(screenX, screenY, this.width, this.height);
+            } else {
+                ctx.drawImage(this.image, // Image
+                this.getImageX() * this.tileWidth, // Src x
+                this.getImageY() * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                screenX, // Target x
+                screenY, // Target y
+                this.width, // Target width
+                this.height); // Target height
+            }
+
+            if (this.topText.length > 0) {
+                ctx.font = "20px Arial";
+                this.topText.forEach(function (text) {
+                    ctx.fillStyle = text.fillStyle;
+                    ctx.fillText(text.text, screenX + 15, screenY - _this2.height * (0.3 + text.time));
+                });
+            }
+        }
+    }, {
+        key: "drawRotatedImage",
+        value: function drawRotatedImage(ctx, image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height, angleInRadians) {
+            ctx.translate(x, y);
+            ctx.rotate(angleInRadians);
+            ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, -width / 2, -height / 2, width, height);
+            ctx.rotate(-angleInRadians);
+            ctx.translate(-x, -y);
+        }
+    }]);
+
+    return GameObject;
+}();
+
+exports.default = GameObject;
 
 /***/ })
 /******/ ]);

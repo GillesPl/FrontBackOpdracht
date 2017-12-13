@@ -408,7 +408,7 @@ export default class InventoryManager {
                         inventoryObject.actionLocation = position;
                         inventoryObject.inventoryLocation = -1;
                         inventoryObject.shownLocation = -1;
-                        console.log(inventoryObject);
+                        //console.log(inventoryObject);
                     }
                 }
             }

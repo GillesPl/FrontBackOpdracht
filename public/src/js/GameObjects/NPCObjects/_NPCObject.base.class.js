@@ -1,11 +1,14 @@
-export default class NPCObject {
+import GameObject from "../_GameObject.base.class";
+
+export default class NPCObject extends GameObject {
     constructor(x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
-        this.x = x; // int
-        this.y = y; // int
-        this.width = width; // int
-        this.height = height; // int
-        this.health = health; // int
-        this.damage = damage; // int
+        super();
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.health = health;
+        this.damage = damage;
         this.map = map;
         this.bounds = bounds;
         this.tileLevel = 0;
@@ -13,15 +16,7 @@ export default class NPCObject {
         this.attackSpeed = attackSpeed;
         this.speed = speed;
         this.passive = passive;
-        this.image = null;
-        this.rows = 1;
-        this.cols = 1;
-        this.tileWidth = 1;
-        this.tileHeight = 1;
-        this.imageIndex = 0;
-        this.increaseRatio = 1;
         this.canBePickedUp = false;
-        this.topText = [];
         this.STATE = {
             STOP: 0,
             RUNNINGNORTH: 1,
@@ -32,6 +27,7 @@ export default class NPCObject {
 
         this.action = this.STATE.STOP;
         this.doingAction = 0;
+        this.imageState = 0;
     }
 
     hasDamage() {
@@ -43,37 +39,19 @@ export default class NPCObject {
         return this.damage;
     }
 
-    setImage(image) {
-        this.image = image; // image
-        this.rows = 1;
-        this.cols = 1;
-        this.tileWidth = image.width;
-        this.tileHeight = image.height;
-        this.imageIndex = 0;
-        this.imageState = 0;
+    getImageIndex() {
+        if (this.action === this.STATE.STOP)
+            return this.imageState;
+        // else
+        return this.imageState + this.cols * Math.floor(this.imageIndex);
     }
 
-    setTilesImage(image, rows, cols, increaseRatio) {
-        this.setImage(image);
-        this.rows = rows;
-        this.cols = cols;
-        this.tileWidth = image.width / cols;
-        this.tileHeight = image.height / rows;
-        this.imageIndex = 0;
-        this.increaseRatio = increaseRatio;
+    getImageX() {
+        return this.getImageIndex() % this.rows;
     }
 
-    isInObject(x, y) {
-        return (this.x < x && this.x + this.width > x &&
-            this.y < y && this.y + this.height > y);
-    }
-
-    isNear(xMin, yMin, xMax, yMax) {
-        // DON'T EDIT IF YOU DON'T UNDERSTAND! (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
-        //console.log('isNear: ' + (this.x < xMax) + ' && ' + (this.x + this.width > xMin) + ' && ' +
-        //   (this.y < yMax) + ' && ' + (this.y + this.height > yMin));
-        return (this.x < xMax && this.x + this.width > xMin &&
-            this.y < yMax && this.y + this.height > yMin);
+    getImageY() {
+        return Math.floor(this.getImageIndex() / this.rows);
     }
 
     increaseImageIndex(increase) {
@@ -81,13 +59,6 @@ export default class NPCObject {
         if (this.imageIndex >= this.cols) {
             this.imageIndex -= this.cols;
         }
-    }
-
-    getImageIndex() {
-        if (this.action === this.STATE.STOP)
-            return this.imageState;
-        // else
-        return this.imageState + this.cols * Math.floor(this.imageIndex);
     }
 
     isHit(projectiles) {
@@ -108,9 +79,7 @@ export default class NPCObject {
     }
 
     update(delta, otherNPCs) {
-        if (this.image !== null && (this.rows > 1 || this.cols > 1) && this.action !== this.STATE.STOP) {
-            this.increaseImageIndex(delta);
-        }
+        super.update(delta);
         if (this.damageDone > 0) {
             this.damageDone -= delta;
         }
@@ -147,14 +116,6 @@ export default class NPCObject {
                 this.doingAction = Math.floor(Math.random() * 2) + 1;
             }
         }
-        if (this.topText.length > 0) {
-            this.topText.forEach(text => {
-                text.time += delta;
-                if (text.time > 2) {
-                    this.topText.splice(this.topText.indexOf(text), 1);
-                }
-            });
-        }
     }
 
     move(delta, units) {
@@ -182,33 +143,6 @@ export default class NPCObject {
         }
 
         this._collide(dirx, diry);
-    }
-
-    draw(ctx, screenX, screenY) {
-        if (this.image === null) {
-            this.ctx.fillText("Object", this.x, this.y);
-            this.ctx.fillStyle = "purple";
-            this.ctx.fillRect(this.x, this.y, this.width, this.height);
-        } else {
-            ctx.drawImage(
-                this.image, // Image
-                (this.getImageIndex() % this.rows) * this.tileWidth, // Src x
-                Math.floor(this.getImageIndex() / this.rows) * this.tileHeight, // Src y
-                this.tileWidth, // Src width
-                this.tileHeight, // Src height
-                screenX, // Target x
-                screenY, // Target y
-                this.width, // Target width
-                this.height); // Target height
-        }
-
-        if (this.topText.length > 0) {
-            ctx.font = "20px Arial";
-            this.topText.forEach(text => {
-                ctx.fillStyle = text.fillStyle;
-                ctx.fillText(text.text, screenX + 15, screenY - this.height * (0.3 + text.time));
-            });
-        }
     }
 
     unitsOverlap(units, thisx, thisy) {
