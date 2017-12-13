@@ -58,7 +58,7 @@ export default class Hero {
         smallObject.width = this.width;
         smallObject.height = this.height;
         //console.log(smallObject);
-        return smallObject;
+        return JSON.stringify(smallObject);
     }
 
     getPlayerBounds() {

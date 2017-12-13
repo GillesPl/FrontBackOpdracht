@@ -55,8 +55,9 @@ io.sockets.on('connection', function (socket) {
     socket.on("updatePlayer", function (hero) {
         socket.broadcast.emit("updatingPlayer", hero); // Notify all other players
         let found = false;
+        let heroId = JSON.parse(hero).id;
         for (let i = players.length - 1; i >= 0; i--) {
-            if (hero.id === players[i].id) {
+            if (heroId === JSON.parse(players[i]).id) {
                 players[i] = hero; // Update player in cache
                 found = true;
             }

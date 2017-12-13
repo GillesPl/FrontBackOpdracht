@@ -245,27 +245,31 @@ export default class MainGameState extends GameState {
         });
         client.on("otherPlayers", function (others) {
             self.otherPlayers = [];
-            others.forEach((player) => {
+            others.forEach((playerString) => {
+                const player = JSON.parse(playerString);
                 if (player.id != self.hero.id) {
                     self.otherPlayers.push(new OtherPlayer(player, self.Loader, self.map));
                 }
             });
         });
-        client.on("New_connection", function (hero) {
-            self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
+        client.on("New_connection", function (playerString) {
+            const player = JSON.parse(playerString);
+            self.otherPlayers.push(new OtherPlayer(player, self.Loader, self.map));
         });
-        client.on("user_leave", function (hero) {
+        client.on("user_leave", function (playerString) {
+            const player = JSON.parse(playerString);
             //console.log('player left');
             let toDeleteIndex = 0;
             for (let i = 0; i < self.otherPlayers.length; i++) {
-                if (self.otherPlayers[i].id === hero.id)
+                if (self.otherPlayers[i].id === player.id)
                     toDeleteIndex = i;
             }
             self.otherPlayers.splice(i, 1);
             //self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
         });
-        client.on("updatingPlayer", function (hero) {
+        client.on("updatingPlayer", function (heroString) {
             let found = false; // is player in cache
+            const hero = JSON.parse(heroString);
             self.otherPlayers.forEach((player) => {
                 if (player.id === hero.id) {
                     //console.log('info from ' + player.id);
