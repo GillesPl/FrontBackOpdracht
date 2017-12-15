@@ -243,10 +243,11 @@ export default class MainGameState extends GameState {
             console.log('disconnected');
             self.retryConnectOnFailure(3000, client, self); // Try again in 3s
         });
-        client.on("otherPlayers", function (others) {
+        client.on("otherPlayers", function (othersJsonString) {
             self.otherPlayers = [];
-            others.forEach((playerString) => {
-                const player = JSON.parse(playerString);
+            const others = JSON.parse(othersJsonString);
+            others.forEach((playerJsonString) => {
+                const player = JSON.parse(playerJsonString);
                 if (player.id != self.hero.id) {
                     self.otherPlayers.push(new OtherPlayer(player, self.Loader, self.map));
                 }

@@ -1382,10 +1382,11 @@ var MainGameState = function (_GameState) {
                 console.log('disconnected');
                 self.retryConnectOnFailure(3000, client, self); // Try again in 3s
             });
-            client.on("otherPlayers", function (others) {
+            client.on("otherPlayers", function (othersJsonString) {
                 self.otherPlayers = [];
-                others.forEach(function (playerString) {
-                    var player = JSON.parse(playerString);
+                var others = JSON.parse(othersJsonString);
+                others.forEach(function (playerJsonString) {
+                    var player = JSON.parse(playerJsonString);
                     if (player.id != self.hero.id) {
                         self.otherPlayers.push(new _OtherPlayer2.default(player, self.Loader, self.map));
                     }
