@@ -111,21 +111,22 @@ export default class MainGameState extends GameState {
     }
 
     loadNonCharacterObjects(objects, gameState) {
+        gameState.nonCharacterObjects = [];
         objects.forEach(object => {
             switch (object.name) {
                 case "Fire":
-                    gameState.nonCharacterObjects.push(new Fire(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                    gameState.nonCharacterObjects.push(new Fire(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale));
                     break;
 
                 case "Coin":
-                    gameState.nonCharacterObjects.push(new DroppedItem(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale,
-                        16, 16, "coin", gameState.hero, object.properties.Count));
+                    gameState.nonCharacterObjects.push(new DroppedItem(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale,
+                        16, 16, "coin", object.properties.Count));
                     break;
 
                 case "Sword_1":
                 case "Boots_1":
-                    gameState.nonCharacterObjects.push(new DroppedItem(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale,
-                        32, 32, object.name, gameState.hero, object.properties.Count));
+                    gameState.nonCharacterObjects.push(new DroppedItem(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale,
+                        32, 32, object.name, object.properties.Count));
                     break;
 
                 default:
@@ -137,21 +138,21 @@ export default class MainGameState extends GameState {
     }
 
     loadEnemies(enemies, gameState) {
-        enemies.forEach(object => {
-            switch (object.name) {
+        enemies.forEach(enemie => {
+            switch (enemie.name) {
                 case "Goblins":
                     let bounds = {
-                        x: object.x * gameState.map.scale,
-                        y: object.y * gameState.map.scale,
-                        width: object.width * gameState.map.scale,
-                        height: object.height * gameState.map.scale
+                        x: enemie.x * gameState.map.scale,
+                        y: enemie.y * gameState.map.scale,
+                        width: enemie.width * gameState.map.scale,
+                        height: enemie.height * gameState.map.scale
                     };
-                    gameState.spawners.push(new Spawner(bounds, object.name, gameState.Loader, object.properties.Count, gameState.map));
+                    gameState.spawners.push(new Spawner(bounds, enemie.name, gameState.Loader, enemie.properties.Count, gameState.map));
                     break;
 
                 default:
-                    console.log("Object '" + object.name + "' doesn't  exist.");
-                    console.log(object);
+                    console.log("Enemie '" + enemie.name + "' doesn't  exist.");
+                    console.log(enemie);
                     break;
             }
         });
@@ -206,7 +207,7 @@ export default class MainGameState extends GameState {
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, enemies) {
             this.socket.emit("new_user", this.hero.getSmallObject());
             this.loadSocket(this.socket);
-            this.loadNonCharacterObjects(objects, this);
+            //this.loadNonCharacterObjects(objects, this);
             this.loadEnemies(enemies, this);
         }.bind(this));
         this.events();
@@ -229,7 +230,6 @@ export default class MainGameState extends GameState {
             }
         }, retryInMilliseconds);
     }
-
 
     loadSocket(client) {
         let self = this;
@@ -284,6 +284,10 @@ export default class MainGameState extends GameState {
             if (!found) {
                 self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
             }
+        });
+        client.on("allObjects", function (objectsString) {
+            const objects = JSON.parse(objectsString);
+            self.loadNonCharacterObjects(objects, self);
         });
     }
 
@@ -366,7 +370,9 @@ export default class MainGameState extends GameState {
                 this.hero.action = this.hero.STATE.STOP;
                 this.socket.emit("updatePlayer", this.hero.getSmallObject());
             }
-
+        }
+        if (this.hero.resurected) {
+            this.socket.emit("updatePlayer", this.hero.getSmallObject());
         }
 
         this.hero.move(delta, dirx, diry);
@@ -396,6 +402,7 @@ export default class MainGameState extends GameState {
                     } else {
                         thisObject.value.stackCount = countLeft;
                     }
+                    this.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
                 }
             }
         });

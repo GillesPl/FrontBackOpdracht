@@ -18,8 +18,9 @@ class Player {
         if (this.id !== playerObject.id) {
             return false;
         }
+        if (playerObject.resurected) console.log('oh no, someone died');
         if (!this.map.isSolidTileAtXY(playerObject.x, playerObject.y, playerObject.tileLevel) &&
-            (this.x === playerObject.x || this.y === playerObject.y)) { // Players can only move one direction at a time
+            (playerObject.resurected || this.x === playerObject.x || this.y === playerObject.y)) { // Players can only move one direction at a time
             this.x = playerObject.x;
             this.y = playerObject.y;
             this.action = playerObject.action;
@@ -27,7 +28,11 @@ class Player {
             this.speed = playerObject.speed;
             this.width = playerObject.width;
             this.height = playerObject.height;
+            return true;
         }
+        // else
+        // Kick player?
+        return false;
     }
 
     getSmallObject() {

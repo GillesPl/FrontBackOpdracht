@@ -38,6 +38,7 @@ export default class Hero {
         this.deadTime = 0;
         this.totalDeadTime = 1;
         this.dead = false;
+        this.resurected = false;
 
         this.speed = 256;
         this.id = this.generateId();
@@ -57,6 +58,7 @@ export default class Hero {
         smallObject.speed = this.speed;
         smallObject.width = this.width;
         smallObject.height = this.height;
+        smallObject.resurected = this.resurected;
         //console.log(smallObject);
         return JSON.stringify(smallObject);
     }
@@ -186,11 +188,14 @@ export default class Hero {
                     fillStyle: "black",
                     time: 0
                 });
-
+                this.resurected = true;
             } else {
                 this.deadTime += delta;
             }
         } else {
+            if (this.resurected) {
+                this.resurected = false;
+            }
             if (this.topText.length > 0) {
                 this.topText.forEach(text => {
                     text.time += delta;

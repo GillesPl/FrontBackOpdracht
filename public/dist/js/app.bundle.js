@@ -458,10 +458,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Fire = function (_NonCharacterObject) {
     _inherits(Fire, _NonCharacterObject);
 
-    function Fire(Loader, x, y) {
+    function Fire(Loader, id, x, y) {
         _classCallCheck(this, Fire);
 
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 45, false));
+        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, id, x, y, 96, 96, 45, false));
 
         _this.setTilesImage(Loader.getImage('fire'), 1, 5, 12);
         return _this;
@@ -502,11 +502,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NonCharacterObject = function (_GameObject) {
     _inherits(NonCharacterObject, _GameObject);
 
-    function NonCharacterObject(x, y, width, height, damage, solid) {
+    function NonCharacterObject(id, x, y, width, height, damage, solid) {
         _classCallCheck(this, NonCharacterObject);
 
         var _this = _possibleConstructorReturn(this, (NonCharacterObject.__proto__ || Object.getPrototypeOf(NonCharacterObject)).call(this));
 
+        _this.id = id;
         _this.x = x;
         _this.y = y;
         _this.width = width;
@@ -536,6 +537,21 @@ var NonCharacterObject = function (_GameObject) {
             if (this.damageDone > 0) {
                 this.damageDone -= delta;
             }
+        }
+    }, {
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.width = this.width;
+            smallObject.height = this.height;
+            smallObject.damage = this.damage;
+            smallObject.damageDone = this.damageDone;
+            smallObject.solid = this.solid;
+            smallObject.canBePickedUp = this.canBePickedUp;
+            return smallObject;
         }
     }]);
 
@@ -1244,19 +1260,20 @@ var MainGameState = function (_GameState) {
     }, {
         key: "loadNonCharacterObjects",
         value: function loadNonCharacterObjects(objects, gameState) {
+            gameState.nonCharacterObjects = [];
             objects.forEach(function (object) {
                 switch (object.name) {
                     case "Fire":
-                        gameState.nonCharacterObjects.push(new _Fire2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                        gameState.nonCharacterObjects.push(new _Fire2.default(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale));
                         break;
 
                     case "Coin":
-                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale, 16, 16, "coin", gameState.hero, object.properties.Count));
+                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale, 16, 16, "coin", object.properties.Count));
                         break;
 
                     case "Sword_1":
                     case "Boots_1":
-                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale, 32, 32, object.name, gameState.hero, object.properties.Count));
+                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale, 32, 32, object.name, object.properties.Count));
                         break;
 
                     default:
@@ -1269,21 +1286,21 @@ var MainGameState = function (_GameState) {
     }, {
         key: "loadEnemies",
         value: function loadEnemies(enemies, gameState) {
-            enemies.forEach(function (object) {
-                switch (object.name) {
+            enemies.forEach(function (enemie) {
+                switch (enemie.name) {
                     case "Goblins":
                         var bounds = {
-                            x: object.x * gameState.map.scale,
-                            y: object.y * gameState.map.scale,
-                            width: object.width * gameState.map.scale,
-                            height: object.height * gameState.map.scale
+                            x: enemie.x * gameState.map.scale,
+                            y: enemie.y * gameState.map.scale,
+                            width: enemie.width * gameState.map.scale,
+                            height: enemie.height * gameState.map.scale
                         };
-                        gameState.spawners.push(new _SpawnerBase2.default(bounds, object.name, gameState.Loader, object.properties.Count, gameState.map));
+                        gameState.spawners.push(new _SpawnerBase2.default(bounds, enemie.name, gameState.Loader, enemie.properties.Count, gameState.map));
                         break;
 
                     default:
-                        console.log("Object '" + object.name + "' doesn't  exist.");
-                        console.log(object);
+                        console.log("Enemie '" + enemie.name + "' doesn't  exist.");
+                        console.log(enemie);
                         break;
                 }
             });
@@ -1342,7 +1359,7 @@ var MainGameState = function (_GameState) {
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, enemies) {
                 this.socket.emit("new_user", this.hero.getSmallObject());
                 this.loadSocket(this.socket);
-                this.loadNonCharacterObjects(objects, this);
+                //this.loadNonCharacterObjects(objects, this);
                 this.loadEnemies(enemies, this);
             }.bind(this));
             this.events();
@@ -1423,6 +1440,10 @@ var MainGameState = function (_GameState) {
                     self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
                 }
             });
+            client.on("allObjects", function (objectsString) {
+                var objects = JSON.parse(objectsString);
+                self.loadNonCharacterObjects(objects, self);
+            });
         }
     }, {
         key: "load",
@@ -1469,6 +1490,9 @@ var MainGameState = function (_GameState) {
                     this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
             }
+            if (this.hero.resurected) {
+                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+            }
 
             this.hero.move(delta, dirx, diry);
             this.otherPlayers.forEach(function (player) {
@@ -1497,6 +1521,7 @@ var MainGameState = function (_GameState) {
                         } else {
                             thisObject.value.stackCount = countLeft;
                         }
+                        _this2.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
                     }
                 }
             });
@@ -1954,6 +1979,10 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _nonCharacterObjectBase = __webpack_require__(3);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
@@ -1981,10 +2010,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DroppedItem = function (_NonCharacterObject) {
     _inherits(DroppedItem, _NonCharacterObject);
 
-    function DroppedItem(Loader, x, y, width, height, type, hero, count) {
+    function DroppedItem(Loader, id, x, y, width, height, type, count) {
         _classCallCheck(this, DroppedItem);
 
-        var _this = _possibleConstructorReturn(this, (DroppedItem.__proto__ || Object.getPrototypeOf(DroppedItem)).call(this, x, y, width, height, 0, false));
+        var _this = _possibleConstructorReturn(this, (DroppedItem.__proto__ || Object.getPrototypeOf(DroppedItem)).call(this, id, x, y, width, height, 0, false));
+
+        _this.type = type;
 
         switch (type) {
             case "coin":
@@ -2009,6 +2040,16 @@ var DroppedItem = function (_NonCharacterObject) {
         _this.canBePickedUp = true;
         return _this;
     }
+
+    _createClass(DroppedItem, [{
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = _get(DroppedItem.prototype.__proto__ || Object.getPrototypeOf(DroppedItem.prototype), "getSmallObject", this).call(this);
+            smallObject.canBePickedUp = this.canBePickedUp;
+            smallObject.value = this.value;
+            return smallObject;
+        }
+    }]);
 
     return DroppedItem;
 }(_nonCharacterObjectBase2.default);
@@ -2440,6 +2481,7 @@ var Hero = function () {
         this.deadTime = 0;
         this.totalDeadTime = 1;
         this.dead = false;
+        this.resurected = false;
 
         this.speed = 256;
         this.id = this.generateId();
@@ -2461,6 +2503,7 @@ var Hero = function () {
             smallObject.speed = this.speed;
             smallObject.width = this.width;
             smallObject.height = this.height;
+            smallObject.resurected = this.resurected;
             //console.log(smallObject);
             return JSON.stringify(smallObject);
         }
@@ -2596,10 +2639,14 @@ var Hero = function () {
                         fillStyle: "black",
                         time: 0
                     });
+                    this.resurected = true;
                 } else {
                     this.deadTime += delta;
                 }
             } else {
+                if (this.resurected) {
+                    this.resurected = false;
+                }
                 if (this.topText.length > 0) {
                     this.topText.forEach(function (text) {
                         text.time += delta;

@@ -1,5 +1,6 @@
 var Map = require('./Map/Map.class');
 var Player = require('./GameObjects/Player.class');
+var NonCharacterObject = require('./GameObjects/NonCharacterObject.class');
 
 class Manager {
     constructor() {
@@ -11,7 +12,7 @@ class Manager {
         this.players = [];
         this.map = new Map.Map();
         this.map.loadMap('../Map/map.json', (objects, enemies) => {
-            this.objects = objects;
+            this.createNonCharacterObjects(objects);
             this.enemies = enemies;
         });
     }
@@ -20,13 +21,41 @@ class Manager {
         this.players.push(new Player.Player(playerJsonString, this.map, socket.id));
         socket.broadcast.emit("New_connection", playerJsonString);
         socket.emit("otherPlayers", this.getSendablePlayers());
+        socket.emit("allObjects", this.getSendableNonCharacterObjects());
     }
 
     updatePlayer(playerJsonString, socket) {
         this.players.forEach(player => {
-            player.updatePlayer(playerJsonString); // This will only execute with the correct player
+            if (player.updatePlayer(playerJsonString)) { // This will only execute with the correct player and then return true
+                socket.broadcast.emit("updatingPlayer", playerJsonString); // Notify all other players
+            }
         });
-        socket.broadcast.emit("updatingPlayer", playerJsonString); // Notify all other players
+    }
+
+    updateObject(obj, socket) {
+        //console.log(obj);
+        obj = JSON.parse(obj);
+        let recreate = null;
+        let delObj = null;
+        this.nonCharacterObjects.forEach(objToUpdate => {
+            if (objToUpdate.id === obj.id) {
+                delObj = objToUpdate;
+            }
+        });
+        this.originalCharacterObjects.forEach(objToRecreate => {
+            if (objToRecreate.id === obj.id) {
+                recreate = objToRecreate;
+            }
+        });
+        this.nonCharacterObjects.splice(this.nonCharacterObjects.indexOf(delObj), 1);
+        socket.broadcast.emit("allObjects", this.getSendableNonCharacterObjects());
+        if (recreate !== null) {
+            setTimeout(() => {
+                this.nonCharacterObjects.push(recreate);
+                socket.emit("allObjects", this.getSendableNonCharacterObjects());
+                socket.broadcast.emit("allObjects", this.getSendableNonCharacterObjects());
+            }, 30 * 1000); // Recreate the object after 30 seconds
+        }
     }
 
     disconnectPlayer(socket) {
@@ -38,12 +67,31 @@ class Manager {
         socket.broadcast.emit("otherPlayers", this.getSendablePlayers());
     }
 
-    getSendablePlayers(socket) {
+    getSendablePlayers() {
         let sendPlayers = [];
         this.players.forEach(player => {
             sendPlayers.push(player.getSmallObject());
         });
         return JSON.stringify(sendPlayers);
+    }
+
+    createNonCharacterObjects(objects) {
+        this.nonCharacterObjects = [];
+        this.originalCharacterObjects = [];
+        let i = 0;
+        objects.forEach(obj => {
+            obj.id = i++;
+            this.nonCharacterObjects.push(new NonCharacterObject.NonCharacterObject(obj));
+            this.originalCharacterObjects.push(new NonCharacterObject.NonCharacterObject(obj));
+        });
+    }
+
+    getSendableNonCharacterObjects() {
+        let nonCharacterObjectsJsonString = [];
+        this.nonCharacterObjects.forEach(obj => {
+            nonCharacterObjectsJsonString.push(obj.getSmallObject());
+        });
+        return JSON.stringify(nonCharacterObjectsJsonString);
     }
 }
 

@@ -46,6 +46,8 @@ class Map {
         console.log('Map loaded:');
         console.log('#layers:' + map.layers.length);
         console.log('#tiles horizontally in tileset:' + map.twidth);
+        console.log('#objects:' + objects.length);
+        console.log('#enemies:' + enemies.length);
         callback(objects, enemies);
     }
 
