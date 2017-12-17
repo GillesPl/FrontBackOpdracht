@@ -1,8 +1,10 @@
 import GameObject from "../_GameObject.base.class";
 
 export default class Projectile extends GameObject {
-    constructor(x, y, angleInRadians, strength, width, height, map) {
+    constructor(id, name, x, y, angleInRadians, strength, width, height, map) {
         super();
+        this.id = id;
+        this.name = name;
         this.x = x;
         this.y = y;
         this.strength = strength;
@@ -12,6 +14,19 @@ export default class Projectile extends GameObject {
         this.map = map;
         this.speed = 512;
         this.destroyed = false;
+    }
+
+    getSmallObject() {
+        let smallObject = {};
+        smallObject.id = this.id;
+        smallObject.name = this.name;
+        smallObject.x = this.x;
+        smallObject.y = this.y;
+        smallObject.strength = this.strength;
+        smallObject.angleInRadians = this.angleInRadians;
+        smallObject.width = this.width;
+        smallObject.height = this.height;
+        return JSON.stringify(smallObject);
     }
 
     doDamage() {

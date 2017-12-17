@@ -9,6 +9,7 @@ import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class"
 import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
+import Pojectile from "../GameObjects/Projectiles/_Projectile.base.class";
 
 // inventoryItems
 import Sword_1 from "../GameObjects/InventoryObjects/Sword_1.class";
@@ -42,6 +43,7 @@ import Empty_bottle_1 from "../GameObjects/InventoryObjects/Empty_bottle_1.class
 import Empty_bottle_2 from "../GameObjects/InventoryObjects/Empty_bottle_2.class";
 import Empty_bottle_3 from "../GameObjects/InventoryObjects/Empty_bottle_3.class";
 import Empty_bottle_4 from "../GameObjects/InventoryObjects/Empty_bottle_4.class";
+import Arrow_1 from "../GameObjects/Projectiles/Arrow_1.class";
 
 export default class MainGameState extends GameState {
     constructor(ctx, map, socket) {
@@ -232,46 +234,45 @@ export default class MainGameState extends GameState {
     }
 
     loadSocket(client) {
-        let self = this;
-        client.on('connect', function () {
-            self.connected = true;
-            clearTimeout(self.timeout);
+        client.on('connect', () => {
+            this.connected = true;
+            clearTimeout(this.timeout);
             console.log('connected');
         });
-        client.on('disconnect', function () {
-            self.connected = false;
+        client.on('disconnect', () => {
+            this.connected = false;
             console.log('disconnected');
-            self.retryConnectOnFailure(3000, client, self); // Try again in 3s
+            this.retryConnectOnFailure(3000, client, this); // Try again in 3s
         });
-        client.on("otherPlayers", function (othersJsonString) {
-            self.otherPlayers = [];
+        client.on("otherPlayers", (othersJsonString) => {
+            this.otherPlayers = [];
             const others = JSON.parse(othersJsonString);
             others.forEach((playerJsonString) => {
                 const player = JSON.parse(playerJsonString);
-                if (player.id != self.hero.id) {
-                    self.otherPlayers.push(new OtherPlayer(player, self.Loader, self.map));
+                if (player.id != this.hero.id) {
+                    this.otherPlayers.push(new OtherPlayer(player, this.Loader, this.map));
                 }
             });
         });
-        client.on("New_connection", function (playerString) {
+        client.on("New_connection", (playerString) => {
             const player = JSON.parse(playerString);
-            self.otherPlayers.push(new OtherPlayer(player, self.Loader, self.map));
+            this.otherPlayers.push(new OtherPlayer(player, this.Loader, this.map));
         });
-        client.on("user_leave", function (playerString) {
+        client.on("user_leave", (playerString) => {
             const player = JSON.parse(playerString);
             //console.log('player left');
             let toDeleteIndex = 0;
-            for (let i = 0; i < self.otherPlayers.length; i++) {
-                if (self.otherPlayers[i].id === player.id)
+            for (let i = 0; i < this.otherPlayers.length; i++) {
+                if (this.otherPlayers[i].id === player.id)
                     toDeleteIndex = i;
             }
-            self.otherPlayers.splice(i, 1);
-            //self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
+            this.otherPlayers.splice(i, 1);
+            //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
         });
-        client.on("updatingPlayer", function (heroString) {
+        client.on("updatingPlayer", (heroString) => {
             let found = false; // is player in cache
             const hero = JSON.parse(heroString);
-            self.otherPlayers.forEach((player) => {
+            this.otherPlayers.forEach((player) => {
                 if (player.id === hero.id) {
                     //console.log('info from ' + player.id);
                     player.action = hero.action;
@@ -282,12 +283,23 @@ export default class MainGameState extends GameState {
                 }
             });
             if (!found) {
-                self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
+                this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
             }
         });
-        client.on("allObjects", function (objectsString) {
+        client.on("allObjects", (objectsString) => {
             const objects = JSON.parse(objectsString);
-            self.loadNonCharacterObjects(objects, self);
+            this.loadNonCharacterObjects(objects, this);
+        });
+        client.on("newProjectile", (projectileJsonString) => {
+            const projectile = JSON.parse(projectileJsonString);
+            let newProjectile = null;
+            switch (projectile.name) {
+                case "Arrow_1":
+                    newProjectile = new Arrow_1(projectile.id, this.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
+                    break;
+            }
+
+            this.InventoryManager.projectiles.push(newProjectile);
         });
     }
 
@@ -336,6 +348,10 @@ export default class MainGameState extends GameState {
             this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
             this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')
         ];
+    }
+
+    sendNewProjectile(projectile) {
+        this.socket.emit("newProjectile", projectile.getSmallObject());
     }
 
     update(delta) {
@@ -505,7 +521,7 @@ export default class MainGameState extends GameState {
             x: event.pageX,
             y: event.pageY
         };
-        this.InventoryManager.onMouseUp(mousePosition);
+        this.InventoryManager.onMouseUp(mousePosition, this);
     }
 
     onMouseMove(event) {

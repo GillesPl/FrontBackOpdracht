@@ -1048,6 +1048,10 @@ var _GameState2 = __webpack_require__(28);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
+var _ProjectileBase = __webpack_require__(25);
+
+var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
+
 var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
@@ -1171,6 +1175,10 @@ var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 var _Empty_bottle_7 = __webpack_require__(11);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
+
+var _Arrow_ = __webpack_require__(24);
+
+var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1388,45 +1396,46 @@ var MainGameState = function (_GameState) {
     }, {
         key: "loadSocket",
         value: function loadSocket(client) {
-            var self = this;
+            var _this2 = this;
+
             client.on('connect', function () {
-                self.connected = true;
-                clearTimeout(self.timeout);
+                _this2.connected = true;
+                clearTimeout(_this2.timeout);
                 console.log('connected');
             });
             client.on('disconnect', function () {
-                self.connected = false;
+                _this2.connected = false;
                 console.log('disconnected');
-                self.retryConnectOnFailure(3000, client, self); // Try again in 3s
+                _this2.retryConnectOnFailure(3000, client, _this2); // Try again in 3s
             });
             client.on("otherPlayers", function (othersJsonString) {
-                self.otherPlayers = [];
+                _this2.otherPlayers = [];
                 var others = JSON.parse(othersJsonString);
                 others.forEach(function (playerJsonString) {
                     var player = JSON.parse(playerJsonString);
-                    if (player.id != self.hero.id) {
-                        self.otherPlayers.push(new _OtherPlayer2.default(player, self.Loader, self.map));
+                    if (player.id != _this2.hero.id) {
+                        _this2.otherPlayers.push(new _OtherPlayer2.default(player, _this2.Loader, _this2.map));
                     }
                 });
             });
             client.on("New_connection", function (playerString) {
                 var player = JSON.parse(playerString);
-                self.otherPlayers.push(new _OtherPlayer2.default(player, self.Loader, self.map));
+                _this2.otherPlayers.push(new _OtherPlayer2.default(player, _this2.Loader, _this2.map));
             });
             client.on("user_leave", function (playerString) {
                 var player = JSON.parse(playerString);
                 //console.log('player left');
                 var toDeleteIndex = 0;
-                for (var _i = 0; _i < self.otherPlayers.length; _i++) {
-                    if (self.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
+                for (var _i = 0; _i < _this2.otherPlayers.length; _i++) {
+                    if (_this2.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
                 }
-                self.otherPlayers.splice(i, 1);
-                //self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
+                _this2.otherPlayers.splice(i, 1);
+                //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
             });
             client.on("updatingPlayer", function (heroString) {
                 var found = false; // is player in cache
                 var hero = JSON.parse(heroString);
-                self.otherPlayers.forEach(function (player) {
+                _this2.otherPlayers.forEach(function (player) {
                     if (player.id === hero.id) {
                         //console.log('info from ' + player.id);
                         player.action = hero.action;
@@ -1437,12 +1446,23 @@ var MainGameState = function (_GameState) {
                     }
                 });
                 if (!found) {
-                    self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
+                    _this2.otherPlayers.push(new _OtherPlayer2.default(hero, _this2.Loader, _this2.map));
                 }
             });
             client.on("allObjects", function (objectsString) {
                 var objects = JSON.parse(objectsString);
-                self.loadNonCharacterObjects(objects, self);
+                _this2.loadNonCharacterObjects(objects, _this2);
+            });
+            client.on("newProjectile", function (projectileJsonString) {
+                var projectile = JSON.parse(projectileJsonString);
+                var newProjectile = null;
+                switch (projectile.name) {
+                    case "Arrow_1":
+                        newProjectile = new _Arrow_2.default(projectile.id, _this2.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this2.map);
+                        break;
+                }
+
+                _this2.InventoryManager.projectiles.push(newProjectile);
             });
         }
     }, {
@@ -1454,9 +1474,14 @@ var MainGameState = function (_GameState) {
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')];
         }
     }, {
+        key: "sendNewProjectile",
+        value: function sendNewProjectile(projectile) {
+            this.socket.emit("newProjectile", projectile.getSmallObject());
+        }
+    }, {
         key: "update",
         value: function update(delta) {
-            var _this2 = this;
+            var _this3 = this;
 
             var dirx = 0;
             var diry = 0;
@@ -1501,27 +1526,27 @@ var MainGameState = function (_GameState) {
             this.projectiles.forEach(function (projectile) {
                 projectile.update(delta);
                 if (projectile.destroyed) {
-                    _this2.projectiles.splice(_this2.projectiles.indexOf(projectile), 1);
+                    _this3.projectiles.splice(_this3.projectiles.indexOf(projectile), 1);
                 }
             });
             this.nonCharacterObjects.forEach(function (thisObject) {
                 thisObject.update(delta);
                 if (thisObject.hasDamage()) {
-                    var playerBounds = _this2.hero.getPlayerBounds();
+                    var playerBounds = _this3.hero.getPlayerBounds();
                     if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                        _this2.hero.takeDamage(thisObject.doDamage());
+                        _this3.hero.takeDamage(thisObject.doDamage());
                     }
                 }
                 if (thisObject.canBePickedUp) {
-                    var _playerBounds = _this2.hero.getPlayerBounds();
+                    var _playerBounds = _this3.hero.getPlayerBounds();
                     if (thisObject.isNear(_playerBounds.xMin, _playerBounds.yMin, _playerBounds.xMax, _playerBounds.yMax)) {
-                        var countLeft = _this2.InventoryManager.addObject(thisObject.value);
+                        var countLeft = _this3.InventoryManager.addObject(thisObject.value);
                         if (countLeft === 0) {
-                            _this2.nonCharacterObjects.splice(_this2.nonCharacterObjects.indexOf(thisObject), 1);
+                            _this3.nonCharacterObjects.splice(_this3.nonCharacterObjects.indexOf(thisObject), 1);
                         } else {
                             thisObject.value.stackCount = countLeft;
                         }
-                        _this2.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
+                        _this3.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
                     }
                 }
             });
@@ -1529,7 +1554,7 @@ var MainGameState = function (_GameState) {
             //    npc.update(delta);
             //});
             this.spawners.forEach(function (spawner) {
-                spawner.update(delta, _this2.projectiles);
+                spawner.update(delta, _this3.projectiles);
             });
             this.InventoryManager.update(delta);
             this.hero.update(delta);
@@ -1550,7 +1575,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "render",
         value: function render(delta) {
-            var _this3 = this;
+            var _this4 = this;
 
             var canvas = document.querySelector("canvas");
             canvas.width = window.innerWidth;
@@ -1572,15 +1597,15 @@ var MainGameState = function (_GameState) {
             // draw map top layer
 
             var _loop = function _loop(_i2) {
-                _this3._drawLayer(_i2);
+                _this4._drawLayer(_i2);
 
                 if (layersUnderPlayer === _i2) {
-                    _this3.hero.draw(_this3.ctx);
+                    _this4.hero.draw(_this4.ctx);
                 }
 
                 if (objectLayersUnder - 1 === _i2) {
-                    _this3.nonCharacterObjects.forEach(function (thisObject) {
-                        thisObject.draw(_this3.ctx, _this3.camera.getScreenX(thisObject.x), _this3.camera.getScreenY(thisObject.y));
+                    _this4.nonCharacterObjects.forEach(function (thisObject) {
+                        thisObject.draw(_this4.ctx, _this4.camera.getScreenX(thisObject.x), _this4.camera.getScreenY(thisObject.y));
                     });
 
                     //this.NPCObjects.forEach(npc => {
@@ -1588,19 +1613,19 @@ var MainGameState = function (_GameState) {
                     //        this.camera.getScreenX(npc.x),
                     //        this.camera.getScreenY(npc.y));
                     //});
-                    _this3.spawners.forEach(function (spawner) {
-                        spawner.draw(_this3.ctx, _this3.camera);
+                    _this4.spawners.forEach(function (spawner) {
+                        spawner.draw(_this4.ctx, _this4.camera);
                     });
 
-                    _this3.projectiles.forEach(function (projectile) {
-                        projectile.draw(_this3.ctx, _this3.camera.getScreenX(projectile.x), _this3.camera.getScreenY(projectile.y));
+                    _this4.projectiles.forEach(function (projectile) {
+                        projectile.draw(_this4.ctx, _this4.camera.getScreenX(projectile.x), _this4.camera.getScreenY(projectile.y));
                     });
                 }
 
-                _this3.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = _this3.getLayersUnder(player.tileLevel);
+                _this4.otherPlayers.forEach(function (player) {
+                    var thisLayersUnder = _this4.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
-                        player.draw(_this3.ctx, _this3.camera.getScreenX(player.x), _this3.camera.getScreenY(player.y));
+                        player.draw(_this4.ctx, _this4.camera.getScreenX(player.x), _this4.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -1632,7 +1657,7 @@ var MainGameState = function (_GameState) {
                 x: event.pageX,
                 y: event.pageY
             };
-            this.InventoryManager.onMouseUp(mousePosition);
+            this.InventoryManager.onMouseUp(mousePosition, this);
         }
     }, {
         key: "onMouseMove",
@@ -3002,7 +3027,7 @@ var InventoryManager = function () {
         }
     }, {
         key: "onMouseUp",
-        value: function onMouseUp(mousePosition) {
+        value: function onMouseUp(mousePosition, sendNewProjectileListener) {
             var _this6 = this;
 
             if (this.movingObject) {
@@ -3062,7 +3087,9 @@ var InventoryManager = function () {
                                     switch (inventoryObject.createObjectName) {
                                         case 'Arrow_1':
                                             var angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                            _this6.projectiles.push(new _Arrow_2.default(_this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, inventoryObject.strength, _this6.map, _this6.map.drawSize * 0.5));
+                                            var projectile = new _Arrow_2.default(Math.random(), _this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, inventoryObject.strength, _this6.map);
+                                            sendNewProjectileListener.sendNewProjectile(projectile);
+                                            _this6.projectiles.push(projectile);
                                             //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                             if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                                 _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
@@ -3522,10 +3549,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Arrow_1 = function (_Projectile) {
     _inherits(Arrow_1, _Projectile);
 
-    function Arrow_1(Loader, x, y, angleInRadians, strength, map, drawSize) {
+    function Arrow_1(id, Loader, x, y, angleInRadians, strength, map) {
         _classCallCheck(this, Arrow_1);
 
-        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, x, y, angleInRadians, strength, drawSize, drawSize, map));
+        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
 
         _this.setImage(Loader.getImage('arrow_1'));
         return _this;
@@ -3566,11 +3593,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Projectile = function (_GameObject) {
     _inherits(Projectile, _GameObject);
 
-    function Projectile(x, y, angleInRadians, strength, width, height, map) {
+    function Projectile(id, name, x, y, angleInRadians, strength, width, height, map) {
         _classCallCheck(this, Projectile);
 
         var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this));
 
+        _this.id = id;
+        _this.name = name;
         _this.x = x;
         _this.y = y;
         _this.strength = strength;
@@ -3584,6 +3613,20 @@ var Projectile = function (_GameObject) {
     }
 
     _createClass(Projectile, [{
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.name = this.name;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.strength = this.strength;
+            smallObject.angleInRadians = this.angleInRadians;
+            smallObject.width = this.width;
+            smallObject.height = this.height;
+            return JSON.stringify(smallObject);
+        }
+    }, {
         key: "doDamage",
         value: function doDamage() {
             this.destroyed = true;

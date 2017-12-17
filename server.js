@@ -43,6 +43,10 @@ io.sockets.on('connection', function (socket) {
     socket.on("updateObject", function (obj) {
         manager.updateObject(obj, socket);
     });
+
+    socket.on("newProjectile", function (projectile) {
+        manager.updateProjectile(projectile, socket);
+    });
 });
 
 

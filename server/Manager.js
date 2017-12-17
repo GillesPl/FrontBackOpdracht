@@ -1,6 +1,7 @@
 var Map = require('./Map/Map.class');
 var Player = require('./GameObjects/Player.class');
 var NonCharacterObject = require('./GameObjects/NonCharacterObject.class');
+var Projectile = require('./GameObjects/Projectile.class');
 
 class Manager {
     constructor() {
@@ -10,6 +11,7 @@ class Manager {
 
     reset() {
         this.players = [];
+        this.projectiles = [];
         this.map = new Map.Map();
         this.map.loadMap('../Map/map.json', (objects, enemies) => {
             this.createNonCharacterObjects(objects);
@@ -55,6 +57,21 @@ class Manager {
                 socket.emit("allObjects", this.getSendableNonCharacterObjects());
                 socket.broadcast.emit("allObjects", this.getSendableNonCharacterObjects());
             }, 30 * 1000); // Recreate the object after 30 seconds
+        }
+    }
+
+    updateProjectile(projectileJsonString, socket) {
+        let projectile = JSON.parse(projectileJsonString);
+        let newProjectile = true;
+        this.projectiles.forEach(projectileToUpdate => {
+            if (projectileToUpdate.id === projectile.id) {
+                projectileToUpdate = projectile;
+                newProjectile = false;
+            }
+        });
+        if (newProjectile) {
+            this.projectiles.push(new Projectile.Projectile(projectile));
+            socket.broadcast.emit("newProjectile", projectileJsonString);            
         }
     }
 

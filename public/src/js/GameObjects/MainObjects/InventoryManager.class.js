@@ -190,7 +190,7 @@ export default class InventoryManager {
         this.movingObject = false;
     }
 
-    onMouseUp(mousePosition) {
+    onMouseUp(mousePosition, sendNewProjectileListener) {
         if (this.movingObject) {
             if (this.isInActionBar(mousePosition.x, mousePosition.y)) {
                 this.moveAction(mousePosition, true);
@@ -249,7 +249,9 @@ export default class InventoryManager {
                                 switch (inventoryObject.createObjectName) {
                                     case 'Arrow_1':
                                         let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                        this.projectiles.push(new Arrow_1(this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map, this.map.drawSize * 0.5));
+                                        let projectile = new Arrow_1(Math.random(), this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
+                                        sendNewProjectileListener.sendNewProjectile(projectile);
+                                        this.projectiles.push(projectile);
                                         //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                         if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                             this.hero.setDirection(this.hero.STATE.RUNNINGEAST);

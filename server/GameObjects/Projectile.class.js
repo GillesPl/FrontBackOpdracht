@@ -1,27 +1,27 @@
-class NonCharacterObject {
+class Projectile {
     constructor(jsonObject) {
         this.id = jsonObject.id;
+        this.name = jsonObject.name;
         this.x = jsonObject.x;
         this.y = jsonObject.y;
+        this.strength = jsonObject.strength;
+        this.angleInRadians = jsonObject.angleInRadians;
         this.width = jsonObject.width;
         this.height = jsonObject.height;
-        this.name = jsonObject.name;
-        this.properties = jsonObject.properties;
-        this.count = jsonObject.count;
     }
 
     getSmallObject() {
         let smallObject = {};
         smallObject.id = this.id;
+        smallObject.name = this.name;
         smallObject.x = this.x;
         smallObject.y = this.y;
+        smallObject.strength = this.strength;
+        smallObject.angleInRadians = this.angleInRadians;
         smallObject.width = this.width;
         smallObject.height = this.height;
-        smallObject.name = this.name;
-        smallObject.properties = this.properties;
-        smallObject.count = this.count;
         return smallObject;
     }
 }
 
-module.exports.NonCharacterObject = NonCharacterObject;
+module.exports.Projectile = Projectile;
