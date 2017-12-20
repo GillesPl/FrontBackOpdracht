@@ -1,4 +1,6 @@
 import Goblin from "../NPCObjects/Goblin.class";
+import Sheep from "../NPCObjects/Sheep.class";
+
 export default class Spawner {
     constructor(bounds, type, Loader, count, map) {
         this.tileLevel = 0;
@@ -49,6 +51,9 @@ export default class Spawner {
             switch (type) {
                 case "Goblins":
                     unit = new Goblin(this.Loader, x, y, this.map, this.bounds);
+                    break;
+                case "Sheep":
+                    unit = new Sheep(this.Loader, x, y, this.map, this.bounds);
                     break;
 
                 default:

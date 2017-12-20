@@ -74,9 +74,9 @@ export default class InventoryManager {
     keyPressed(keyCode, keyboard) {
         let checkState = this.STATES.HIDDEN;
 
-        if (keyCode === keyboard.E) {
+        if (keyCode === keyboard.I) {
             checkState = this.STATES.INVENTORY;
-        } else if (keyCode === keyboard.R) {
+        } else if (keyCode === keyboard.C) {
             checkState = this.STATES.CHARACTER;
         }
         this.iconBar.forEach(icon => {

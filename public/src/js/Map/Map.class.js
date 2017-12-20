@@ -18,7 +18,7 @@ export default class Map {
     loadMap(src, camera, hero, callback) {
         let map = this;
         let objects = [];
-        let enemies = [];
+        let npcs = [];
         this.loadJSON(src, function (data) {
             //console.log(data);
             map.cols = data.width;
@@ -34,10 +34,13 @@ export default class Map {
                         layer.objects.forEach(object => {
                             objects.push(object);
                         });
-                    } else if (layer.name === "Enemies") {
+                    } else if (layer.name === "NPC") {
                         layer.objects.forEach(object => {
-                            enemies.push(object);
+                            npcs.push(object);
                         });
+                    } else {
+                        console.log("Unknown objectgroup type: '" + layer.name + "' in layer");
+                        console.log(layer);
                     }
                     // objects.concat(layer.objects); <- not working?
                 } else {
@@ -49,7 +52,7 @@ export default class Map {
             camera.follow(hero);
             //console.log('#layers:' + map.layers.length);
             //console.log('#tiles horizontally in tileset:' + map.twidth);
-            callback(objects, enemies);
+            callback(objects, npcs);
         });
     }
 

@@ -705,22 +705,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Fire = function (_NPCObject) {
-    _inherits(Fire, _NPCObject);
+var Goblin = function (_NPCObject) {
+    _inherits(Goblin, _NPCObject);
 
-    function Fire(Loader, x, y, map, bounds) {
-        _classCallCheck(this, Fire);
+    function Goblin(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Goblin);
 
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
+        var _this = _possibleConstructorReturn(this, (Goblin.__proto__ || Object.getPrototypeOf(Goblin)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
 
         _this.setTilesImage(Loader.getImage('goblin'), 4, 4, 4);
         return _this;
     }
 
-    return Fire;
+    return Goblin;
 }(_NPCObjectBase2.default);
 
-exports.default = Fire;
+exports.default = Goblin;
 
 /***/ }),
 /* 8 */
@@ -1432,25 +1432,33 @@ var MainGameState = function (_GameState) {
             });
         }
     }, {
-        key: "loadEnemies",
-        value: function loadEnemies(enemies, gameState) {
-            enemies.forEach(function (enemie) {
-                switch (enemie.name) {
+        key: "loadNPCs",
+        value: function loadNPCs(npcs, gameState) {
+            npcs.forEach(function (npc) {
+                var bounds = {
+                    x: npc.x * gameState.map.scale,
+                    y: npc.y * gameState.map.scale,
+                    width: npc.width * gameState.map.scale,
+                    height: npc.height * gameState.map.scale
+                };
+                gameState.spawners.push(new _SpawnerBase2.default(bounds, npc.name, gameState.Loader, npc.properties.Count, gameState.map));
+                /*switch (npc.name) {
                     case "Goblins":
-                        var bounds = {
-                            x: enemie.x * gameState.map.scale,
-                            y: enemie.y * gameState.map.scale,
-                            width: enemie.width * gameState.map.scale,
-                            height: enemie.height * gameState.map.scale
+                        let bounds = {
+                            x: npc.x * gameState.map.scale,
+                            y: npc.y * gameState.map.scale,
+                            width: npc.width * gameState.map.scale,
+                            height: npc.height * gameState.map.scale
                         };
-                        gameState.spawners.push(new _SpawnerBase2.default(bounds, enemie.name, gameState.Loader, enemie.properties.Count, gameState.map));
+                        gameState.spawners.push(new Spawner(bounds, npc.name, gameState.Loader, npc.properties.Count, gameState.map));
                         break;
-
-                    default:
-                        console.log("Enemie '" + enemie.name + "' doesn't  exist.");
-                        console.log(enemie);
+                      case "Goblins":
                         break;
-                }
+                      default:
+                        console.log("Enemie '" + npc.name + "' doesn't  exist.");
+                        console.log(npc);
+                        break;
+                }*/
             });
         }
     }, {
@@ -1497,18 +1505,18 @@ var MainGameState = function (_GameState) {
         key: "init",
         value: function init() {
             this.Keyboard = new _Keyboard2.default(this);
-            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.E, this.Keyboard.R]);
+            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.I, this.Keyboard.C]);
 
             this.tileAtlas = this.Loader.getImage('tiles');
             this.hero = new _Hero2.default(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
             this.loadInventoryObjects();
 
-            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, enemies) {
+            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
                 this.socket.emit("new_user", this.hero.getSmallObject());
                 this.loadSocket(this.socket);
                 //this.loadNonCharacterObjects(objects, this);
-                this.loadEnemies(enemies, this);
+                this.loadNPCs(npcs, this);
             }.bind(this));
             this.events();
         }
@@ -1608,7 +1616,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')];
@@ -2043,8 +2051,11 @@ var Keyboard = function () {
         this.S = 83;
         this.D = 68;
         this.F = 70;
-        this.E = 69;
-        this.R = 82;
+        //this.E = 69;
+        //this.R = 82;
+        //this.X = 88;
+        this.C = 67;
+        this.I = 73;
         this._nums = [];
         for (var i = 0; i <= 9; i++) {
             this._nums.push({
@@ -2504,6 +2515,10 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
+var _Sheep = __webpack_require__(57);
+
+var _Sheep2 = _interopRequireDefault(_Sheep);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2567,6 +2582,9 @@ var Spawner = function () {
                 switch (type) {
                     case "Goblins":
                         unit = new _Goblin2.default(this.Loader, x, y, this.map, this.bounds);
+                        break;
+                    case "Sheep":
+                        unit = new _Sheep2.default(this.Loader, x, y, this.map, this.bounds);
                         break;
 
                     default:
@@ -3043,9 +3061,9 @@ var InventoryManager = function () {
 
             var checkState = this.STATES.HIDDEN;
 
-            if (keyCode === keyboard.E) {
+            if (keyCode === keyboard.I) {
                 checkState = this.STATES.INVENTORY;
-            } else if (keyCode === keyboard.R) {
+            } else if (keyCode === keyboard.C) {
                 checkState = this.STATES.CHARACTER;
             }
             this.iconBar.forEach(function (icon) {
@@ -4977,7 +4995,7 @@ var Map = function () {
         value: function loadMap(src, camera, hero, callback) {
             var map = this;
             var objects = [];
-            var enemies = [];
+            var npcs = [];
             this.loadJSON(src, function (data) {
                 //console.log(data);
                 map.cols = data.width;
@@ -4993,10 +5011,13 @@ var Map = function () {
                             layer.objects.forEach(function (object) {
                                 objects.push(object);
                             });
-                        } else if (layer.name === "Enemies") {
+                        } else if (layer.name === "NPC") {
                             layer.objects.forEach(function (object) {
-                                enemies.push(object);
+                                npcs.push(object);
                             });
+                        } else {
+                            console.log("Unknown objectgroup type: '" + layer.name + "' in layer");
+                            console.log(layer);
                         }
                         // objects.concat(layer.objects); <- not working?
                     } else {
@@ -5008,7 +5029,7 @@ var Map = function () {
                 camera.follow(hero);
                 //console.log('#layers:' + map.layers.length);
                 //console.log('#tiles horizontally in tileset:' + map.twidth);
-                callback(objects, enemies);
+                callback(objects, npcs);
             });
         }
     }, {
@@ -5136,6 +5157,48 @@ exports.default = Map;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 55 */,
+/* 56 */,
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _NPCObjectBase = __webpack_require__(21);
+
+var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Sheep = function (_NPCObject) {
+    _inherits(Sheep, _NPCObject);
+
+    function Sheep(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Sheep);
+
+        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 196, true, map, bounds));
+
+        _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
+        return _this;
+    }
+
+    return Sheep;
+}(_NPCObjectBase2.default);
+
+exports.default = Sheep;
 
 /***/ })
 /******/ ]);

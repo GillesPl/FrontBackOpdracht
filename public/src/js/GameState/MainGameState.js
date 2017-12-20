@@ -139,24 +139,34 @@ export default class MainGameState extends GameState {
         });
     }
 
-    loadEnemies(enemies, gameState) {
-        enemies.forEach(enemie => {
-            switch (enemie.name) {
+    loadNPCs(npcs, gameState) {
+        npcs.forEach(npc => {
+            let bounds = {
+                x: npc.x * gameState.map.scale,
+                y: npc.y * gameState.map.scale,
+                width: npc.width * gameState.map.scale,
+                height: npc.height * gameState.map.scale
+            };
+            gameState.spawners.push(new Spawner(bounds, npc.name, gameState.Loader, npc.properties.Count, gameState.map));
+            /*switch (npc.name) {
                 case "Goblins":
                     let bounds = {
-                        x: enemie.x * gameState.map.scale,
-                        y: enemie.y * gameState.map.scale,
-                        width: enemie.width * gameState.map.scale,
-                        height: enemie.height * gameState.map.scale
+                        x: npc.x * gameState.map.scale,
+                        y: npc.y * gameState.map.scale,
+                        width: npc.width * gameState.map.scale,
+                        height: npc.height * gameState.map.scale
                     };
-                    gameState.spawners.push(new Spawner(bounds, enemie.name, gameState.Loader, enemie.properties.Count, gameState.map));
+                    gameState.spawners.push(new Spawner(bounds, npc.name, gameState.Loader, npc.properties.Count, gameState.map));
+                    break;
+
+                case "Goblins":
                     break;
 
                 default:
-                    console.log("Enemie '" + enemie.name + "' doesn't  exist.");
-                    console.log(enemie);
+                    console.log("Enemie '" + npc.name + "' doesn't  exist.");
+                    console.log(npc);
                     break;
-            }
+            }*/
         });
     }
 
@@ -199,18 +209,28 @@ export default class MainGameState extends GameState {
     // send map in this
     init() {
         this.Keyboard = new Keyboard(this);
-        this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.E, this.Keyboard.R]);
+        this.Keyboard.listenForEvents([this.Keyboard.LEFT,
+            this.Keyboard.RIGHT,
+            this.Keyboard.UP,
+            this.Keyboard.DOWN,
+            this.Keyboard.A,
+            this.Keyboard.D,
+            this.Keyboard.W,
+            this.Keyboard.S
+        ], [this.Keyboard.I,
+            this.Keyboard.C
+        ]);
 
         this.tileAtlas = this.Loader.getImage('tiles');
         this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
         this.loadInventoryObjects();
 
-        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, enemies) {
+        this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
             this.socket.emit("new_user", this.hero.getSmallObject());
             this.loadSocket(this.socket);
             //this.loadNonCharacterObjects(objects, this);
-            this.loadEnemies(enemies, this);
+            this.loadNPCs(npcs, this);
         }.bind(this));
         this.events();
     }
@@ -313,6 +333,7 @@ export default class MainGameState extends GameState {
             this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
             this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
             this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
+            this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
             this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
 
             // InventoryItems

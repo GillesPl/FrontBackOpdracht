@@ -590,7 +590,7 @@
         }, 
         {
          "draworder":"topdown",
-         "name":"Enemies",
+         "name":"NPC",
          "objects":[
                 {
                  "height":630.333,
@@ -629,6 +629,25 @@
                  "width":114,
                  "x":552,
                  "y":455
+                }, 
+                {
+                 "height":297.439393939394,
+                 "id":34,
+                 "name":"Sheep",
+                 "properties":
+                    {
+                     "Count":50
+                    },
+                 "propertytypes":
+                    {
+                     "Count":"int"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":374.712121212121,
+                 "x":373.727272727273,
+                 "y":743.439393939394
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -636,7 +655,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":34,
+ "nextobjectid":35,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",
