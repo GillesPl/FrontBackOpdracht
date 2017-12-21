@@ -2,20 +2,21 @@ var Map = require('./Map/Map.class');
 var Player = require('./GameObjects/Player.class');
 var NonCharacterObject = require('./GameObjects/NonCharacterObject.class');
 var Projectile = require('./GameObjects/Projectile.class');
+var Spawner = require('./GameObjects/Spawner.class');
 
 class Manager {
     constructor() {
-        //this.socket = socket;
         this.reset();
     }
 
     reset() {
+        this.sockets = [];
         this.players = [];
         this.projectiles = [];
         this.map = new Map.Map();
-        this.map.loadMap('../Map/map.json', (objects, enemies) => {
-            this.createNonCharacterObjects(objects);
-            this.enemies = enemies;
+        this.map.loadMap('../Map/map.json', (objects, npcs) => {
+            this.createNonCharacterObjects(objects)
+            this.loadNPCs(npcs);
         });
     }
 
@@ -24,6 +25,13 @@ class Manager {
         socket.broadcast.emit("New_connection", playerJsonString);
         socket.emit("otherPlayers", this.getSendablePlayers());
         socket.emit("allObjects", this.getSendableNonCharacterObjects());
+        socket.emit("allSpawners", this.getSendableSpawners());
+        this.sockets.forEach(s => {
+            if (s.id === socket.id) {
+                this.sockets.splice(this.sockets.indexOf(s), 1);
+            }
+        });
+        this.sockets.push(socket);
     }
 
     updatePlayer(playerJsonString, socket) {
@@ -71,7 +79,7 @@ class Manager {
         });
         if (newProjectile) {
             this.projectiles.push(new Projectile.Projectile(projectile));
-            socket.broadcast.emit("newProjectile", projectileJsonString);            
+            socket.broadcast.emit("newProjectile", projectileJsonString);
         }
     }
 
@@ -82,6 +90,11 @@ class Manager {
             }
         });
         socket.broadcast.emit("otherPlayers", this.getSendablePlayers());
+        this.sockets.forEach(s => {
+            if (s.id === socket.id) {
+                this.sockets.splice(this.sockets.indexOf(s), 1);
+            }
+        });
     }
 
     getSendablePlayers() {
@@ -103,12 +116,34 @@ class Manager {
         });
     }
 
-    getSendableNonCharacterObjects() {
-        let nonCharacterObjectsJsonString = [];
-        this.nonCharacterObjects.forEach(obj => {
-            nonCharacterObjectsJsonString.push(obj.getSmallObject());
+    loadNPCs(npcs) {
+        this.spawners = [];
+        let id = 0;
+        npcs.forEach(npc => {
+            let bounds = {
+                x: npc.x * this.map.scale,
+                y: npc.y * this.map.scale,
+                width: npc.width * this.map.scale,
+                height: npc.height * this.map.scale
+            };
+            this.spawners.push(new Spawner.Spawner(id++, bounds, npc.name, npc.properties.Count, this.map, this.sockets));
         });
-        return JSON.stringify(nonCharacterObjectsJsonString);
+    }
+
+    getSendableNonCharacterObjects() {
+        let nonCharacterObjects = [];
+        this.nonCharacterObjects.forEach(obj => {
+            nonCharacterObjects.push(obj.getSmallObject());
+        });
+        return JSON.stringify(nonCharacterObjects);
+    }
+
+    getSendableSpawners() {
+        let spawners = [];
+        this.spawners.forEach(spawner => {
+            spawners.push(spawner.getSendableObject());
+        });
+        return JSON.stringify(spawners);
     }
 }
 

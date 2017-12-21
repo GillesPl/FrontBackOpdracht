@@ -16,7 +16,7 @@ class Map {
     loadMap(src, callback) {
         let map = this;
         let objects = [];
-        let enemies = [];
+        let npcs = [];
         var data = require(src);
         //console.log(data);
         map.cols = data.width;
@@ -32,9 +32,9 @@ class Map {
                     layer.objects.forEach(object => {
                         objects.push(object);
                     });
-                } else if (layer.name === "Enemies") {
+                } else if (layer.name === "NPC") {
                     layer.objects.forEach(object => {
-                        enemies.push(object);
+                        npcs.push(object);
                     });
                 }
             } else {
@@ -47,8 +47,8 @@ class Map {
         console.log('#layers:' + map.layers.length);
         console.log('#tiles horizontally in tileset:' + map.twidth);
         console.log('#objects:' + objects.length);
-        console.log('#enemies:' + enemies.length);
-        callback(objects, enemies);
+        console.log('#npcs:' + npcs.length);
+        callback(objects, npcs);
     }
 
 

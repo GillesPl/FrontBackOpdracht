@@ -2,8 +2,9 @@ import Goblin from "../NPCObjects/Goblin.class";
 import Sheep from "../NPCObjects/Sheep.class";
 
 export default class Spawner {
-    constructor(bounds, type, Loader, count, map) {
+    constructor(bounds, type, Loader, count, map, id, units) {
         this.tileLevel = 0;
+        this.id = id;
         this.bounds = bounds;
         this.type = type;
         this.Loader = Loader;
@@ -11,8 +12,15 @@ export default class Spawner {
         this.map = map;
         this.units = [];
         this.timeToCreate = 0;
-        for (let i = 0; i < count; i++) {
-            this.units.push(this.createOfType(type));
+
+        if (units === undefined) {
+            for (let i = 0; i < count; i++) {
+                this.units.push(this.createOfType(type));
+            }
+        } else {
+            units.forEach(unit => {
+                this.units.push(this.createUnit(unit));
+            });
         }
     }
 
@@ -33,6 +41,34 @@ export default class Spawner {
                 }
             }
         });
+    }
+
+    updateUnit(remoteUnit) {
+        if (remoteUnit.id.startsWith(this.id)) {
+            this.units.forEach(unit => {
+                if (remoteUnit.id === unit.id) {
+                    unit.x = remoteUnit.x;
+                    unit.y = remoteUnit.y;
+                    unit.health = remoteUnit.health;
+                    unit.action = remoteUnit.action;
+                    unit.doingAction = remoteUnit.doingAction;
+                    switch (unit.action) {
+                        case unit.STATE.RUNNINGNORTH:
+                            unit.imageState = 3;
+                            break;
+                        case unit.STATE.RUNNINGEAST:
+                            unit.imageState = 2;
+                            break;
+                        case unit.STATE.RUNNINGSOUTH:
+                            unit.imageState = 0;
+                            break;
+                        case unit.STATE.RUNNINGWEST:
+                            unit.imageState = 1;
+                            break;
+                    }
+                }
+            });
+        }
     }
 
     draw(ctx, camera) {
@@ -73,5 +109,40 @@ export default class Spawner {
                 unit.unitsOverlap(this.units);
         } while (collision);
         return unit;
+    }
+
+    createUnit(unit) {
+        let newUnit;
+        switch (unit.type) {
+            case "Goblins":
+                newUnit = new Goblin(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                break;
+            case "Sheep":
+                newUnit = new Sheep(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                break;
+
+            default:
+                console.log('Cannot create unit of type ' + type);
+                return null;
+        }
+        newUnit.id = unit.id;
+        newUnit.health = unit.health;
+        newUnit.action = unit.action;
+        newUnit.doingAction = unit.doingAction;
+        switch (newUnit.action) {
+            case newUnit.STATE.RUNNINGNORTH:
+                newUnit.imageState = 3;
+                break;
+            case newUnit.STATE.RUNNINGEAST:
+                newUnit.imageState = 2;
+                break;
+            case newUnit.STATE.RUNNINGSOUTH:
+                newUnit.imageState = 0;
+                break;
+            case newUnit.STATE.RUNNINGWEST:
+                newUnit.imageState = 1;
+                break;
+        }
+        return newUnit;
     }
 }

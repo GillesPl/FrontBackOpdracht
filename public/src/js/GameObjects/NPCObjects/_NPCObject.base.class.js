@@ -28,6 +28,7 @@ export default class NPCObject extends GameObject {
         this.action = this.STATE.STOP;
         this.doingAction = 0;
         this.imageState = 0;
+        this.id = -1;
     }
 
     hasDamage() {
@@ -90,31 +91,32 @@ export default class NPCObject extends GameObject {
         this.move(delta, otherNPCs);
 
         if (this.doingAction <= 0) {
-            if (this.action !== this.STATE.STOP) {
-                this.action = this.STATE.STOP;
-                this.doingAction = Math.floor(Math.random() * 3) + 2;
-            } else {
-                let previousAction = this.action;
-                this.action = Math.floor(Math.random() * 4) + 1;
-                this.imageIndex = 0;
-                switch (this.action) {
-                    case this.STATE.RUNNINGNORTH:
-                        this.imageState = 3;
-                        break;
-                    case this.STATE.RUNNINGEAST:
-                        this.imageState = 2;
-                        break;
-                    case this.STATE.RUNNINGSOUTH:
-                        this.imageState = 0;
-                        break;
-                    case this.STATE.RUNNINGWEST:
-                        this.imageState = 1;
-                        break;
-                        //default: // STOP
-                        //    break;
-                }
-                this.doingAction = Math.floor(Math.random() * 2) + 1;
-            }
+            this.action = this.STATE.STOP;
+            //if (this.action !== this.STATE.STOP) {
+            //    this.action = this.STATE.STOP;
+            //    this.doingAction = Math.floor(Math.random() * 3) + 2;
+            //} else {
+            //    let previousAction = this.action;
+            //    this.action = Math.floor(Math.random() * 4) + 1;
+            //    this.imageIndex = 0;
+            //    switch (this.action) {
+            //        case this.STATE.RUNNINGNORTH:
+            //            this.imageState = 3;
+            //            break;
+            //        case this.STATE.RUNNINGEAST:
+            //            this.imageState = 2;
+            //            break;
+            //        case this.STATE.RUNNINGSOUTH:
+            //            this.imageState = 0;
+            //            break;
+            //        case this.STATE.RUNNINGWEST:
+            //            this.imageState = 1;
+            //            break;
+            //            //default: // STOP
+            //            //    break;
+            //    }
+            //    this.doingAction = Math.floor(Math.random() * 2) + 1;
+            //}
         }
     }
 

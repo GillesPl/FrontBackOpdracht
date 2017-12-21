@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -693,7 +693,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _NPCObjectBase = __webpack_require__(21);
+var _NPCObjectBase = __webpack_require__(8);
 
 var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
@@ -733,7 +733,275 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _ProjectileBase = __webpack_require__(9);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _GameObjectBase = __webpack_require__(1);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NPCObject = function (_GameObject) {
+    _inherits(NPCObject, _GameObject);
+
+    function NPCObject(x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
+        _classCallCheck(this, NPCObject);
+
+        var _this = _possibleConstructorReturn(this, (NPCObject.__proto__ || Object.getPrototypeOf(NPCObject)).call(this));
+
+        _this.x = x;
+        _this.y = y;
+        _this.width = width;
+        _this.height = height;
+        _this.health = health;
+        _this.damage = damage;
+        _this.map = map;
+        _this.bounds = bounds;
+        _this.tileLevel = 0;
+        _this.damageDone = 0;
+        _this.attackSpeed = attackSpeed;
+        _this.speed = speed;
+        _this.passive = passive;
+        _this.canBePickedUp = false;
+        _this.STATE = {
+            STOP: 0,
+            RUNNINGNORTH: 1,
+            RUNNINGEAST: 2,
+            RUNNINGSOUTH: 3,
+            RUNNINGWEST: 4
+        };
+
+        _this.action = _this.STATE.STOP;
+        _this.doingAction = 0;
+        _this.imageState = 0;
+        _this.id = -1;
+        return _this;
+    }
+
+    _createClass(NPCObject, [{
+        key: "hasDamage",
+        value: function hasDamage() {
+            return this.damageDone > 0 ? false : this.damage >= 0;
+        }
+    }, {
+        key: "doDamage",
+        value: function doDamage() {
+            this.damageDone += 1;
+            return this.damage;
+        }
+    }, {
+        key: "getImageIndex",
+        value: function getImageIndex() {
+            if (this.action === this.STATE.STOP) return this.imageState;
+            // else
+            return this.imageState + this.cols * Math.floor(this.imageIndex);
+        }
+    }, {
+        key: "getImageX",
+        value: function getImageX() {
+            return this.getImageIndex() % this.rows;
+        }
+    }, {
+        key: "getImageY",
+        value: function getImageY() {
+            return Math.floor(this.getImageIndex() / this.rows);
+        }
+    }, {
+        key: "increaseImageIndex",
+        value: function increaseImageIndex(increase) {
+            this.imageIndex += increase * this.increaseRatio;
+            if (this.imageIndex >= this.cols) {
+                this.imageIndex -= this.cols;
+            }
+        }
+    }, {
+        key: "isHit",
+        value: function isHit(projectiles) {
+            for (var i = 0; i < projectiles.length; i++) {
+                var projectile = projectiles[i];
+                if (this.isInObject(projectile.x, projectile.y)) {
+                    var damage = projectile.doDamage();
+                    this.health -= damage;
+                    this.topText.push({
+                        text: "-" + damage,
+                        fillStyle: "red",
+                        time: 0
+                    });
+                    return true;
+                }
+            }
+            return false;
+        }
+    }, {
+        key: "update",
+        value: function update(delta, otherNPCs) {
+            _get(NPCObject.prototype.__proto__ || Object.getPrototypeOf(NPCObject.prototype), "update", this).call(this, delta);
+            if (this.damageDone > 0) {
+                this.damageDone -= delta;
+            }
+            if (this.doingAction > 0) {
+                this.doingAction -= delta;
+            }
+
+            this.move(delta, otherNPCs);
+
+            if (this.doingAction <= 0) {
+                this.action = this.STATE.STOP;
+                //if (this.action !== this.STATE.STOP) {
+                //    this.action = this.STATE.STOP;
+                //    this.doingAction = Math.floor(Math.random() * 3) + 2;
+                //} else {
+                //    let previousAction = this.action;
+                //    this.action = Math.floor(Math.random() * 4) + 1;
+                //    this.imageIndex = 0;
+                //    switch (this.action) {
+                //        case this.STATE.RUNNINGNORTH:
+                //            this.imageState = 3;
+                //            break;
+                //        case this.STATE.RUNNINGEAST:
+                //            this.imageState = 2;
+                //            break;
+                //        case this.STATE.RUNNINGSOUTH:
+                //            this.imageState = 0;
+                //            break;
+                //        case this.STATE.RUNNINGWEST:
+                //            this.imageState = 1;
+                //            break;
+                //            //default: // STOP
+                //            //    break;
+                //    }
+                //    this.doingAction = Math.floor(Math.random() * 2) + 1;
+                //}
+            }
+        }
+    }, {
+        key: "move",
+        value: function move(delta, units) {
+            var dirx = 0;
+            var diry = 0;
+            switch (this.action) {
+                case this.STATE.RUNNINGNORTH:
+                    diry = -1;
+                    break;
+                case this.STATE.RUNNINGEAST:
+                    dirx = 1;
+                    break;
+                case this.STATE.RUNNINGSOUTH:
+                    diry = 1;
+                    break;
+                case this.STATE.RUNNINGWEST:
+                    dirx = -1;
+                    break;
+                //default: // STOP
+                //    break;
+            }
+            if (!this.unitsOverlap(units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta)) {
+                this.x += dirx * this.speed * delta;
+                this.y += diry * this.speed * delta;
+            }
+
+            this._collide(dirx, diry);
+        }
+    }, {
+        key: "unitsOverlap",
+        value: function unitsOverlap(units, thisx, thisy) {
+            if (thisx === undefined) {
+                thisx = this.x;
+            }
+            if (thisy === undefined) {
+                thisy = this.y;
+            }
+            var left = thisx;
+            var right = thisx + this.width - 1;
+            var top = thisy;
+            var bottom = thisy + this.height - 1;
+
+            for (var i = 0; i < units.length; i++) {
+                var npc = units[i];
+                if (npc !== this) {
+                    if (npc.isInObject(left, top) || npc.isInObject(right, top) || npc.isInObject(right, bottom) || npc.isInObject(left, bottom)) {
+                        this.imageIndex = 0;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }, {
+        key: "_collide",
+        value: function _collide(dirx, diry) {
+            var row = void 0,
+                col = void 0;
+            var left = this.x;
+            var right = this.x + this.width - 1;
+            var top = this.y;
+            var bottom = this.y + this.height - 1;
+
+            if (left < this.bounds.x) {
+                this.x = this.bounds.x;
+                this.imageIndex = 0;
+            } else if (right > this.bounds.x + this.bounds.width) {
+                this.x = this.bounds.x + this.bounds.width - this.width;
+                this.imageIndex = 0;
+            } else if (top < this.bounds.y) {
+                this.y = this.bounds.y;
+                this.imageIndex = 0;
+            } else if (bottom > this.bounds.y + this.bounds.height) {
+                this.y = this.bounds.y + this.bounds.height - this.height;
+                this.imageIndex = 0;
+            }
+
+            // check for collisions on sprite sides
+            var collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
+            if (!collision) {
+                return;
+            }
+
+            if (diry > 0) {
+                row = this.map.getRow(bottom);
+                this.y = -this.height + this.map.getY(row);
+                this.imageIndex = 0;
+            } else if (diry < 0) {
+                row = this.map.getRow(top);
+                this.y = this.map.getY(row + 1);
+                this.imageIndex = 0;
+            } else if (dirx > 0) {
+                col = this.map.getCol(right);
+                this.x = -this.width + this.map.getX(col);
+                this.imageIndex = 0;
+            } else if (dirx < 0) {
+                col = this.map.getCol(left);
+                this.x = this.map.getX(col + 1);
+                this.imageIndex = 0;
+            }
+        }
+    }]);
+
+    return NPCObject;
+}(_GameObjectBase2.default);
+
+exports.default = NPCObject;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _ProjectileBase = __webpack_require__(10);
 
 var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
 
@@ -763,7 +1031,7 @@ var Arrow_1 = function (_Projectile) {
 exports.default = Arrow_1;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -863,7 +1131,7 @@ var Projectile = function (_GameObject) {
 exports.default = Projectile;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -903,7 +1171,7 @@ var Empty_bottle_1 = function (_InventoryObject) {
 exports.default = Empty_bottle_1;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -943,7 +1211,7 @@ var Empty_bottle_2 = function (_InventoryObject) {
 exports.default = Empty_bottle_2;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -983,7 +1251,7 @@ var Empty_bottle_3 = function (_InventoryObject) {
 exports.default = Empty_bottle_3;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1023,29 +1291,29 @@ var Empty_bottle_4 = function (_InventoryObject) {
 exports.default = Empty_bottle_4;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(15);
-module.exports = __webpack_require__(54);
+__webpack_require__(16);
+module.exports = __webpack_require__(55);
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(16);
+var _GameStateManager = __webpack_require__(17);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _MainGameState = __webpack_require__(17);
+var _MainGameState = __webpack_require__(18);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(53);
+var _Map = __webpack_require__(54);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -1062,7 +1330,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 })();
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1132,7 +1400,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1144,11 +1412,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Camera = __webpack_require__(18);
+var _Camera = __webpack_require__(19);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(19);
+var _Keyboard = __webpack_require__(20);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
@@ -1156,7 +1424,7 @@ var _Fire = __webpack_require__(2);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
-var _DroppedItem = __webpack_require__(20);
+var _DroppedItem = __webpack_require__(21);
 
 var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
 
@@ -1168,27 +1436,27 @@ var _SpawnerBase = __webpack_require__(22);
 
 var _SpawnerBase2 = _interopRequireDefault(_SpawnerBase);
 
-var _Hero = __webpack_require__(23);
+var _Hero = __webpack_require__(24);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _InventoryManager = __webpack_require__(24);
+var _InventoryManager = __webpack_require__(25);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(26);
+var _OtherPlayer = __webpack_require__(27);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(27);
+var _Loader = __webpack_require__(28);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState2 = __webpack_require__(28);
+var _GameState2 = __webpack_require__(29);
 
 var _GameState3 = _interopRequireDefault(_GameState2);
 
-var _ProjectileBase = __webpack_require__(9);
+var _ProjectileBase = __webpack_require__(10);
 
 var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
 
@@ -1196,67 +1464,67 @@ var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(29);
+var _Sword_3 = __webpack_require__(30);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(30);
+var _Sword_5 = __webpack_require__(31);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(31);
+var _Shield_ = __webpack_require__(32);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(32);
+var _Shield_3 = __webpack_require__(33);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(33);
+var _Shield_5 = __webpack_require__(34);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(34);
+var _Shield_7 = __webpack_require__(35);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(35);
+var _Axe_ = __webpack_require__(36);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(36);
+var _Axe_3 = __webpack_require__(37);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(37);
+var _Axe_5 = __webpack_require__(38);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(38);
+var _Bow_ = __webpack_require__(39);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(39);
+var _Bow_3 = __webpack_require__(40);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(40);
+var _Bow_5 = __webpack_require__(41);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(41);
+var _Mace = __webpack_require__(42);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(42);
+var _Spear = __webpack_require__(43);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(43);
+var _Armor_ = __webpack_require__(44);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(44);
+var _Armor_3 = __webpack_require__(45);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
@@ -1264,19 +1532,19 @@ var _Boots_ = __webpack_require__(6);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(45);
+var _Boots_3 = __webpack_require__(46);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(46);
+var _Boots_5 = __webpack_require__(47);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(47);
+var _Helmet_ = __webpack_require__(48);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(48);
+var _Helmet_3 = __webpack_require__(49);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
@@ -1284,39 +1552,39 @@ var _Coin = __webpack_require__(4);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(49);
+var _Health_bottle_ = __webpack_require__(50);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(50);
+var _Health_bottle_3 = __webpack_require__(51);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(51);
+var _Health_bottle_5 = __webpack_require__(52);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(52);
+var _Health_bottle_7 = __webpack_require__(53);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
-var _Empty_bottle_ = __webpack_require__(10);
+var _Empty_bottle_ = __webpack_require__(11);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
-var _Empty_bottle_3 = __webpack_require__(11);
+var _Empty_bottle_3 = __webpack_require__(12);
 
 var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
 
-var _Empty_bottle_5 = __webpack_require__(12);
+var _Empty_bottle_5 = __webpack_require__(13);
 
 var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 
-var _Empty_bottle_7 = __webpack_require__(13);
+var _Empty_bottle_7 = __webpack_require__(14);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
-var _Arrow_ = __webpack_require__(8);
+var _Arrow_ = __webpack_require__(9);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
@@ -1407,21 +1675,23 @@ var MainGameState = function (_GameState) {
         }
     }, {
         key: "loadNonCharacterObjects",
-        value: function loadNonCharacterObjects(objects, gameState) {
-            gameState.nonCharacterObjects = [];
+        value: function loadNonCharacterObjects(objects) {
+            var _this2 = this;
+
+            this.nonCharacterObjects = [];
             objects.forEach(function (object) {
                 switch (object.name) {
                     case "Fire":
-                        gameState.nonCharacterObjects.push(new _Fire2.default(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                        _this2.nonCharacterObjects.push(new _Fire2.default(_this2.Loader, object.id, object.x * _this2.map.scale, object.y * _this2.map.scale));
                         break;
 
                     case "Coin":
-                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale, 16, 16, "coin", object.properties.Count));
+                        _this2.nonCharacterObjects.push(new _DroppedItem2.default(_this2.Loader, object.id, object.x * _this2.map.scale, object.y * _this2.map.scale, 16, 16, "coin", object.properties.Count));
                         break;
 
                     case "Sword_1":
                     case "Boots_1":
-                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.id, object.x * gameState.map.scale, object.y * gameState.map.scale, 32, 32, object.name, object.properties.Count));
+                        _this2.nonCharacterObjects.push(new _DroppedItem2.default(_this2.Loader, object.id, object.x * _this2.map.scale, object.y * _this2.map.scale, 32, 32, object.name, object.properties.Count));
                         break;
 
                     default:
@@ -1433,32 +1703,28 @@ var MainGameState = function (_GameState) {
         }
     }, {
         key: "loadNPCs",
-        value: function loadNPCs(npcs, gameState) {
+        value: function loadNPCs(npcs) {
+            var _this3 = this;
+
+            this.spawners = [];
             npcs.forEach(function (npc) {
                 var bounds = {
-                    x: npc.x * gameState.map.scale,
-                    y: npc.y * gameState.map.scale,
-                    width: npc.width * gameState.map.scale,
-                    height: npc.height * gameState.map.scale
+                    x: npc.x * _this3.map.scale,
+                    y: npc.y * _this3.map.scale,
+                    width: npc.width * _this3.map.scale,
+                    height: npc.height * _this3.map.scale
                 };
-                gameState.spawners.push(new _SpawnerBase2.default(bounds, npc.name, gameState.Loader, npc.properties.Count, gameState.map));
-                /*switch (npc.name) {
-                    case "Goblins":
-                        let bounds = {
-                            x: npc.x * gameState.map.scale,
-                            y: npc.y * gameState.map.scale,
-                            width: npc.width * gameState.map.scale,
-                            height: npc.height * gameState.map.scale
-                        };
-                        gameState.spawners.push(new Spawner(bounds, npc.name, gameState.Loader, npc.properties.Count, gameState.map));
-                        break;
-                      case "Goblins":
-                        break;
-                      default:
-                        console.log("Enemie '" + npc.name + "' doesn't  exist.");
-                        console.log(npc);
-                        break;
-                }*/
+                _this3.spawners.push(new _SpawnerBase2.default(bounds, npc.name, _this3.Loader, npc.properties.Count, _this3.map));
+            });
+        }
+    }, {
+        key: "loadSpawners",
+        value: function loadSpawners(spawners) {
+            var _this4 = this;
+
+            this.spawners = [];
+            spawners.forEach(function (spawner) {
+                _this4.spawners.push(new _SpawnerBase2.default(spawner.bounds, spawner.type, _this4.Loader, spawner.count, _this4.map, spawner.id, spawner.units));
             });
         }
     }, {
@@ -1515,8 +1781,8 @@ var MainGameState = function (_GameState) {
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
                 this.socket.emit("new_user", this.hero.getSmallObject());
                 this.loadSocket(this.socket);
-                //this.loadNonCharacterObjects(objects, this);
-                this.loadNPCs(npcs, this);
+                //this.loadNonCharacterObjects(objects);
+                //this.loadNPCs(npcs);
             }.bind(this));
             this.events();
         }
@@ -1544,46 +1810,46 @@ var MainGameState = function (_GameState) {
     }, {
         key: "loadSocket",
         value: function loadSocket(client) {
-            var _this2 = this;
+            var _this5 = this;
 
             client.on('connect', function () {
-                _this2.connected = true;
-                clearTimeout(_this2.timeout);
+                _this5.connected = true;
+                clearTimeout(_this5.timeout);
                 console.log('connected');
             });
             client.on('disconnect', function () {
-                _this2.connected = false;
+                _this5.connected = false;
                 console.log('disconnected');
-                _this2.retryConnectOnFailure(3000, client, _this2); // Try again in 3s
+                _this5.retryConnectOnFailure(3000, client, _this5); // Try again in 3s
             });
             client.on("otherPlayers", function (othersJsonString) {
-                _this2.otherPlayers = [];
+                _this5.otherPlayers = [];
                 var others = JSON.parse(othersJsonString);
                 others.forEach(function (playerJsonString) {
                     var player = JSON.parse(playerJsonString);
-                    if (player.id != _this2.hero.id) {
-                        _this2.otherPlayers.push(new _OtherPlayer2.default(player, _this2.Loader, _this2.map));
+                    if (player.id != _this5.hero.id) {
+                        _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.Loader, _this5.map));
                     }
                 });
             });
             client.on("New_connection", function (playerString) {
                 var player = JSON.parse(playerString);
-                _this2.otherPlayers.push(new _OtherPlayer2.default(player, _this2.Loader, _this2.map));
+                _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.Loader, _this5.map));
             });
             client.on("user_leave", function (playerString) {
                 var player = JSON.parse(playerString);
                 //console.log('player left');
                 var toDeleteIndex = 0;
-                for (var _i = 0; _i < _this2.otherPlayers.length; _i++) {
-                    if (_this2.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
+                for (var _i = 0; _i < _this5.otherPlayers.length; _i++) {
+                    if (_this5.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
                 }
-                _this2.otherPlayers.splice(i, 1);
+                _this5.otherPlayers.splice(i, 1);
                 //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
             });
             client.on("updatingPlayer", function (heroString) {
                 var found = false; // is player in cache
                 var hero = JSON.parse(heroString);
-                _this2.otherPlayers.forEach(function (player) {
+                _this5.otherPlayers.forEach(function (player) {
                     if (player.id === hero.id) {
                         //console.log('info from ' + player.id);
                         player.action = hero.action;
@@ -1594,23 +1860,37 @@ var MainGameState = function (_GameState) {
                     }
                 });
                 if (!found) {
-                    _this2.otherPlayers.push(new _OtherPlayer2.default(hero, _this2.Loader, _this2.map));
+                    _this5.otherPlayers.push(new _OtherPlayer2.default(hero, _this5.Loader, _this5.map));
                 }
             });
             client.on("allObjects", function (objectsString) {
                 var objects = JSON.parse(objectsString);
-                _this2.loadNonCharacterObjects(objects, _this2);
+                _this5.loadNonCharacterObjects(objects);
             });
             client.on("newProjectile", function (projectileJsonString) {
                 var projectile = JSON.parse(projectileJsonString);
                 var newProjectile = null;
                 switch (projectile.name) {
                     case "Arrow_1":
-                        newProjectile = new _Arrow_2.default(projectile.id, _this2.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this2.map);
+                        newProjectile = new _Arrow_2.default(projectile.id, _this5.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                 }
 
-                _this2.InventoryManager.projectiles.push(newProjectile);
+                _this5.InventoryManager.projectiles.push(newProjectile);
+            });
+            client.on("allSpawners", function (spawnersString) {
+                var spawners = JSON.parse(spawnersString);
+                _this5.loadSpawners(spawners);
+            });
+            client.on("newUnit", function (unitString) {
+                var unit = JSON.parse(unitString);
+                //console.log(unit);
+            });
+            client.on("updateUnit", function (unitString) {
+                var unit = JSON.parse(unitString);
+                _this5.spawners.forEach(function (spawner) {
+                    spawner.updateUnit(unit);
+                });
             });
         }
     }, {
@@ -1629,7 +1909,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "update",
         value: function update(delta) {
-            var _this3 = this;
+            var _this6 = this;
 
             var dirx = 0;
             var diry = 0;
@@ -1674,27 +1954,27 @@ var MainGameState = function (_GameState) {
             this.projectiles.forEach(function (projectile) {
                 projectile.update(delta);
                 if (projectile.destroyed) {
-                    _this3.projectiles.splice(_this3.projectiles.indexOf(projectile), 1);
+                    _this6.projectiles.splice(_this6.projectiles.indexOf(projectile), 1);
                 }
             });
             this.nonCharacterObjects.forEach(function (thisObject) {
                 thisObject.update(delta);
                 if (thisObject.hasDamage()) {
-                    var playerBounds = _this3.hero.getPlayerBounds();
+                    var playerBounds = _this6.hero.getPlayerBounds();
                     if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                        _this3.hero.takeDamage(thisObject.doDamage());
+                        _this6.hero.takeDamage(thisObject.doDamage());
                     }
                 }
                 if (thisObject.canBePickedUp) {
-                    var _playerBounds = _this3.hero.getPlayerBounds();
+                    var _playerBounds = _this6.hero.getPlayerBounds();
                     if (thisObject.isNear(_playerBounds.xMin, _playerBounds.yMin, _playerBounds.xMax, _playerBounds.yMax)) {
-                        var countLeft = _this3.InventoryManager.addObject(thisObject.value);
+                        var countLeft = _this6.InventoryManager.addObject(thisObject.value);
                         if (countLeft === 0) {
-                            _this3.nonCharacterObjects.splice(_this3.nonCharacterObjects.indexOf(thisObject), 1);
+                            _this6.nonCharacterObjects.splice(_this6.nonCharacterObjects.indexOf(thisObject), 1);
                         } else {
                             thisObject.value.stackCount = countLeft;
                         }
-                        _this3.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
+                        _this6.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
                     }
                 }
             });
@@ -1702,7 +1982,7 @@ var MainGameState = function (_GameState) {
             //    npc.update(delta);
             //});
             this.spawners.forEach(function (spawner) {
-                spawner.update(delta, _this3.projectiles);
+                spawner.update(delta, _this6.projectiles);
             });
             this.InventoryManager.update(delta);
             this.hero.update(delta);
@@ -1723,7 +2003,7 @@ var MainGameState = function (_GameState) {
     }, {
         key: "render",
         value: function render(delta) {
-            var _this4 = this;
+            var _this7 = this;
 
             var canvas = document.querySelector("canvas");
             canvas.width = window.innerWidth;
@@ -1745,15 +2025,15 @@ var MainGameState = function (_GameState) {
             // draw map top layer
 
             var _loop = function _loop(_i2) {
-                _this4._drawLayer(_i2);
+                _this7._drawLayer(_i2);
 
                 if (layersUnderPlayer === _i2) {
-                    _this4.hero.draw(_this4.ctx);
+                    _this7.hero.draw(_this7.ctx);
                 }
 
                 if (objectLayersUnder - 1 === _i2) {
-                    _this4.nonCharacterObjects.forEach(function (thisObject) {
-                        thisObject.draw(_this4.ctx, _this4.camera.getScreenX(thisObject.x), _this4.camera.getScreenY(thisObject.y));
+                    _this7.nonCharacterObjects.forEach(function (thisObject) {
+                        thisObject.draw(_this7.ctx, _this7.camera.getScreenX(thisObject.x), _this7.camera.getScreenY(thisObject.y));
                     });
 
                     //this.NPCObjects.forEach(npc => {
@@ -1761,19 +2041,19 @@ var MainGameState = function (_GameState) {
                     //        this.camera.getScreenX(npc.x),
                     //        this.camera.getScreenY(npc.y));
                     //});
-                    _this4.spawners.forEach(function (spawner) {
-                        spawner.draw(_this4.ctx, _this4.camera);
+                    _this7.spawners.forEach(function (spawner) {
+                        spawner.draw(_this7.ctx, _this7.camera);
                     });
 
-                    _this4.projectiles.forEach(function (projectile) {
-                        projectile.draw(_this4.ctx, _this4.camera.getScreenX(projectile.x), _this4.camera.getScreenY(projectile.y));
+                    _this7.projectiles.forEach(function (projectile) {
+                        projectile.draw(_this7.ctx, _this7.camera.getScreenX(projectile.x), _this7.camera.getScreenY(projectile.y));
                     });
                 }
 
-                _this4.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = _this4.getLayersUnder(player.tileLevel);
+                _this7.otherPlayers.forEach(function (player) {
+                    var thisLayersUnder = _this7.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
-                        player.draw(_this4.ctx, _this4.camera.getScreenX(player.x), _this4.camera.getScreenY(player.y));
+                        player.draw(_this7.ctx, _this7.camera.getScreenX(player.x), _this7.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -1931,7 +2211,7 @@ var MainGameState = function (_GameState) {
 exports.default = MainGameState;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2023,7 +2303,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2145,7 +2425,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2233,272 +2513,6 @@ var DroppedItem = function (_NonCharacterObject) {
 exports.default = DroppedItem;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _GameObjectBase = __webpack_require__(1);
-
-var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var NPCObject = function (_GameObject) {
-    _inherits(NPCObject, _GameObject);
-
-    function NPCObject(x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
-        _classCallCheck(this, NPCObject);
-
-        var _this = _possibleConstructorReturn(this, (NPCObject.__proto__ || Object.getPrototypeOf(NPCObject)).call(this));
-
-        _this.x = x;
-        _this.y = y;
-        _this.width = width;
-        _this.height = height;
-        _this.health = health;
-        _this.damage = damage;
-        _this.map = map;
-        _this.bounds = bounds;
-        _this.tileLevel = 0;
-        _this.damageDone = 0;
-        _this.attackSpeed = attackSpeed;
-        _this.speed = speed;
-        _this.passive = passive;
-        _this.canBePickedUp = false;
-        _this.STATE = {
-            STOP: 0,
-            RUNNINGNORTH: 1,
-            RUNNINGEAST: 2,
-            RUNNINGSOUTH: 3,
-            RUNNINGWEST: 4
-        };
-
-        _this.action = _this.STATE.STOP;
-        _this.doingAction = 0;
-        _this.imageState = 0;
-        return _this;
-    }
-
-    _createClass(NPCObject, [{
-        key: "hasDamage",
-        value: function hasDamage() {
-            return this.damageDone > 0 ? false : this.damage >= 0;
-        }
-    }, {
-        key: "doDamage",
-        value: function doDamage() {
-            this.damageDone += 1;
-            return this.damage;
-        }
-    }, {
-        key: "getImageIndex",
-        value: function getImageIndex() {
-            if (this.action === this.STATE.STOP) return this.imageState;
-            // else
-            return this.imageState + this.cols * Math.floor(this.imageIndex);
-        }
-    }, {
-        key: "getImageX",
-        value: function getImageX() {
-            return this.getImageIndex() % this.rows;
-        }
-    }, {
-        key: "getImageY",
-        value: function getImageY() {
-            return Math.floor(this.getImageIndex() / this.rows);
-        }
-    }, {
-        key: "increaseImageIndex",
-        value: function increaseImageIndex(increase) {
-            this.imageIndex += increase * this.increaseRatio;
-            if (this.imageIndex >= this.cols) {
-                this.imageIndex -= this.cols;
-            }
-        }
-    }, {
-        key: "isHit",
-        value: function isHit(projectiles) {
-            for (var i = 0; i < projectiles.length; i++) {
-                var projectile = projectiles[i];
-                if (this.isInObject(projectile.x, projectile.y)) {
-                    var damage = projectile.doDamage();
-                    this.health -= damage;
-                    this.topText.push({
-                        text: "-" + damage,
-                        fillStyle: "red",
-                        time: 0
-                    });
-                    return true;
-                }
-            }
-            return false;
-        }
-    }, {
-        key: "update",
-        value: function update(delta, otherNPCs) {
-            _get(NPCObject.prototype.__proto__ || Object.getPrototypeOf(NPCObject.prototype), "update", this).call(this, delta);
-            if (this.damageDone > 0) {
-                this.damageDone -= delta;
-            }
-            if (this.doingAction > 0) {
-                this.doingAction -= delta;
-            }
-
-            this.move(delta, otherNPCs);
-
-            if (this.doingAction <= 0) {
-                if (this.action !== this.STATE.STOP) {
-                    this.action = this.STATE.STOP;
-                    this.doingAction = Math.floor(Math.random() * 3) + 2;
-                } else {
-                    var previousAction = this.action;
-                    this.action = Math.floor(Math.random() * 4) + 1;
-                    this.imageIndex = 0;
-                    switch (this.action) {
-                        case this.STATE.RUNNINGNORTH:
-                            this.imageState = 3;
-                            break;
-                        case this.STATE.RUNNINGEAST:
-                            this.imageState = 2;
-                            break;
-                        case this.STATE.RUNNINGSOUTH:
-                            this.imageState = 0;
-                            break;
-                        case this.STATE.RUNNINGWEST:
-                            this.imageState = 1;
-                            break;
-                        //default: // STOP
-                        //    break;
-                    }
-                    this.doingAction = Math.floor(Math.random() * 2) + 1;
-                }
-            }
-        }
-    }, {
-        key: "move",
-        value: function move(delta, units) {
-            var dirx = 0;
-            var diry = 0;
-            switch (this.action) {
-                case this.STATE.RUNNINGNORTH:
-                    diry = -1;
-                    break;
-                case this.STATE.RUNNINGEAST:
-                    dirx = 1;
-                    break;
-                case this.STATE.RUNNINGSOUTH:
-                    diry = 1;
-                    break;
-                case this.STATE.RUNNINGWEST:
-                    dirx = -1;
-                    break;
-                //default: // STOP
-                //    break;
-            }
-            if (!this.unitsOverlap(units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta)) {
-                this.x += dirx * this.speed * delta;
-                this.y += diry * this.speed * delta;
-            }
-
-            this._collide(dirx, diry);
-        }
-    }, {
-        key: "unitsOverlap",
-        value: function unitsOverlap(units, thisx, thisy) {
-            if (thisx === undefined) {
-                thisx = this.x;
-            }
-            if (thisy === undefined) {
-                thisy = this.y;
-            }
-            var left = thisx;
-            var right = thisx + this.width - 1;
-            var top = thisy;
-            var bottom = thisy + this.height - 1;
-
-            for (var i = 0; i < units.length; i++) {
-                var npc = units[i];
-                if (npc !== this) {
-                    if (npc.isInObject(left, top) || npc.isInObject(right, top) || npc.isInObject(right, bottom) || npc.isInObject(left, bottom)) {
-                        this.imageIndex = 0;
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }, {
-        key: "_collide",
-        value: function _collide(dirx, diry) {
-            var row = void 0,
-                col = void 0;
-            var left = this.x;
-            var right = this.x + this.width - 1;
-            var top = this.y;
-            var bottom = this.y + this.height - 1;
-
-            if (left < this.bounds.x) {
-                this.x = this.bounds.x;
-                this.imageIndex = 0;
-            } else if (right > this.bounds.x + this.bounds.width) {
-                this.x = this.bounds.x + this.bounds.width - this.width;
-                this.imageIndex = 0;
-            } else if (top < this.bounds.y) {
-                this.y = this.bounds.y;
-                this.imageIndex = 0;
-            } else if (bottom > this.bounds.y + this.bounds.height) {
-                this.y = this.bounds.y + this.bounds.height - this.height;
-                this.imageIndex = 0;
-            }
-
-            // check for collisions on sprite sides
-            var collision = this.map.isSolidTileAtXY(left, top, this.tileLevel) || this.map.isSolidTileAtXY(right, top, this.tileLevel) || this.map.isSolidTileAtXY(right, bottom, this.tileLevel) || this.map.isSolidTileAtXY(left, bottom, this.tileLevel);
-            if (!collision) {
-                return;
-            }
-
-            if (diry > 0) {
-                row = this.map.getRow(bottom);
-                this.y = -this.height + this.map.getY(row);
-                this.imageIndex = 0;
-            } else if (diry < 0) {
-                row = this.map.getRow(top);
-                this.y = this.map.getY(row + 1);
-                this.imageIndex = 0;
-            } else if (dirx > 0) {
-                col = this.map.getCol(right);
-                this.x = -this.width + this.map.getX(col);
-                this.imageIndex = 0;
-            } else if (dirx < 0) {
-                col = this.map.getCol(left);
-                this.x = this.map.getX(col + 1);
-                this.imageIndex = 0;
-            }
-        }
-    }]);
-
-    return NPCObject;
-}(_GameObjectBase2.default);
-
-exports.default = NPCObject;
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2515,7 +2529,7 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _Sheep = __webpack_require__(57);
+var _Sheep = __webpack_require__(23);
 
 var _Sheep2 = _interopRequireDefault(_Sheep);
 
@@ -2524,10 +2538,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Spawner = function () {
-    function Spawner(bounds, type, Loader, count, map) {
+    function Spawner(bounds, type, Loader, count, map, id, units) {
+        var _this = this;
+
         _classCallCheck(this, Spawner);
 
         this.tileLevel = 0;
+        this.id = id;
         this.bounds = bounds;
         this.type = type;
         this.Loader = Loader;
@@ -2535,15 +2552,22 @@ var Spawner = function () {
         this.map = map;
         this.units = [];
         this.timeToCreate = 0;
-        for (var i = 0; i < count; i++) {
-            this.units.push(this.createOfType(type));
+
+        if (units === undefined) {
+            for (var i = 0; i < count; i++) {
+                this.units.push(this.createOfType(type));
+            }
+        } else {
+            units.forEach(function (unit) {
+                _this.units.push(_this.createUnit(unit));
+            });
         }
     }
 
     _createClass(Spawner, [{
         key: "update",
         value: function update(delta, projectiles) {
-            var _this = this;
+            var _this2 = this;
 
             if (this.units.length < this.count) {
                 if (this.timeToCreate < 10) {
@@ -2554,13 +2578,42 @@ var Spawner = function () {
                 }
             }
             this.units.forEach(function (unit) {
-                unit.update(delta, _this.units);
+                unit.update(delta, _this2.units);
                 if (unit.isHit(projectiles)) {
                     if (unit.health <= 0) {
-                        _this.units.splice(_this.units.indexOf(unit), 1);
+                        _this2.units.splice(_this2.units.indexOf(unit), 1);
                     }
                 }
             });
+        }
+    }, {
+        key: "updateUnit",
+        value: function updateUnit(remoteUnit) {
+            if (remoteUnit.id.startsWith(this.id)) {
+                this.units.forEach(function (unit) {
+                    if (remoteUnit.id === unit.id) {
+                        unit.x = remoteUnit.x;
+                        unit.y = remoteUnit.y;
+                        unit.health = remoteUnit.health;
+                        unit.action = remoteUnit.action;
+                        unit.doingAction = remoteUnit.doingAction;
+                        switch (unit.action) {
+                            case unit.STATE.RUNNINGNORTH:
+                                unit.imageState = 3;
+                                break;
+                            case unit.STATE.RUNNINGEAST:
+                                unit.imageState = 2;
+                                break;
+                            case unit.STATE.RUNNINGSOUTH:
+                                unit.imageState = 0;
+                                break;
+                            case unit.STATE.RUNNINGWEST:
+                                unit.imageState = 1;
+                                break;
+                        }
+                    }
+                });
+            }
         }
     }, {
         key: "draw",
@@ -2600,6 +2653,42 @@ var Spawner = function () {
             } while (collision);
             return unit;
         }
+    }, {
+        key: "createUnit",
+        value: function createUnit(unit) {
+            var newUnit = void 0;
+            switch (unit.type) {
+                case "Goblins":
+                    newUnit = new _Goblin2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    break;
+                case "Sheep":
+                    newUnit = new _Sheep2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    break;
+
+                default:
+                    console.log('Cannot create unit of type ' + type);
+                    return null;
+            }
+            newUnit.id = unit.id;
+            newUnit.health = unit.health;
+            newUnit.action = unit.action;
+            newUnit.doingAction = unit.doingAction;
+            switch (newUnit.action) {
+                case newUnit.STATE.RUNNINGNORTH:
+                    newUnit.imageState = 3;
+                    break;
+                case newUnit.STATE.RUNNINGEAST:
+                    newUnit.imageState = 2;
+                    break;
+                case newUnit.STATE.RUNNINGSOUTH:
+                    newUnit.imageState = 0;
+                    break;
+                case newUnit.STATE.RUNNINGWEST:
+                    newUnit.imageState = 1;
+                    break;
+            }
+            return newUnit;
+        }
     }]);
 
     return Spawner;
@@ -2609,6 +2698,46 @@ exports.default = Spawner;
 
 /***/ }),
 /* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _NPCObjectBase = __webpack_require__(8);
+
+var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Sheep = function (_NPCObject) {
+    _inherits(Sheep, _NPCObject);
+
+    function Sheep(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Sheep);
+
+        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 196, true, map, bounds));
+
+        _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
+        return _this;
+    }
+
+    return Sheep;
+}(_NPCObjectBase2.default);
+
+exports.default = Sheep;
+
+/***/ }),
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2954,7 +3083,7 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2966,11 +3095,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _InventoryIcon = __webpack_require__(25);
+var _InventoryIcon = __webpack_require__(26);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
-var _Arrow_ = __webpack_require__(8);
+var _Arrow_ = __webpack_require__(9);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
@@ -3616,7 +3745,7 @@ var InventoryManager = function () {
 exports.default = InventoryManager;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3682,7 +3811,7 @@ var InventoryIcon = function () {
 exports.default = InventoryIcon;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3863,7 +3992,7 @@ var OtherPlayer = function () {
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3916,7 +4045,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3961,7 +4090,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4002,7 +4131,7 @@ var Sword_2 = function (_InventoryObject) {
 exports.default = Sword_2;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4043,7 +4172,7 @@ var Sword_3 = function (_InventoryObject) {
 exports.default = Sword_3;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4084,7 +4213,7 @@ var Shield_1 = function (_InventoryObject) {
 exports.default = Shield_1;
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4125,7 +4254,7 @@ var Shield_2 = function (_InventoryObject) {
 exports.default = Shield_2;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4166,7 +4295,7 @@ var Shield_3 = function (_InventoryObject) {
 exports.default = Shield_3;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4207,7 +4336,7 @@ var Shield_4 = function (_InventoryObject) {
 exports.default = Shield_4;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4247,7 +4376,7 @@ var Axe_1 = function (_InventoryObject) {
 exports.default = Axe_1;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4287,7 +4416,7 @@ var Axe_2 = function (_InventoryObject) {
 exports.default = Axe_2;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4327,7 +4456,7 @@ var Axe_3 = function (_InventoryObject) {
 exports.default = Axe_3;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4368,7 +4497,7 @@ var Bow_1 = function (_InventoryObject) {
 exports.default = Bow_1;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4409,7 +4538,7 @@ var Bow_2 = function (_InventoryObject) {
 exports.default = Bow_2;
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4450,7 +4579,7 @@ var Bow_3 = function (_InventoryObject) {
 exports.default = Bow_3;
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4490,7 +4619,7 @@ var Mace = function (_InventoryObject) {
 exports.default = Mace;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4530,7 +4659,7 @@ var Spear = function (_InventoryObject) {
 exports.default = Spear;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4571,7 +4700,7 @@ var Armor_1 = function (_InventoryObject) {
 exports.default = Armor_1;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4612,7 +4741,7 @@ var Armor_2 = function (_InventoryObject) {
 exports.default = Armor_2;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4653,7 +4782,7 @@ var Boots_2 = function (_InventoryObject) {
 exports.default = Boots_2;
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4694,7 +4823,7 @@ var Boots_3 = function (_InventoryObject) {
 exports.default = Boots_3;
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4735,7 +4864,7 @@ var Helmet_1 = function (_InventoryObject) {
 exports.default = Helmet_1;
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4776,7 +4905,7 @@ var Helmet_2 = function (_InventoryObject) {
 exports.default = Helmet_2;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4790,7 +4919,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(10);
+var _Empty_bottle_ = __webpack_require__(11);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4821,7 +4950,7 @@ var Health_bottle_1 = function (_InventoryObject) {
 exports.default = Health_bottle_1;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4835,7 +4964,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(11);
+var _Empty_bottle_ = __webpack_require__(12);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4866,7 +4995,7 @@ var Health_bottle_2 = function (_InventoryObject) {
 exports.default = Health_bottle_2;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4880,7 +5009,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(12);
+var _Empty_bottle_ = __webpack_require__(13);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4911,7 +5040,7 @@ var Health_bottle_3 = function (_InventoryObject) {
 exports.default = Health_bottle_3;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4925,7 +5054,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(13);
+var _Empty_bottle_ = __webpack_require__(14);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -4956,7 +5085,7 @@ var Health_bottle_4 = function (_InventoryObject) {
 exports.default = Health_bottle_4;
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5153,52 +5282,10 @@ var Map = function () {
 exports.default = Map;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 55 */,
-/* 56 */,
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _NPCObjectBase = __webpack_require__(21);
-
-var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Sheep = function (_NPCObject) {
-    _inherits(Sheep, _NPCObject);
-
-    function Sheep(Loader, x, y, map, bounds) {
-        _classCallCheck(this, Sheep);
-
-        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 196, true, map, bounds));
-
-        _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
-        return _this;
-    }
-
-    return Sheep;
-}(_NPCObjectBase2.default);
-
-exports.default = Sheep;
 
 /***/ })
 /******/ ]);
