@@ -119,16 +119,16 @@ class NPC {
         this._collide(dirx, diry);
     }
 
-    updateUnit(npcJsonString) {
-        let npcObject = JSON.parse(npcJsonString);
+    updateUnit(npcObject) {
         if (this.id !== npcObject.id) {
             return false;
         }
-        this.type = npcObject.type;
-        this.x = npcObject.x;
-        this.y = npcObject.y;
+        //this.type = npcObject.type;
+        //this.x = npcObject.x;
+        //this.y = npcObject.y;
         this.health = npcObject.health;
-        this.action = npcObject.action;
+        //this.action = npcObject.action;
+        //this.doingAction = npcObject.doingAction;
         return true;
     }
 

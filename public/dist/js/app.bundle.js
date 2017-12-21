@@ -983,6 +983,19 @@ var NPCObject = function (_GameObject) {
                 this.imageIndex = 0;
             }
         }
+    }, {
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.type = this.type;
+            smallObject.health = this.health;
+            smallObject.action = this.action;
+            smallObject.doingAction = this.doingAction;
+            return JSON.stringify(smallObject);
+        }
     }]);
 
     return NPCObject;
@@ -1884,7 +1897,10 @@ var MainGameState = function (_GameState) {
             });
             client.on("newUnit", function (unitString) {
                 var unit = JSON.parse(unitString);
-                //console.log(unit);
+                console.log(unit);
+                _this5.spawners.forEach(function (spawner) {
+                    spawner.newUnit(unit);
+                });
             });
             client.on("updateUnit", function (unitString) {
                 var unit = JSON.parse(unitString);
@@ -1892,6 +1908,11 @@ var MainGameState = function (_GameState) {
                     spawner.updateUnit(unit);
                 });
             });
+        }
+    }, {
+        key: "updateUnit",
+        value: function updateUnit(unitJsonString) {
+            this.socket.emit("updateUnit", unitJsonString);
         }
     }, {
         key: "load",
@@ -1982,7 +2003,7 @@ var MainGameState = function (_GameState) {
             //    npc.update(delta);
             //});
             this.spawners.forEach(function (spawner) {
-                spawner.update(delta, _this6.projectiles);
+                spawner.update(delta, _this6.projectiles, _this6);
             });
             this.InventoryManager.update(delta);
             this.hero.update(delta);
@@ -2566,25 +2587,33 @@ var Spawner = function () {
 
     _createClass(Spawner, [{
         key: "update",
-        value: function update(delta, projectiles) {
+        value: function update(delta, projectiles, parent) {
             var _this2 = this;
 
-            if (this.units.length < this.count) {
-                if (this.timeToCreate < 10) {
-                    this.timeToCreate += delta;
-                } else {
-                    this.timeToCreate = 0;
-                    this.units.push(this.createOfType(this.type));
-                }
-            }
+            //if (this.units.length < this.count) {
+            //    if (this.timeToCreate < 10) {
+            //        this.timeToCreate += delta;
+            //    } else {
+            //        this.timeToCreate = 0;
+            //        this.units.push(this.createOfType(this.type));
+            //    }
+            //}
             this.units.forEach(function (unit) {
                 unit.update(delta, _this2.units);
                 if (unit.isHit(projectiles)) {
+                    parent.updateUnit(unit.getSmallObject());
                     if (unit.health <= 0) {
                         _this2.units.splice(_this2.units.indexOf(unit), 1);
                     }
                 }
             });
+        }
+    }, {
+        key: "newUnit",
+        value: function newUnit(remoteUnit) {
+            if (remoteUnit.id.startsWith(this.id)) {
+                this.units.push(this.createUnit(remoteUnit));
+            }
         }
     }, {
         key: "updateUnit",

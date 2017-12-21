@@ -47,6 +47,10 @@ io.sockets.on('connection', function (socket) {
     socket.on("newProjectile", function (projectile) {
         manager.updateProjectile(projectile, socket);
     });
+
+    socket.on("updateUnit", function (npcJsonString) {
+        manager.updateNpc(npcJsonString, socket);
+    });
 });
 
 

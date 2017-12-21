@@ -24,23 +24,30 @@ export default class Spawner {
         }
     }
 
-    update(delta, projectiles) {
-        if (this.units.length < this.count) {
-            if (this.timeToCreate < 10) {
-                this.timeToCreate += delta;
-            } else {
-                this.timeToCreate = 0;
-                this.units.push(this.createOfType(this.type));
-            }
-        }
+    update(delta, projectiles, parent) {
+        //if (this.units.length < this.count) {
+        //    if (this.timeToCreate < 10) {
+        //        this.timeToCreate += delta;
+        //    } else {
+        //        this.timeToCreate = 0;
+        //        this.units.push(this.createOfType(this.type));
+        //    }
+        //}
         this.units.forEach(unit => {
             unit.update(delta, this.units);
             if (unit.isHit(projectiles)) {
+                parent.updateUnit(unit.getSmallObject());
                 if (unit.health <= 0) {
                     this.units.splice(this.units.indexOf(unit), 1);
                 }
             }
         });
+    }
+
+    newUnit(remoteUnit) {
+        if (remoteUnit.id.startsWith(this.id)) {
+            this.units.push(this.createUnit(remoteUnit));
+        }
     }
 
     updateUnit(remoteUnit) {

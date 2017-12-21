@@ -14,16 +14,16 @@ class Spawner {
         for (let i = 0; i < count; i++) {
             this.units.push(this.createNPC());
         }
-        
-        let delta = 16;
 
-        setInterval(() => {
-            this.checkNPCs();
-        }, 60 * 1000);
+        let delta = 16;
 
         setInterval(() => {
             this.updateNPCs(delta);
         }, delta);
+
+        setInterval(() => {
+            this.checkNPCs();
+        }, 60 * 1000);
     }
 
     sendMessage(messageId, message) {
@@ -52,7 +52,7 @@ class Spawner {
             x = (Math.random() * this.bounds.width + this.bounds.x);
             y = (Math.random() * this.bounds.height + this.bounds.y);
 
-            unit = new NPC.NPC(this.id + '' + (this.units.length), this.type, x, y, this.map, this.bounds, health, this);
+            unit = new NPC.NPC(this.id + '' + Math.floor(Math.random() * 99999), this.type, x, y, this.map, this.bounds, health, this);
             let left = x;
             let right = x + this.map.drawSize - 1;
             let top = y;
@@ -70,7 +70,8 @@ class Spawner {
 
     checkNPCs() {
         if (this.units.length < this.count) {
-            this.createNPC();
+            let unit = this.createNPC();
+            this.units.push(unit);
             this.sendMessage("newUnit", unit.getSmallObject(true));
         }
     }
@@ -78,6 +79,15 @@ class Spawner {
     updateNPCs(delta) {
         this.units.forEach(unit => {
             unit.update(delta / 1000, this.units);
+        });
+    }
+
+    updateFromClient(npc) {
+        this.units.forEach(unit => {
+            unit.updateUnit(npc);
+            if (unit.health <= 0) {
+                this.units.splice(this.units.indexOf(unit), 1);
+            }
         });
     }
 

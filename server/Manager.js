@@ -68,6 +68,16 @@ class Manager {
         }
     }
 
+    updateNpc(npcJsonString, socket) {
+        const npc = JSON.parse(npcJsonString);
+        this.spawners.forEach(spawner => {
+            if (npc.id.startsWith(spawner.id)) {
+                spawner.updateFromClient(npc);
+            }
+        });
+        socket.broadcast.emit("updateUnit", npcJsonString);
+    }
+
     updateProjectile(projectileJsonString, socket) {
         let projectile = JSON.parse(projectileJsonString);
         let newProjectile = true;

@@ -316,7 +316,10 @@ export default class MainGameState extends GameState {
         });
         client.on("newUnit", (unitString) => {
             const unit = JSON.parse(unitString);
-            //console.log(unit);
+            console.log(unit);
+            this.spawners.forEach(spawner => {
+                spawner.newUnit(unit);
+            })
         });
         client.on("updateUnit", (unitString) => {
             const unit = JSON.parse(unitString);
@@ -324,6 +327,10 @@ export default class MainGameState extends GameState {
                 spawner.updateUnit(unit);
             })
         });
+    }
+
+    updateUnit(unitJsonString) {
+        this.socket.emit("updateUnit", unitJsonString);
     }
 
     load() {
@@ -450,7 +457,7 @@ export default class MainGameState extends GameState {
         //    npc.update(delta);
         //});
         this.spawners.forEach(spawner => {
-            spawner.update(delta, this.projectiles);
+            spawner.update(delta, this.projectiles, this);
         });
         this.InventoryManager.update(delta);
         this.hero.update(delta);

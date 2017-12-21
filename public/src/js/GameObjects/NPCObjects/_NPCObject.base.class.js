@@ -223,4 +223,16 @@ export default class NPCObject extends GameObject {
             this.imageIndex = 0;
         }
     }
+
+    getSmallObject() {
+        let smallObject = {};
+        smallObject.id = this.id;
+        smallObject.x = this.x;
+        smallObject.y = this.y;
+        smallObject.type = this.type;
+        smallObject.health = this.health;
+        smallObject.action = this.action;
+        smallObject.doingAction = this.doingAction;
+        return JSON.stringify(smallObject);
+    }
 }
