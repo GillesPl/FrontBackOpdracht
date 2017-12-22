@@ -18,7 +18,7 @@ class Player {
         if (this.id !== playerObject.id) {
             return false;
         }
-        if (playerObject.resurected) console.log('oh no, someone died');
+        //if (playerObject.resurected) console.log('oh no, someone died');
         if (!this.map.isSolidTileAtXY(playerObject.x, playerObject.y, playerObject.tileLevel) &&
             (playerObject.resurected || this.x === playerObject.x || this.y === playerObject.y)) { // Players can only move one direction at a time
             this.x = playerObject.x;

@@ -852,7 +852,7 @@ var NPCObject = function (_GameObject) {
             }
             if (this.doingAction <= 0) {
                 delta += this.doingAction; // Get the difference
-                this.action = this.STATE.STOP;
+                //this.action = this.STATE.STOP;
             }
 
             this.move(delta, otherNPCs);

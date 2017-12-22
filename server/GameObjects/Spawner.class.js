@@ -16,8 +16,7 @@ class Spawner {
             this.units.push(this.createNPC());
         }
 
-        let delta = 16;
-
+        let delta = 20;
         setInterval(() => {
             if (this.players.length > 0) {
                 this.updateNPCs(delta);
@@ -89,6 +88,7 @@ class Spawner {
             unit.updateUnit(npc);
             if (unit.health <= 0) {
                 this.units.splice(this.units.indexOf(unit), 1);
+                //manager.createObject(unit.createObject());
             }
         });
     }

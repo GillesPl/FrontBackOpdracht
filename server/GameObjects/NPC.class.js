@@ -1,3 +1,5 @@
+NonCharacterObject = require('./NonCharacterObject.class');
+
 class NPC {
     constructor(id, type, x, y, map, bounds, health, parent) {
         this.id = id;
@@ -182,6 +184,21 @@ class NPC {
             this.x = this.map.getX(col + 1);
         }
     }
+
+    //createObject() {
+    //    switch (type) {
+    //        case "sheep":
+    //            let jsonObject = {};
+    //            jsonObject.id = this.id + Math.floor(Math.random() * 100);
+    //            jsonObject.x = this.x;
+    //            jsonObject.y = this.y;
+    //            //jsonObject.width = this.width;
+    //            //jsonObject.height = this.height;
+    //            jsonObject.name = "Coin";
+    //            jsonObject.count = 3;
+    //            return new NonCharacterObject.NonCharacterObject(jsonObject);
+    //    }
+    //}
 
     getSmallObject(stringify) {
         let smallObject = {};
