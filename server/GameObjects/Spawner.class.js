@@ -1,7 +1,7 @@
 var NPC = require('./NPC.class');
 
 class Spawner {
-    constructor(id, bounds, type, count, map, sockets) {
+    constructor(id, bounds, type, count, map, sockets, players) {
         this.id = id;
         this.tileLevel = 0;
         this.bounds = bounds;
@@ -11,6 +11,7 @@ class Spawner {
         this.units = [];
         this.timeToCreate = 0;
         this.sockets = sockets;
+        this.players = players;
         for (let i = 0; i < count; i++) {
             this.units.push(this.createNPC());
         }
@@ -18,7 +19,9 @@ class Spawner {
         let delta = 16;
 
         setInterval(() => {
-            this.updateNPCs(delta);
+            if (this.players.length > 0) {
+                this.updateNPCs(delta);
+            }
         }, delta);
 
         setInterval(() => {
@@ -34,7 +37,6 @@ class Spawner {
 
     createNPC() {
         let x, y, collision, unit, health;
-
         switch (this.type) {
             case "Goblins":
                 health = 50;

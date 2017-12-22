@@ -1,3 +1,7 @@
+/* 
+Try catch rond alle json parse op server
+*/
+
 var Map = require('./Map/Map.class');
 var Player = require('./GameObjects/Player.class');
 var NonCharacterObject = require('./GameObjects/NonCharacterObject.class');
@@ -136,7 +140,7 @@ class Manager {
                 width: npc.width * this.map.scale,
                 height: npc.height * this.map.scale
             };
-            this.spawners.push(new Spawner.Spawner(id++, bounds, npc.name, npc.properties.Count, this.map, this.sockets));
+            this.spawners.push(new Spawner.Spawner(id++, bounds, npc.name, npc.properties.Count, this.map, this.sockets, this.players));
         });
     }
 

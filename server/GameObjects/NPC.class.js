@@ -38,10 +38,7 @@ class NPC {
         for (let i = 0; i < units.length; i++) {
             const npc = units[i];
             if (npc !== this) {
-                if (npc.isInObject(left, top) ||
-                    npc.isInObject(right, top) ||
-                    npc.isInObject(right, bottom) ||
-                    npc.isInObject(left, bottom)) {
+                if (npc.isNear(left, top, right, bottom)) {
                     return true;
                 }
             }
@@ -49,16 +46,19 @@ class NPC {
         return false;
     }
 
-    isInObject(x, y) {
-        return (this.x < x && this.x + this.width > x &&
-            this.y < y && this.y + this.height > y);
+    isNear(xMin, yMin, xMax, yMax) {
+        // (source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other)
+        return (this.x < xMax && this.x + this.width > xMin &&
+            this.y < yMax && this.y + this.height > yMin);
     }
 
     update(delta, otherNPCs) {
         if (this.doingAction > 0) {
             this.doingAction -= delta;
         }
-
+        if (this.doingAction < 0) {
+            delta += this.doingAction; // Get the difference
+        }
         this.move(delta, otherNPCs);
 
         if (this.doingAction <= 0) {
@@ -66,31 +66,40 @@ class NPC {
                 this.action = this.STATE.STOP;
                 this.doingAction = Math.floor(Math.random() * 3) + 2;
             } else {
-                let previousAction = this.action;
-                this.action = Math.floor(Math.random() * 4) + 1;
-                switch (this.action) {
-                    case this.STATE.RUNNINGNORTH:
-                        this.imageState = 3;
-                        break;
-                    case this.STATE.RUNNINGEAST:
-                        this.imageState = 2;
-                        break;
-                    case this.STATE.RUNNINGSOUTH:
-                        this.imageState = 0;
-                        break;
-                    case this.STATE.RUNNINGWEST:
-                        this.imageState = 1;
-                        break;
-                        //default: // STOP
-                        //    break;
-                }
-                this.doingAction = Math.floor(Math.random() * 2) + 1;
+                let dirx = 0;
+                let diry = 0;
+                let count = 0;
+                do {
+                    let previousAction = this.action;
+                    this.action = Math.floor(Math.random() * 4) + 1;
+                    dirx = 0;
+                    diry = 0;
+                    switch (this.action) {
+                        case this.STATE.RUNNINGNORTH:
+                            diry = -1;
+                            break;
+                        case this.STATE.RUNNINGEAST:
+                            dirx = 1;
+                            break;
+                        case this.STATE.RUNNINGSOUTH:
+                            diry = 1;
+                            break;
+                        case this.STATE.RUNNINGWEST:
+                            dirx = -1;
+                            break;
+                            //default: // STOP
+                            //    break;
+                    }
+                    this.doingAction = Math.floor(Math.random() * 2) + 1;
+                    count++;
+                } while (count < 5 && this.unitsOverlap(this.units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta));
             }
             this.parent.sendMessage("updateUnit", this.getSmallObject(true));
         }
     }
 
     move(delta, units) {
+        this.units = units;
         let dirx = 0;
         let diry = 0;
         switch (this.action) {
@@ -112,11 +121,10 @@ class NPC {
         if (!this.unitsOverlap(units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta)) {
             this.x += dirx * this.speed * delta;
             this.y += diry * this.speed * delta;
+            this._collide(dirx, diry);
         } else {
             this.doingAction = 0; // Change action
         }
-
-        this._collide(dirx, diry);
     }
 
     updateUnit(npcObject) {

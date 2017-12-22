@@ -800,7 +800,7 @@ var NPCObject = function (_GameObject) {
     }, {
         key: "getImageIndex",
         value: function getImageIndex() {
-            if (this.action === this.STATE.STOP) return this.imageState;
+            if (this.action === this.STATE.STOP || !this.moving) return this.imageState;
             // else
             return this.imageState + this.cols * Math.floor(this.imageIndex);
         }
@@ -850,37 +850,12 @@ var NPCObject = function (_GameObject) {
             if (this.doingAction > 0) {
                 this.doingAction -= delta;
             }
+            if (this.doingAction <= 0) {
+                delta += this.doingAction; // Get the difference
+                this.action = this.STATE.STOP;
+            }
 
             this.move(delta, otherNPCs);
-
-            if (this.doingAction <= 0) {
-                this.action = this.STATE.STOP;
-                //if (this.action !== this.STATE.STOP) {
-                //    this.action = this.STATE.STOP;
-                //    this.doingAction = Math.floor(Math.random() * 3) + 2;
-                //} else {
-                //    let previousAction = this.action;
-                //    this.action = Math.floor(Math.random() * 4) + 1;
-                //    this.imageIndex = 0;
-                //    switch (this.action) {
-                //        case this.STATE.RUNNINGNORTH:
-                //            this.imageState = 3;
-                //            break;
-                //        case this.STATE.RUNNINGEAST:
-                //            this.imageState = 2;
-                //            break;
-                //        case this.STATE.RUNNINGSOUTH:
-                //            this.imageState = 0;
-                //            break;
-                //        case this.STATE.RUNNINGWEST:
-                //            this.imageState = 1;
-                //            break;
-                //            //default: // STOP
-                //            //    break;
-                //    }
-                //    this.doingAction = Math.floor(Math.random() * 2) + 1;
-                //}
-            }
         }
     }, {
         key: "move",
@@ -903,12 +878,14 @@ var NPCObject = function (_GameObject) {
                 //default: // STOP
                 //    break;
             }
+
+            this.moving = false;
             if (!this.unitsOverlap(units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta)) {
+                this.moving = true;
                 this.x += dirx * this.speed * delta;
                 this.y += diry * this.speed * delta;
+                this._collide(dirx, diry);
             }
-
-            this._collide(dirx, diry);
         }
     }, {
         key: "unitsOverlap",
@@ -927,8 +904,7 @@ var NPCObject = function (_GameObject) {
             for (var i = 0; i < units.length; i++) {
                 var npc = units[i];
                 if (npc !== this) {
-                    if (npc.isInObject(left, top) || npc.isInObject(right, top) || npc.isInObject(right, bottom) || npc.isInObject(left, bottom)) {
-                        this.imageIndex = 0;
+                    if (npc.isNear(left, top, right, bottom)) {
                         return true;
                     }
                 }
@@ -964,6 +940,7 @@ var NPCObject = function (_GameObject) {
             if (!collision) {
                 return;
             }
+            this.moving = false;
 
             if (diry > 0) {
                 row = this.map.getRow(bottom);
