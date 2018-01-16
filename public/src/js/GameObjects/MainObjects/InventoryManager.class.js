@@ -178,6 +178,11 @@ export default class InventoryManager {
             this.yAction < y && this.yAction + this.heightAction > y);
     }
 
+    isInIconBar(x, y) {
+        return (this.xIcon < x && this.xIcon + this.widthSingleIcon * this.iconBar.length > x &&
+            this.yIcon - this.heightSingleIcon < y && this.yIcon > y);
+    }
+
     onMouseDown(mousePosition) {
         this.inventory.forEach(inventoryObject => {
             if (inventoryObject.isEquiped && this.state === this.STATES.CHARACTER ||
@@ -237,7 +242,7 @@ export default class InventoryManager {
                 });
             }
             if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) &&
-                !this.isInActionBar(mousePosition.x, mousePosition.y)) {
+                !this.isInActionBar(mousePosition.x, mousePosition.y) && !this.isInIconBar(mousePosition.x, mousePosition.y)) {
                 this.inventory.forEach(inventoryObject => {
                     let location = this.selectedAction - 1;
                     if (location < 0) location = 9;
@@ -466,6 +471,8 @@ export default class InventoryManager {
         this.yIcon = this.yTop;
         this.widthIcon = width;
         this.heightIcon = height;
+        this.widthSingleIcon = drawWidth;
+        this.heightSingleIcon = drawHeight;
         this.xAction = xAction;
         this.yAction = yAction;
         this.widthAction = drawWidth * 10;

@@ -4,7 +4,7 @@ export default class GameStateManager {
         this.currentState;
         this.gameStates = [];
     }
-    
+
     draw() {
         //start the tickevent
         this.currentState.draw();
@@ -17,16 +17,15 @@ export default class GameStateManager {
 
     getState(gameState) {
         gameStates.forEach((el) => {
-            if(el === gameState) return el;
+            if (el === gameState) return el;
             else throw new Error("Gamestate not found in GameStateManager");
         });
     }
 
     getCurrentState() {
-        if(this.currentState != null) return this.currentState;
-        else throw new Error("No current Gamestate is set");        
+        if (this.currentState != null) return this.currentState;
+        else throw new Error("No current Gamestate is set");
     }
-
 
     addState(gameState) {
         this.gameStates.push(gameState);
@@ -34,15 +33,12 @@ export default class GameStateManager {
 
     removeState(gameState) {
         let index = this.gameStates.indexOf(gameState);
-        if(index != null) {
-            this.gameStates.splice(index,1);
-        }
-        else throw new Error("Gamestate not found");
+        if (index != null) {
+            this.gameStates.splice(index, 1);
+        } else throw new Error("Gamestate not found");
     }
 
     update() {
 
     }
-
-
 }
