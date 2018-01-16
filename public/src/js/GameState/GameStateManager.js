@@ -2,7 +2,7 @@ export default class GameStateManager {
 
     constructor() {
         this.currentState;
-        this.gameStates = [];
+        this.states = [];
     }
     
     draw() {
@@ -10,34 +10,34 @@ export default class GameStateManager {
         this.currentState.draw();
     }
 
-    setState(gameState) {
+    setState(state) {
         this.currentState = state;
         this.draw();
     }
 
-    getState(gameState) {
-        gameStates.forEach((el) => {
-            if(el === gameState) return el;
-            else throw new Error("Gamestate not found in GameStateManager");
+    getState(state) {
+        states.forEach((el) => {
+            if(el === state) return el;
+            else throw new Error("state not found in GameStateManager");
         });
     }
 
     getCurrentState() {
         if(this.currentState != null) return this.currentState;
-        else throw new Error("No current Gamestate is set");        
+        else throw new Error("No current state is set");        
     }
 
 
-    addState(gameState) {
-        this.gameStates.push(gameState);
+    addState(state) {
+        this.states.push(state);
     }
 
-    removeState(gameState) {
-        let index = this.gameStates.indexOf(gameState);
+    removeState(state) {
+        let index = this.states.indexOf(state);
         if(index != null) {
-            this.gameStates.splice(index,1);
+            this.states.splice(index,1);
         }
-        else throw new Error("Gamestate not found");
+        else throw new Error("state not found");
     }
 
     update() {

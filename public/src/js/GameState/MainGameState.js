@@ -64,8 +64,15 @@ export default class MainGameState extends GameState {
 
         this._previousElapsed = 0;
         this.isMousePressed = true;
-
         this.loadassets = this.load();
+        
+    }
+
+    //showCustomMenu() {
+    //
+    //}
+
+    start() {
         Promise.all(this.loadassets).then(function (loaded) {
             this.init();
             document.onmousemove = function (event) {
@@ -86,10 +93,6 @@ export default class MainGameState extends GameState {
             //}.bind(this);
         }.bind(this));
     }
-
-    //showCustomMenu() {
-    //
-    //}
 
     draw(elapsed) {
         let self = this;

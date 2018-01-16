@@ -1,12 +1,55 @@
 var express = require('express');
 var app = express();
+var mongo = require("mongodb");
+var MongoClient = mongo.MongoClient;
+var mongoose = require('mongoose');
 var server = require('http').Server(app);
 var WebSocketServer = require('websocket').server;
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server),
+    bodyParser = require("body-parser"),
+    morgan = require("morgan");
+
+
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(bodyParser.json());
+
+app.use(morgan("dev"));
+
+//models
+var Item = require("./server/Models/Item.model");
+var User = require("./server/Models/User.model");
+
+//controllers
+var UserController = require("./server/Controllers/UserController");
+
 
 /*app.use('/css',express.static(__dirname + 'public/css'));
 app.use('/js',express.static(__dirname + 'public/js'));
 app.use('/assets',express.static(__dirname + 'public/assets'));*/
+
+var url = "mongodb://localhost:27017/georgescape";
+
+mongoose.connect(url, {
+    useMongoClient: true
+});
+// Get Mongoose to use the global promise library
+mongoose.Promise = global.Promise;
+//Get the default connection
+var db = mongoose.connection;
+
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+
+var routes = express.Router();
+app.use("/api", routes);
+var userRoutes = require("./server/Routes/UserRoutes")(routes);
+
+
+
+
 app.use(express.static("public/dist/"));
 
 let players = [];
