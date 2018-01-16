@@ -5,14 +5,14 @@ export default class GameStateManager {
         this.states = [];
     }
     
-    draw() {
+    start() {
         //start the tickevent
-        this.currentState.draw();
+        this.currentState.start();
     }
 
     setState(state) {
         this.currentState = state;
-        this.draw();
+        this.start();
     }
 
     getState(state) {

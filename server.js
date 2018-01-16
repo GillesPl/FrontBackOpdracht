@@ -7,8 +7,11 @@ var server = require('http').Server(app);
 var WebSocketServer = require('websocket').server;
 var io = require('socket.io').listen(server),
     bodyParser = require("body-parser"),
-    morgan = require("morgan");
+    morgan = require("morgan")
+    config = require("./server/config");
 
+
+app.set("megaSecret", config.secret);
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -23,6 +26,7 @@ var User = require("./server/Models/User.model");
 
 //controllers
 var UserController = require("./server/Controllers/UserController");
+var AuthenticateController = require("./server/Controllers/AuthenticateController");
 
 
 /*app.use('/css',express.static(__dirname + 'public/css'));
@@ -46,8 +50,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 var routes = express.Router();
 app.use("/api", routes);
 var userRoutes = require("./server/Routes/UserRoutes")(routes);
-
-
 
 
 app.use(express.static("public/dist/"));
@@ -91,8 +93,22 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.on("requestlogin", function (player) {
-        // 
+    socket.on("registerUser" , function(user) {
+        UserController.createUserSocket(user);
+        
+    })
+
+    socket.on("requestLogin", function (user) {
+       AuthenticateController.authenticate(user,function(res) {
+        if(res.success == true) {
+            //do shit, token bij user steken????
+            socket.emit("requestLoginSuccess", res)
+        }
+        else {
+            console.log(res.message);
+        }
+       });
+       
     });
 
     socket.on("updatePlayer", function (hero) {

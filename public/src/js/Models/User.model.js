@@ -1,7 +1,10 @@
 export default class User {
 
-    constructor(username) {
+
+    constructor(username,password, mail) {
         this.username = username;
+        this.password = password;
+        this.mail = mail;
     }
 
     getUsername() {
@@ -10,5 +13,17 @@ export default class User {
 
     setUsername(username) {
         this.username = username;
+    }
+
+    getPassword() {
+        return this.password;
+    }
+
+    getEmail() {
+        return this.mail;
+    }
+
+    setEmail(email) {
+        this.mail = mail;
     }
 }

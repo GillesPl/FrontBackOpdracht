@@ -1,15 +1,13 @@
-import GameState from "./GameState";
 import User from "./../Models/User.model"
 
-export default class LoginState extends GameState {
+export default class LoginState  {
     constructor(socket) {        
-        super();
         this.socket = socket;
         this.user;
         this.body = document.querySelector("body");
     }
 
-    draw() {  
+    start() {  
         this.clearBody();
         this.drawChoice();
     }
@@ -34,7 +32,7 @@ export default class LoginState extends GameState {
 
     drawRegister() {
         this.clearBody();
-        const template = '<div class="register"><form action="/"><input type="text" placeholder="Username" name="username" id="registerUser" /><input type="password" placeholder="Password" name="password" id="registerPassword" /><input type="submit" class="btnregister" value="Register"><input type="button" class="btnback" value="Back"></form></div>';
+        const template = '<div class="register"><form action="/"><input type="email" placeholder="Email" name="email" id="registerEmail" /><input type="text" placeholder="Username" name="username" id="registerUser" /><input type="password" placeholder="Password" name="password" id="registerPassword" /><input type="submit" class="btnregister" value="Register"><input type="button" class="btnback" value="Back"></form></div>';
         this.body.innerHTML = template;
 
         this.body.querySelector(".btnback").addEventListener("click",function(e) {
@@ -43,9 +41,10 @@ export default class LoginState extends GameState {
 
         this.body.querySelector(".btnregister").addEventListener("click" , function(e) {
             e.preventDefault();
-            let user;
-            user.username = this.body.querySelector("#registerUser").value;
-            user.password = this.body.querySelector("#registerPassword").value;
+            var username = this.body.querySelector("#registerUser").value;
+            var password = this.body.querySelector("#registerPassword").value;
+            var email = this.body.querySelector("#registerEmail").value;
+            let user = new User(username,password,email);
             this.registerCall(user);
             
         }.bind(this)) 
@@ -53,26 +52,34 @@ export default class LoginState extends GameState {
 
     drawLogin() {
         this.clearBody();
-        const template = '<div class="login"><form action="/"><input type="text" placeholder="Username" name="username" id="loginUsername" /><input type="password" placeholder="Password" name="password" id="loginPassword" /><input type="submit" class="btnlogin" value="Login"><input type="button" class="btnback" value="Back"></form></div>';
+        const template = '<div class="login"><form action="/"><input type="text" placeholder="email" name="email" id="loginEmail" /><input type="password" placeholder="Password" name="password" id="loginPassword" /><input type="submit" class="btnlogin" value="Login"><input type="button" class="btnback" value="Back"></form></div>';
         this.body.innerHTML = template;
 
         this.body.querySelector(".btnback").addEventListener("click",function(e) {
+            e.preventDefault();
             this.drawChoice();
         }.bind(this));
 
         this.body.querySelector(".btnlogin").addEventListener("click" , function(e) {
             e.preventDefault();
+            var password = this.body.querySelector("#loginPassword").value;
+            var email = this.body.querySelector("#loginEmail").value;
+            let user = new User(null,password,email);
+            this.loginCall(user);
         }.bind(this)) 
     }
 
 
     registerCall(user) {
-        
+        this.socket.emit("registerUser" , {user: user});
     }
 
 
     loginCall(user) {
-
+        this.socket.emit("requestLogin" , {user : user});
+        this.socket.on("requestLoginFail", function(res) {
+            console.log(res.message);
+        })
     }
 
     clearBody() {

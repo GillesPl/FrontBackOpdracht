@@ -8,7 +8,6 @@ import Hero from "../GameObjects/MainObjects/Hero.class";
 import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class";
 import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
-import GameState from "./GameState";
 
 // inventoryItems
 import Sword_1 from "../GameObjects/InventoryObjects/Sword_1.class";
@@ -43,9 +42,8 @@ import Empty_bottle_2 from "../GameObjects/InventoryObjects/Empty_bottle_2.class
 import Empty_bottle_3 from "../GameObjects/InventoryObjects/Empty_bottle_3.class";
 import Empty_bottle_4 from "../GameObjects/InventoryObjects/Empty_bottle_4.class";
 
-export default class MainGameState extends GameState {
-    constructor(ctx, map, socket) {
-        super(ctx);
+export default class MainGameState {
+    constructor( map, socket) {
         this.map = map;
         this.hero;
         this.camera;
@@ -54,9 +52,7 @@ export default class MainGameState extends GameState {
         this.Loader = new Loader();
         this.otherPlayers = [];
         this.connected = false;
-        this.ctx = ctx;
-        this.ctx.width = window.innerWidth;
-        this.ctx.height = window.innerHeight;
+       
         this.nonCharacterObjects = [];
         //this.NPCObjects = [];
         this.spawners = [];
@@ -65,7 +61,6 @@ export default class MainGameState extends GameState {
         this._previousElapsed = 0;
         this.isMousePressed = true;
         this.loadassets = this.load();
-        
     }
 
     //showCustomMenu() {
@@ -73,6 +68,11 @@ export default class MainGameState extends GameState {
     //}
 
     start() {
+        document.querySelector("body").innerHTML = `<canvas id="game" width="512" height="512"></canvas>`;
+        this.ctx = document.querySelector("#game").getContext('2d');
+        this.ctx.width = window.innerWidth;
+        this.ctx.height = window.innerHeight;
+
         Promise.all(this.loadassets).then(function (loaded) {
             this.init();
             document.onmousemove = function (event) {
@@ -111,6 +111,10 @@ export default class MainGameState extends GameState {
         //var in update == delta, see commented code above
         this.update(delta);
         this.render(delta);
+    }
+
+    setToken(token) {
+        this.token = token;
     }
 
     loadNonCharacterObjects(objects, gameState) {

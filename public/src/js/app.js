@@ -4,7 +4,6 @@ import MainGameState from "./GameState/MainGameState";
 import Map from "./Map/Map.class";
 
 (function () {
-    let ctx = document.querySelector("#game").getContext('2d');
 
     const socket = io();
     //const socket = io.connect("http://localhost:5000");
@@ -12,17 +11,23 @@ import Map from "./Map/Map.class";
     let gamestatemanager = new GameStateManager();
 
     
-    let mainstate = new MainGameState(ctx, new Map(), socket);
+    let mainstate = new MainGameState(new Map(), socket);
     let loginstate = new LoginState(socket);
-
-    //loginstate.draw();
 
     gamestatemanager.addState(loginstate);
     gamestatemanager.addState(mainstate);
 
-
+    
     gamestatemanager.setState(loginstate);
 
+    socket.on("requestLoginSuccess", function(res) {
+        mainstate.setToken(res.token);
+        gamestatemanager.setState(mainstate);
+        console.log(gamestatemanager.getCurrentState());
+    });
+
+
+    
     console.log(gamestatemanager.getCurrentState());
 
     

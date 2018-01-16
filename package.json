@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
     "mongoose-unique-validator": "^1.0.6",
     "socket.io": "^2.0.3"
   },
