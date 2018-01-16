@@ -102,6 +102,7 @@ io.sockets.on('connection', function (socket) {
        AuthenticateController.authenticate(user,function(res) {
         if(res.success == true) {
             //do shit, token bij user steken????
+            //dbupdate user in steken, returnvalue geven naar client met socket.emit("requestLoginSuccess",res) 
             socket.emit("requestLoginSuccess", res)
         }
         else {
