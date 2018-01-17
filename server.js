@@ -35,7 +35,8 @@ var AuthenticateController = require("./server/Controllers/AuthenticateControlle
 app.use('/js',express.static(__dirname + 'public/js'));
 app.use('/assets',express.static(__dirname + 'public/assets'));*/
 
-var url = "mongodb://localhost:27017/georgescape";
+//var url = "mongodb://localhost:27017/georgescape";
+var url = "mongodb://admin:admin@ds157185.mlab.com:57185/backend-mmorpg-api";
 
 mongoose.connect(url, {
     useMongoClient: true
