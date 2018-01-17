@@ -9,10 +9,9 @@ var Map = require('./Map/Map.class'),
     Projectile = require('./GameObjects/Projectile.class'),
     Spawner = require('./GameObjects/Spawner.class');
 
-
-    //controllers
-    var UserController = require("./Controllers/UserController");
-    var AuthenticateController = require("./Controllers/AuthenticateController");
+//controllers
+var UserController = require("./Controllers/UserController");
+var AuthenticateController = require("./Controllers/AuthenticateController");
 
 class Manager {
     constructor() {
@@ -46,7 +45,6 @@ class Manager {
 
     updatePlayer(playerJsonString, socket) {
         let player = JSON.parse(playerJsonString);
-        console.log(player);
         let playerForDatabase = {
             _id: player.id,
             token: player.token,
@@ -73,7 +71,6 @@ class Manager {
     }
 
     updateObject(obj, socket) {
-        //console.log(obj);
         obj = JSON.parse(obj);
         let recreate = null;
         let delObj = null;
@@ -102,7 +99,7 @@ class Manager {
         const npc = JSON.parse(npcJsonString);
         this.spawners.forEach(spawner => {
             if (npc.id.startsWith(spawner.id)) {
-                spawner.updateFromClient(npc);
+                spawner.updateFromClient(npc, this, socket);
             }
         });
         socket.broadcast.emit("updateUnit", npcJsonString);
@@ -113,8 +110,12 @@ class Manager {
         let newProjectile = true;
         this.projectiles.forEach(projectileToUpdate => {
             if (projectileToUpdate.id === projectile.id) {
-                projectileToUpdate = projectile;
                 newProjectile = false;
+                if (projectile.destroyed) {
+                    this.projectiles.splice(this.projectiles.indexOf(projectile), 1);
+                } else {
+                    projectileToUpdate = projectile;
+                }
             }
         });
         if (newProjectile) {
@@ -148,12 +149,20 @@ class Manager {
     createNonCharacterObjects(objects) {
         this.nonCharacterObjects = [];
         this.originalCharacterObjects = [];
-        let i = 0;
-        objects.forEach(obj => {
-            obj.id = i++;
-            this.nonCharacterObjects.push(new NonCharacterObject.NonCharacterObject(obj));
-            this.originalCharacterObjects.push(new NonCharacterObject.NonCharacterObject(obj));
+        this.idIncrementer = 0;
+        objects.forEach(object => {
+            object.id = this.idIncrementer++;
+            this.nonCharacterObjects.push(new NonCharacterObject.NonCharacterObject(object));
+            this.originalCharacterObjects.push(new NonCharacterObject.NonCharacterObject(object));
         });
+    }
+
+    createObject(object, socket) {
+        object.id = this.idIncrementer++;
+        this.nonCharacterObjects.push(new NonCharacterObject.NonCharacterObject(object));
+        let send = this.getSendableNonCharacterObjects();
+        socket.emit("allObjects", send);
+        socket.broadcast.emit("allObjects", send);
     }
 
     loadNPCs(npcs) {
@@ -161,10 +170,10 @@ class Manager {
         let id = 0;
         npcs.forEach(npc => {
             let bounds = {
-                x: npc.x * this.map.scale,
-                y: npc.y * this.map.scale,
-                width: npc.width * this.map.scale,
-                height: npc.height * this.map.scale
+                x: npc.x,
+                y: npc.y,
+                width: npc.width,
+                height: npc.height
             };
             this.spawners.push(new Spawner.Spawner(id++, bounds, npc.name, npc.properties.Count, this.map, this.sockets, this.players));
         });
@@ -186,22 +195,20 @@ class Manager {
         return JSON.stringify(spawners);
     }
 
-    createUser(user,socket) {
+    createUser(user, socket) {
         // i'm so sorry :(
-        UserController.createUserSocket(user , function(res) {
-            socket.emit("requestRegister" , res);
+        UserController.createUserSocket(user, function (res) {
+            socket.emit("requestRegister", res);
         }, function (res) {
-            socket.emit("requestLogin", res);
-        });        
-    }   
-    
-    loginUser(user,socket) {
-        AuthenticateController.authenticate(user, function (res) {
             socket.emit("requestLogin", res);
         });
     }
 
-    
+    loginUser(user, socket) {
+        AuthenticateController.authenticate(user, function (res) {
+            socket.emit("requestLogin", res);
+        });
+    }
 }
 
 module.exports.Manager = Manager;

@@ -83,12 +83,12 @@ class Spawner {
         });
     }
 
-    updateFromClient(npc) {
+    updateFromClient(npc, manager, socket) {
         this.units.forEach(unit => {
             unit.updateUnit(npc);
             if (unit.health <= 0) {
                 this.units.splice(this.units.indexOf(unit), 1);
-                //manager.createObject(unit.createObject());
+                manager.createObject(unit.getDropItem(), socket);
             }
         });
     }

@@ -30,10 +30,18 @@ class Map {
             } else if (layer.type === "objectgroup") {
                 if (layer.name === "Objects") {
                     layer.objects.forEach(object => {
+                        object.x *= this.scale;
+                        object.y *= this.scale;
+                        object.width *= this.scale;
+                        object.height *= this.scale;
                         objects.push(object);
                     });
                 } else if (layer.name === "NPC") {
                     layer.objects.forEach(object => {
+                        object.x *= this.scale;
+                        object.y *= this.scale;
+                        object.width *= this.scale;
+                        object.height *= this.scale;
                         npcs.push(object);
                     });
                 }

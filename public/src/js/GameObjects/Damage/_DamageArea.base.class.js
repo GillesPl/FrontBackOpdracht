@@ -23,11 +23,13 @@ export default class DamageArea extends GameObject {
         smallObject.name = this.name;
         smallObject.x = this.x;
         smallObject.y = this.y;
+        smallObject.angleInRadians = this.angleInRadians;
         smallObject.strength = this.strength;
         smallObject.width = this.width;
         smallObject.height = this.height;
         smallObject.lifeTime = this.lifeTime;
         smallObject.totalLifeTime = this.totalLifeTime;
+        smallObject.destroyed = this.destroyed;
         return JSON.stringify(smallObject);
     }
 

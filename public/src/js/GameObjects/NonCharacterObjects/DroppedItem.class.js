@@ -154,24 +154,24 @@ export default class DroppedItem extends NonCharacterObject {
                 this.value = new Mace(Loader, count);
                 break;
 
-            case "Shield_bottle_1":
-                this.setImage(Loader.getImage('shield_bottle_1'));
-                this.value = new Shield_bottle_1(Loader, count);
+            case "Shield_1":
+                this.setImage(Loader.getImage('shield_1'));
+                this.value = new Shield_1(Loader, count);
                 break;
 
-            case "Shield_bottle_2":
-                this.setImage(Loader.getImage('shield_bottle_2'));
-                this.value = new Shield_bottle_2(Loader, count);
+            case "Shield_2":
+                this.setImage(Loader.getImage('shield_2'));
+                this.value = new Shield_2(Loader, count);
                 break;
 
-            case "Shield_bottle_3":
-                this.setImage(Loader.getImage('shield_bottle_3'));
-                this.value = new Shield_bottle_3(Loader, count);
+            case "Shield_3":
+                this.setImage(Loader.getImage('shield_3'));
+                this.value = new Shield_3(Loader, count);
                 break;
 
-            case "Shield_bottle_4":
-                this.setImage(Loader.getImage('shield_bottle_4'));
-                this.value = new Shield_bottle_4(Loader, count);
+            case "Shield_4":
+                this.setImage(Loader.getImage('shield_4'));
+                this.value = new Shield_4(Loader, count);
                 break;
 
             case "Spear":

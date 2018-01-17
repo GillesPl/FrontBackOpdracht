@@ -131,32 +131,36 @@ export default class MainGameState {
     loadNonCharacterObjects(objects) {
         this.nonCharacterObjects = [];
         objects.forEach(object => {
-            switch (object.name) {
-                case "Fire":
-                    this.nonCharacterObjects.push(new Fire(this.Loader, object.id, object.x * this.map.scale, object.y * this.map.scale));
-                    break;
-
-                case "Coin":
-                    this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x * this.map.scale, object.y * this.map.scale,
-                        16, 16, "coin", object.properties.Count));
-                    break;
-
-                default:
-                    this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x * this.map.scale, object.y * this.map.scale,
-                        32, 32, object.name, object.properties.Count));
-                    break;
-            }
+            this.createNonCharacterObject(object);
         });
+    }
+
+    createNonCharacterObject(object) {
+        switch (object.name) {
+            case "Fire":
+                this.nonCharacterObjects.push(new Fire(this.Loader, object.id, object.x, object.y));
+                break;
+
+            case "Coin":
+                this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x, object.y,
+                    16, 16, "coin", object.properties.Count));
+                break;
+
+            default:
+                this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x, object.y,
+                    32, 32, object.name, object.properties.Count));
+                break;
+        }
     }
 
     loadNPCs(npcs) {
         this.spawners = [];
         npcs.forEach(npc => {
             let bounds = {
-                x: npc.x * this.map.scale,
-                y: npc.y * this.map.scale,
-                width: npc.width * this.map.scale,
-                height: npc.height * this.map.scale
+                x: npc.x,
+                y: npc.y,
+                width: npc.width,
+                height: npc.height
             };
             this.spawners.push(new Spawner(bounds, npc.name, this.Loader, npc.properties.Count, this.map));
         });
@@ -318,11 +322,11 @@ export default class MainGameState {
                     newProjectile = new Arrow_1(projectile.id, this.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
                 case "DamageArea_1":
-                    newProjectile = new DamageArea_1(projectile.id, projectile.x, projectile.y, projectile.strength, this.map);
+                    newProjectile = new DamageArea_1(projectile.id, this.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
             }
 
-            this.InventoryManager.projectiles.push(newProjectile);
+            this.InventoryManager.damageAreas.push(newProjectile);
         });
         client.on("allSpawners", (spawnersString) => {
             const spawners = JSON.parse(spawnersString);
@@ -339,7 +343,7 @@ export default class MainGameState {
             const unit = JSON.parse(unitString);
             this.spawners.forEach(spawner => {
                 spawner.updateUnit(unit);
-            })
+            });
         });
     }
 

@@ -185,20 +185,77 @@ class NPC {
         }
     }
 
-    //createObject() {
-    //    switch (type) {
-    //        case "sheep":
-    //            let jsonObject = {};
-    //            jsonObject.id = this.id + Math.floor(Math.random() * 100);
-    //            jsonObject.x = this.x;
-    //            jsonObject.y = this.y;
-    //            //jsonObject.width = this.width;
-    //            //jsonObject.height = this.height;
-    //            jsonObject.name = "Coin";
-    //            jsonObject.count = 3;
-    //            return new NonCharacterObject.NonCharacterObject(jsonObject);
-    //    }
-    //}
+    addDrop(name, amount, chance) {
+        this.possibledrops.push({
+            id: Math.floor(Math.random() * 9999999),
+            name: name,
+            properties: {
+                Count: amount
+            },
+            chance: chance
+        });
+    }
+
+    getDropItem() {
+        this.possibledrops = [];
+        switch (this.type) {
+            case "Sheep":
+                this.addDrop("Empty_bottle_1", 3, 10);
+                this.addDrop("Armor_1", 1, 1);
+                this.addDrop("Axe_1", 1, 1);
+                this.addDrop("Boots_1", 1, 1);
+                this.addDrop("Bow_1", 1, 1);
+                this.addDrop("Health_bottle_1", 5, 1);
+                this.addDrop("Health_bottle_2", 3, 1);
+                this.addDrop("Helmet_1", 1, 1);
+                this.addDrop("Shield_1", 1, 1);
+                this.addDrop("Shield_2", 1, 1);
+                this.addDrop("Sword_1", 1, 1);
+
+                break;
+
+            case "Goblins":
+                this.addDrop("Empty_bottle_4", 3, 10);
+                this.addDrop("Armor_2", 1, 1);
+                this.addDrop("Axe_2", 1, 1);
+                this.addDrop("Axe_3", 1, 1);
+                this.addDrop("Boots_2", 1, 1);
+                this.addDrop("Boots_3", 1, 1);
+                this.addDrop("Bow_2", 1, 1);
+                this.addDrop("Bow_3", 1, 1);
+                this.addDrop("Health_bottle_3", 5, 1);
+                this.addDrop("Health_bottle_4", 3, 1);
+                this.addDrop("Helmet_2", 1, 1);
+                this.addDrop("Mace", 1, 1);
+                this.addDrop("Shield_3", 1, 1);
+                this.addDrop("Shield_4", 1, 1);
+                this.addDrop("Spear", 1, 1);
+                this.addDrop("Sword_2", 1, 1);
+                this.addDrop("Sword_3", 1, 1);
+                break;
+        }
+
+        let totalChance = 0;
+        this.possibledrops.forEach(drop => {
+            totalChance += drop.chance;
+        });
+        let rand = Math.random() * totalChance;
+
+        for (let i = 0; i < this.possibledrops.length; i++) {
+            const drop = this.possibledrops[i];
+            if (drop.chance >= rand) {
+                drop.x = this.x;
+                drop.y = this.y;
+                return drop;
+            }
+            rand -= drop.chance;
+        }
+
+        let t = this.possibledrops[Math.floor(Math.random() * this.possibledrops.length)];
+        t.x = this.x;
+        t.y = this.y;
+        return t; // Shouldn't happen
+    }
 
     getSmallObject(stringify) {
         let smallObject = {};

@@ -2,15 +2,8 @@ import DamageArea from "./_DamageArea.base.class";
 
 export default class Projectile extends DamageArea {
     constructor(id, name, x, y, angleInRadians, strength, width, height, map) {
-        super(id, name, x, y, strength, width, height, 3, map);
-        this.angleInRadians = angleInRadians;
+        super(id, name, x, y, angleInRadians, strength, width, height, 3, map);
         this.speed = 512;
-    }
-
-    getSmallObject() {
-        let smallObject = JSON.parse(super.getSmallObject());
-        smallObject.angleInRadians = this.angleInRadians;
-        return JSON.stringify(smallObject);
     }
 
     doDamage() {

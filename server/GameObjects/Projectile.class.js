@@ -6,8 +6,11 @@ class Projectile {
         this.y = jsonObject.y;
         this.strength = jsonObject.strength;
         this.angleInRadians = jsonObject.angleInRadians;
+        this.lifeTime = jsonObject.lifeTime;
+        this.totalLifeTime = jsonObject.totalLifeTime;
         this.width = jsonObject.width;
         this.height = jsonObject.height;
+        this.destroyed = jsonObject.destroyed;
     }
 
     getSmallObject() {
@@ -18,8 +21,11 @@ class Projectile {
         smallObject.y = this.y;
         smallObject.strength = this.strength;
         smallObject.angleInRadians = this.angleInRadians;
+        smallObject.lifeTime = this.lifeTime;
+        smallObject.totalLifeTime = this.totalLifeTime;
         smallObject.width = this.width;
         smallObject.height = this.height;
+        smallObject.destroyed = this.destroyed;
         return smallObject;
     }
 }
