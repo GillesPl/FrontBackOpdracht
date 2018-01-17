@@ -241,7 +241,7 @@ var InventoryObject = function (_GameObject) {
                 ctx.lineTo(screenX + width / 2 + width / 2 * Math.cos(angle), screenY + width / 2 + width / 2 * Math.sin(angle));
                 ctx.moveTo(screenX + width / 2, screenY + width / 2);
                 ctx.arc(screenX + width / 2, screenY + width / 2, width / 2, 0, angle);
-                ctx.fillStyle = 'rgb(' + percentage * 200 + 55 + ', ' + (1 - percentage) * 200 + 55 + ', 60, 0.8)';
+                ctx.fillStyle = 'rgba(' + (Math.floor(percentage * 200) + 30) + ', ' + (Math.floor((1 - percentage) * 200) + 30) + ', 60, 0.8)';
                 ctx.fill();
                 ctx.closePath();
             }
@@ -458,10 +458,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Fire = function (_NonCharacterObject) {
     _inherits(Fire, _NonCharacterObject);
 
-    function Fire(Loader, x, y) {
+    function Fire(Loader, id, x, y) {
         _classCallCheck(this, Fire);
 
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, 96, 96, 45, false));
+        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, id, x, y, 96, 96, 45, false));
 
         _this.setTilesImage(Loader.getImage('fire'), 1, 5, 12);
         return _this;
@@ -502,11 +502,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NonCharacterObject = function (_GameObject) {
     _inherits(NonCharacterObject, _GameObject);
 
-    function NonCharacterObject(x, y, width, height, damage, solid) {
+    function NonCharacterObject(id, x, y, width, height, damage, solid) {
         _classCallCheck(this, NonCharacterObject);
 
         var _this = _possibleConstructorReturn(this, (NonCharacterObject.__proto__ || Object.getPrototypeOf(NonCharacterObject)).call(this));
 
+        _this.id = id;
         _this.x = x;
         _this.y = y;
         _this.width = width;
@@ -536,6 +537,21 @@ var NonCharacterObject = function (_GameObject) {
             if (this.damageDone > 0) {
                 this.damageDone -= delta;
             }
+        }
+    }, {
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.width = this.width;
+            smallObject.height = this.height;
+            smallObject.damage = this.damage;
+            smallObject.damageDone = this.damageDone;
+            smallObject.solid = this.solid;
+            smallObject.canBePickedUp = this.canBePickedUp;
+            return smallObject;
         }
     }]);
 
@@ -689,22 +705,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Fire = function (_NPCObject) {
-    _inherits(Fire, _NPCObject);
+var Goblin = function (_NPCObject) {
+    _inherits(Goblin, _NPCObject);
 
-    function Fire(Loader, x, y, map, bounds) {
-        _classCallCheck(this, Fire);
+    function Goblin(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Goblin);
 
-        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
+        var _this = _possibleConstructorReturn(this, (Goblin.__proto__ || Object.getPrototypeOf(Goblin)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
 
         _this.setTilesImage(Loader.getImage('goblin'), 4, 4, 4);
         return _this;
     }
 
-    return Fire;
+    return Goblin;
 }(_NPCObjectBase2.default);
 
-exports.default = Fire;
+exports.default = Goblin;
 
 /***/ }),
 /* 8 */
@@ -766,6 +782,7 @@ var NPCObject = function (_GameObject) {
         _this.action = _this.STATE.STOP;
         _this.doingAction = 0;
         _this.imageState = 0;
+        _this.id = -1;
         return _this;
     }
 
@@ -783,7 +800,7 @@ var NPCObject = function (_GameObject) {
     }, {
         key: "getImageIndex",
         value: function getImageIndex() {
-            if (this.action === this.STATE.STOP) return this.imageState;
+            if (this.action === this.STATE.STOP || !this.moving) return this.imageState;
             // else
             return this.imageState + this.cols * Math.floor(this.imageIndex);
         }
@@ -833,36 +850,12 @@ var NPCObject = function (_GameObject) {
             if (this.doingAction > 0) {
                 this.doingAction -= delta;
             }
+            if (this.doingAction <= 0) {
+                delta += this.doingAction; // Get the difference
+                //this.action = this.STATE.STOP;
+            }
 
             this.move(delta, otherNPCs);
-
-            if (this.doingAction <= 0) {
-                if (this.action !== this.STATE.STOP) {
-                    this.action = this.STATE.STOP;
-                    this.doingAction = Math.floor(Math.random() * 3) + 2;
-                } else {
-                    var previousAction = this.action;
-                    this.action = Math.floor(Math.random() * 4) + 1;
-                    this.imageIndex = 0;
-                    switch (this.action) {
-                        case this.STATE.RUNNINGNORTH:
-                            this.imageState = 3;
-                            break;
-                        case this.STATE.RUNNINGEAST:
-                            this.imageState = 2;
-                            break;
-                        case this.STATE.RUNNINGSOUTH:
-                            this.imageState = 0;
-                            break;
-                        case this.STATE.RUNNINGWEST:
-                            this.imageState = 1;
-                            break;
-                        //default: // STOP
-                        //    break;
-                    }
-                    this.doingAction = Math.floor(Math.random() * 2) + 1;
-                }
-            }
         }
     }, {
         key: "move",
@@ -885,12 +878,14 @@ var NPCObject = function (_GameObject) {
                 //default: // STOP
                 //    break;
             }
+
+            this.moving = false;
             if (!this.unitsOverlap(units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta)) {
+                this.moving = true;
                 this.x += dirx * this.speed * delta;
                 this.y += diry * this.speed * delta;
+                this._collide(dirx, diry);
             }
-
-            this._collide(dirx, diry);
         }
     }, {
         key: "unitsOverlap",
@@ -909,8 +904,7 @@ var NPCObject = function (_GameObject) {
             for (var i = 0; i < units.length; i++) {
                 var npc = units[i];
                 if (npc !== this) {
-                    if (npc.isInObject(left, top) || npc.isInObject(right, top) || npc.isInObject(right, bottom) || npc.isInObject(left, bottom)) {
-                        this.imageIndex = 0;
+                    if (npc.isNear(left, top, right, bottom)) {
                         return true;
                     }
                 }
@@ -946,6 +940,7 @@ var NPCObject = function (_GameObject) {
             if (!collision) {
                 return;
             }
+            this.moving = false;
 
             if (diry > 0) {
                 row = this.map.getRow(bottom);
@@ -964,6 +959,19 @@ var NPCObject = function (_GameObject) {
                 this.x = this.map.getX(col + 1);
                 this.imageIndex = 0;
             }
+        }
+    }, {
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.type = this.type;
+            smallObject.health = this.health;
+            smallObject.action = this.action;
+            smallObject.doingAction = this.doingAction;
+            return JSON.stringify(smallObject);
         }
     }]);
 
@@ -998,10 +1006,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Arrow_1 = function (_Projectile) {
     _inherits(Arrow_1, _Projectile);
 
-    function Arrow_1(Loader, x, y, angleInRadians, strength, map, drawSize) {
+    function Arrow_1(id, Loader, x, y, angleInRadians, strength, map) {
         _classCallCheck(this, Arrow_1);
 
-        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, x, y, angleInRadians, strength, drawSize, drawSize, map));
+        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
 
         _this.setImage(Loader.getImage('arrow_1'));
         return _this;
@@ -1042,11 +1050,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Projectile = function (_GameObject) {
     _inherits(Projectile, _GameObject);
 
-    function Projectile(x, y, angleInRadians, strength, width, height, map) {
+    function Projectile(id, name, x, y, angleInRadians, strength, width, height, map) {
         _classCallCheck(this, Projectile);
 
         var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this));
 
+        _this.id = id;
+        _this.name = name;
         _this.x = x;
         _this.y = y;
         _this.strength = strength;
@@ -1060,6 +1070,20 @@ var Projectile = function (_GameObject) {
     }
 
     _createClass(Projectile, [{
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.name = this.name;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.strength = this.strength;
+            smallObject.angleInRadians = this.angleInRadians;
+            smallObject.width = this.width;
+            smallObject.height = this.height;
+            return JSON.stringify(smallObject);
+        }
+    }, {
         key: "doDamage",
         value: function doDamage() {
             this.destroyed = true;
@@ -1434,6 +1458,14 @@ var _Loader = __webpack_require__(28);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
+var _GameState = __webpack_require__(29);
+
+var _GameState2 = _interopRequireDefault(_GameState);
+
+var _ProjectileBase = __webpack_require__(10);
+
+var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
+
 var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
@@ -1558,6 +1590,10 @@ var _Empty_bottle_7 = __webpack_require__(14);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
+var _Arrow_ = __webpack_require__(9);
+
+var _Arrow_2 = _interopRequireDefault(_Arrow_);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1651,20 +1687,23 @@ var MainGameState = function () {
         }
     }, {
         key: "loadNonCharacterObjects",
-        value: function loadNonCharacterObjects(objects, gameState) {
+        value: function loadNonCharacterObjects(objects) {
+            var _this = this;
+
+            this.nonCharacterObjects = [];
             objects.forEach(function (object) {
                 switch (object.name) {
                     case "Fire":
-                        gameState.nonCharacterObjects.push(new _Fire2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale));
+                        _this.nonCharacterObjects.push(new _Fire2.default(_this.Loader, object.id, object.x * _this.map.scale, object.y * _this.map.scale));
                         break;
 
                     case "Coin":
-                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale, 16, 16, "coin", gameState.hero, object.properties.Count));
+                        _this.nonCharacterObjects.push(new _DroppedItem2.default(_this.Loader, object.id, object.x * _this.map.scale, object.y * _this.map.scale, 16, 16, "coin", object.properties.Count));
                         break;
 
                     case "Sword_1":
                     case "Boots_1":
-                        gameState.nonCharacterObjects.push(new _DroppedItem2.default(gameState.Loader, object.x * gameState.map.scale, object.y * gameState.map.scale, 32, 32, object.name, gameState.hero, object.properties.Count));
+                        _this.nonCharacterObjects.push(new _DroppedItem2.default(_this.Loader, object.id, object.x * _this.map.scale, object.y * _this.map.scale, 32, 32, object.name, object.properties.Count));
                         break;
 
                     default:
@@ -1675,25 +1714,29 @@ var MainGameState = function () {
             });
         }
     }, {
-        key: "loadEnemies",
-        value: function loadEnemies(enemies, gameState) {
-            enemies.forEach(function (object) {
-                switch (object.name) {
-                    case "Goblins":
-                        var bounds = {
-                            x: object.x * gameState.map.scale,
-                            y: object.y * gameState.map.scale,
-                            width: object.width * gameState.map.scale,
-                            height: object.height * gameState.map.scale
-                        };
-                        gameState.spawners.push(new _SpawnerBase2.default(bounds, object.name, gameState.Loader, object.properties.Count, gameState.map));
-                        break;
+        key: "loadNPCs",
+        value: function loadNPCs(npcs) {
+            var _this2 = this;
 
-                    default:
-                        console.log("Object '" + object.name + "' doesn't  exist.");
-                        console.log(object);
-                        break;
-                }
+            this.spawners = [];
+            npcs.forEach(function (npc) {
+                var bounds = {
+                    x: npc.x * _this2.map.scale,
+                    y: npc.y * _this2.map.scale,
+                    width: npc.width * _this2.map.scale,
+                    height: npc.height * _this2.map.scale
+                };
+                _this2.spawners.push(new _SpawnerBase2.default(bounds, npc.name, _this2.Loader, npc.properties.Count, _this2.map));
+            });
+        }
+    }, {
+        key: "loadSpawners",
+        value: function loadSpawners(spawners) {
+            var _this3 = this;
+
+            this.spawners = [];
+            spawners.forEach(function (spawner) {
+                _this3.spawners.push(new _SpawnerBase2.default(spawner.bounds, spawner.type, _this3.Loader, spawner.count, _this3.map, spawner.id, spawner.units));
             });
         }
     }, {
@@ -1740,7 +1783,7 @@ var MainGameState = function () {
         key: "init",
         value: function init() {
             this.Keyboard = new _Keyboard2.default(this);
-            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.E, this.Keyboard.R]);
+            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.I, this.Keyboard.C]);
 
             this.tileAtlas = this.Loader.getImage('tiles');
             this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
@@ -1748,11 +1791,11 @@ var MainGameState = function () {
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
             this.loadInventoryObjects();
 
-            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, enemies) {
+            this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
                 this.socket.emit("new_user", this.hero.getSmallObject());
                 this.loadSocket(this.socket);
-                this.loadNonCharacterObjects(objects, this);
-                this.loadEnemies(enemies, this);
+                //this.loadNonCharacterObjects(objects);
+                //this.loadNPCs(npcs);
             }.bind(this));
             this.events();
         }
@@ -1780,44 +1823,46 @@ var MainGameState = function () {
     }, {
         key: "loadSocket",
         value: function loadSocket(client) {
-            var self = this;
+            var _this4 = this;
+
             client.on('connect', function () {
-                self.connected = true;
-                clearTimeout(self.timeout);
+                _this4.connected = true;
+                clearTimeout(_this4.timeout);
                 console.log('connected');
             });
             client.on('disconnect', function () {
-                self.connected = false;
+                _this4.connected = false;
                 console.log('disconnected');
-                self.retryConnectOnFailure(3000, client, self); // Try again in 3s
+                _this4.retryConnectOnFailure(3000, client, _this4); // Try again in 3s
             });
-            client.on("otherPlayers", function (others) {
-                self.otherPlayers = [];
-                others.forEach(function (playerString) {
-                    var player = JSON.parse(playerString);
-                    if (player.id != self.hero.id) {
-                        self.otherPlayers.push(new _OtherPlayer2.default(player, self.Loader, self.map));
+            client.on("otherPlayers", function (othersJsonString) {
+                _this4.otherPlayers = [];
+                var others = JSON.parse(othersJsonString);
+                others.forEach(function (playerJsonString) {
+                    var player = JSON.parse(playerJsonString);
+                    if (player.id != _this4.hero.id) {
+                        _this4.otherPlayers.push(new _OtherPlayer2.default(player, _this4.Loader, _this4.map));
                     }
                 });
             });
             client.on("New_connection", function (playerString) {
                 var player = JSON.parse(playerString);
-                self.otherPlayers.push(new _OtherPlayer2.default(player, self.Loader, self.map));
+                _this4.otherPlayers.push(new _OtherPlayer2.default(player, _this4.Loader, _this4.map));
             });
             client.on("user_leave", function (playerString) {
                 var player = JSON.parse(playerString);
                 //console.log('player left');
                 var toDeleteIndex = 0;
-                for (var _i = 0; _i < self.otherPlayers.length; _i++) {
-                    if (self.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
+                for (var _i = 0; _i < _this4.otherPlayers.length; _i++) {
+                    if (_this4.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
                 }
-                self.otherPlayers.splice(i, 1);
-                //self.otherPlayers.push(new OtherPlayer(hero, self.Loader, self.map));
+                _this4.otherPlayers.splice(i, 1);
+                //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
             });
             client.on("updatingPlayer", function (heroString) {
                 var found = false; // is player in cache
                 var hero = JSON.parse(heroString);
-                self.otherPlayers.forEach(function (player) {
+                _this4.otherPlayers.forEach(function (player) {
                     if (player.id === hero.id) {
                         //console.log('info from ' + player.id);
                         player.action = hero.action;
@@ -1828,22 +1873,64 @@ var MainGameState = function () {
                     }
                 });
                 if (!found) {
-                    self.otherPlayers.push(new _OtherPlayer2.default(hero, self.Loader, self.map));
+                    _this4.otherPlayers.push(new _OtherPlayer2.default(hero, _this4.Loader, _this4.map));
                 }
             });
+            client.on("allObjects", function (objectsString) {
+                var objects = JSON.parse(objectsString);
+                _this4.loadNonCharacterObjects(objects);
+            });
+            client.on("newProjectile", function (projectileJsonString) {
+                var projectile = JSON.parse(projectileJsonString);
+                var newProjectile = null;
+                switch (projectile.name) {
+                    case "Arrow_1":
+                        newProjectile = new _Arrow_2.default(projectile.id, _this4.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this4.map);
+                        break;
+                }
+
+                _this4.InventoryManager.projectiles.push(newProjectile);
+            });
+            client.on("allSpawners", function (spawnersString) {
+                var spawners = JSON.parse(spawnersString);
+                _this4.loadSpawners(spawners);
+            });
+            client.on("newUnit", function (unitString) {
+                var unit = JSON.parse(unitString);
+                console.log(unit);
+                _this4.spawners.forEach(function (spawner) {
+                    spawner.newUnit(unit);
+                });
+            });
+            client.on("updateUnit", function (unitString) {
+                var unit = JSON.parse(unitString);
+                _this4.spawners.forEach(function (spawner) {
+                    spawner.updateUnit(unit);
+                });
+            });
+        }
+    }, {
+        key: "updateUnit",
+        value: function updateUnit(unitJsonString) {
+            this.socket.emit("updateUnit", unitJsonString);
         }
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')];
         }
     }, {
+        key: "sendNewProjectile",
+        value: function sendNewProjectile(projectile) {
+            this.socket.emit("newProjectile", projectile.getSmallObject());
+        }
+    }, {
         key: "update",
         value: function update(delta) {
-            var _this = this;
+            var _this5 = this;
 
             var dirx = 0;
             var diry = 0;
@@ -1877,6 +1964,9 @@ var MainGameState = function () {
                     this.socket.emit("updatePlayer", this.hero.getSmallObject());
                 }
             }
+            if (this.hero.resurected) {
+                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+            }
 
             this.hero.move(delta, dirx, diry);
             this.otherPlayers.forEach(function (player) {
@@ -1885,26 +1975,27 @@ var MainGameState = function () {
             this.projectiles.forEach(function (projectile) {
                 projectile.update(delta);
                 if (projectile.destroyed) {
-                    _this.projectiles.splice(_this.projectiles.indexOf(projectile), 1);
+                    _this5.projectiles.splice(_this5.projectiles.indexOf(projectile), 1);
                 }
             });
             this.nonCharacterObjects.forEach(function (thisObject) {
                 thisObject.update(delta);
                 if (thisObject.hasDamage()) {
-                    var playerBounds = _this.hero.getPlayerBounds();
+                    var playerBounds = _this5.hero.getPlayerBounds();
                     if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                        _this.hero.takeDamage(thisObject.doDamage());
+                        _this5.hero.takeDamage(thisObject.doDamage());
                     }
                 }
                 if (thisObject.canBePickedUp) {
-                    var _playerBounds = _this.hero.getPlayerBounds();
+                    var _playerBounds = _this5.hero.getPlayerBounds();
                     if (thisObject.isNear(_playerBounds.xMin, _playerBounds.yMin, _playerBounds.xMax, _playerBounds.yMax)) {
-                        var countLeft = _this.InventoryManager.addObject(thisObject.value);
+                        var countLeft = _this5.InventoryManager.addObject(thisObject.value);
                         if (countLeft === 0) {
-                            _this.nonCharacterObjects.splice(_this.nonCharacterObjects.indexOf(thisObject), 1);
+                            _this5.nonCharacterObjects.splice(_this5.nonCharacterObjects.indexOf(thisObject), 1);
                         } else {
                             thisObject.value.stackCount = countLeft;
                         }
+                        _this5.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
                     }
                 }
             });
@@ -1912,7 +2003,7 @@ var MainGameState = function () {
             //    npc.update(delta);
             //});
             this.spawners.forEach(function (spawner) {
-                spawner.update(delta, _this.projectiles);
+                spawner.update(delta, _this5.projectiles, _this5);
             });
             this.InventoryManager.update(delta);
             this.hero.update(delta);
@@ -1933,7 +2024,7 @@ var MainGameState = function () {
     }, {
         key: "render",
         value: function render(delta) {
-            var _this2 = this;
+            var _this6 = this;
 
             var canvas = document.querySelector("canvas");
             canvas.width = window.innerWidth;
@@ -1955,15 +2046,15 @@ var MainGameState = function () {
             // draw map top layer
 
             var _loop = function _loop(_i2) {
-                _this2._drawLayer(_i2);
+                _this6._drawLayer(_i2);
 
                 if (layersUnderPlayer === _i2) {
-                    _this2.hero.draw(_this2.ctx);
+                    _this6.hero.draw(_this6.ctx);
                 }
 
                 if (objectLayersUnder - 1 === _i2) {
-                    _this2.nonCharacterObjects.forEach(function (thisObject) {
-                        thisObject.draw(_this2.ctx, _this2.camera.getScreenX(thisObject.x), _this2.camera.getScreenY(thisObject.y));
+                    _this6.nonCharacterObjects.forEach(function (thisObject) {
+                        thisObject.draw(_this6.ctx, _this6.camera.getScreenX(thisObject.x), _this6.camera.getScreenY(thisObject.y));
                     });
 
                     //this.NPCObjects.forEach(npc => {
@@ -1971,19 +2062,19 @@ var MainGameState = function () {
                     //        this.camera.getScreenX(npc.x),
                     //        this.camera.getScreenY(npc.y));
                     //});
-                    _this2.spawners.forEach(function (spawner) {
-                        spawner.draw(_this2.ctx, _this2.camera);
+                    _this6.spawners.forEach(function (spawner) {
+                        spawner.draw(_this6.ctx, _this6.camera);
                     });
 
-                    _this2.projectiles.forEach(function (projectile) {
-                        projectile.draw(_this2.ctx, _this2.camera.getScreenX(projectile.x), _this2.camera.getScreenY(projectile.y));
+                    _this6.projectiles.forEach(function (projectile) {
+                        projectile.draw(_this6.ctx, _this6.camera.getScreenX(projectile.x), _this6.camera.getScreenY(projectile.y));
                     });
                 }
 
-                _this2.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = _this2.getLayersUnder(player.tileLevel);
+                _this6.otherPlayers.forEach(function (player) {
+                    var thisLayersUnder = _this6.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
-                        player.draw(_this2.ctx, _this2.camera.getScreenX(player.x), _this2.camera.getScreenY(player.y));
+                        player.draw(_this6.ctx, _this6.camera.getScreenX(player.x), _this6.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -2015,7 +2106,7 @@ var MainGameState = function () {
                 x: event.pageX,
                 y: event.pageY
             };
-            this.InventoryManager.onMouseUp(mousePosition);
+            this.InventoryManager.onMouseUp(mousePosition, this);
         }
     }, {
         key: "onMouseMove",
@@ -2261,8 +2352,11 @@ var Keyboard = function () {
         this.S = 83;
         this.D = 68;
         this.F = 70;
-        this.E = 69;
-        this.R = 82;
+        //this.E = 69;
+        //this.R = 82;
+        //this.X = 88;
+        this.C = 67;
+        this.I = 73;
         this._nums = [];
         for (var i = 0; i <= 9; i++) {
             this._nums.push({
@@ -2362,6 +2456,10 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _nonCharacterObjectBase = __webpack_require__(3);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
@@ -2389,10 +2487,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DroppedItem = function (_NonCharacterObject) {
     _inherits(DroppedItem, _NonCharacterObject);
 
-    function DroppedItem(Loader, x, y, width, height, type, hero, count) {
+    function DroppedItem(Loader, id, x, y, width, height, type, count) {
         _classCallCheck(this, DroppedItem);
 
-        var _this = _possibleConstructorReturn(this, (DroppedItem.__proto__ || Object.getPrototypeOf(DroppedItem)).call(this, x, y, width, height, 0, false));
+        var _this = _possibleConstructorReturn(this, (DroppedItem.__proto__ || Object.getPrototypeOf(DroppedItem)).call(this, id, x, y, width, height, 0, false));
+
+        _this.type = type;
 
         switch (type) {
             case "coin":
@@ -2418,6 +2518,16 @@ var DroppedItem = function (_NonCharacterObject) {
         return _this;
     }
 
+    _createClass(DroppedItem, [{
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = _get(DroppedItem.prototype.__proto__ || Object.getPrototypeOf(DroppedItem.prototype), "getSmallObject", this).call(this);
+            smallObject.canBePickedUp = this.canBePickedUp;
+            smallObject.value = this.value;
+            return smallObject;
+        }
+    }]);
+
     return DroppedItem;
 }(_nonCharacterObjectBase2.default);
 
@@ -2440,15 +2550,22 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
+var _Sheep = __webpack_require__(23);
+
+var _Sheep2 = _interopRequireDefault(_Sheep);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Spawner = function () {
-    function Spawner(bounds, type, Loader, count, map) {
+    function Spawner(bounds, type, Loader, count, map, id, units) {
+        var _this = this;
+
         _classCallCheck(this, Spawner);
 
         this.tileLevel = 0;
+        this.id = id;
         this.bounds = bounds;
         this.type = type;
         this.Loader = Loader;
@@ -2456,32 +2573,76 @@ var Spawner = function () {
         this.map = map;
         this.units = [];
         this.timeToCreate = 0;
-        for (var i = 0; i < count; i++) {
-            this.units.push(this.createOfType(type));
+
+        if (units === undefined) {
+            for (var i = 0; i < count; i++) {
+                this.units.push(this.createOfType(type));
+            }
+        } else {
+            units.forEach(function (unit) {
+                _this.units.push(_this.createUnit(unit));
+            });
         }
     }
 
     _createClass(Spawner, [{
         key: "update",
-        value: function update(delta, projectiles) {
-            var _this = this;
+        value: function update(delta, projectiles, parent) {
+            var _this2 = this;
 
-            if (this.units.length < this.count) {
-                if (this.timeToCreate < 10) {
-                    this.timeToCreate += delta;
-                } else {
-                    this.timeToCreate = 0;
-                    this.units.push(this.createOfType(this.type));
-                }
-            }
+            //if (this.units.length < this.count) {
+            //    if (this.timeToCreate < 10) {
+            //        this.timeToCreate += delta;
+            //    } else {
+            //        this.timeToCreate = 0;
+            //        this.units.push(this.createOfType(this.type));
+            //    }
+            //}
             this.units.forEach(function (unit) {
-                unit.update(delta, _this.units);
+                unit.update(delta, _this2.units);
                 if (unit.isHit(projectiles)) {
+                    parent.updateUnit(unit.getSmallObject());
                     if (unit.health <= 0) {
-                        _this.units.splice(_this.units.indexOf(unit), 1);
+                        _this2.units.splice(_this2.units.indexOf(unit), 1);
                     }
                 }
             });
+        }
+    }, {
+        key: "newUnit",
+        value: function newUnit(remoteUnit) {
+            if (remoteUnit.id.startsWith(this.id)) {
+                this.units.push(this.createUnit(remoteUnit));
+            }
+        }
+    }, {
+        key: "updateUnit",
+        value: function updateUnit(remoteUnit) {
+            if (remoteUnit.id.startsWith(this.id)) {
+                this.units.forEach(function (unit) {
+                    if (remoteUnit.id === unit.id) {
+                        unit.x = remoteUnit.x;
+                        unit.y = remoteUnit.y;
+                        unit.health = remoteUnit.health;
+                        unit.action = remoteUnit.action;
+                        unit.doingAction = remoteUnit.doingAction;
+                        switch (unit.action) {
+                            case unit.STATE.RUNNINGNORTH:
+                                unit.imageState = 3;
+                                break;
+                            case unit.STATE.RUNNINGEAST:
+                                unit.imageState = 2;
+                                break;
+                            case unit.STATE.RUNNINGSOUTH:
+                                unit.imageState = 0;
+                                break;
+                            case unit.STATE.RUNNINGWEST:
+                                unit.imageState = 1;
+                                break;
+                        }
+                    }
+                });
+            }
         }
     }, {
         key: "draw",
@@ -2504,6 +2665,9 @@ var Spawner = function () {
                     case "Goblins":
                         unit = new _Goblin2.default(this.Loader, x, y, this.map, this.bounds);
                         break;
+                    case "Sheep":
+                        unit = new _Sheep2.default(this.Loader, x, y, this.map, this.bounds);
+                        break;
 
                     default:
                         console.log('Cannot create unit of type ' + type);
@@ -2518,6 +2682,42 @@ var Spawner = function () {
             } while (collision);
             return unit;
         }
+    }, {
+        key: "createUnit",
+        value: function createUnit(unit) {
+            var newUnit = void 0;
+            switch (unit.type) {
+                case "Goblins":
+                    newUnit = new _Goblin2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    break;
+                case "Sheep":
+                    newUnit = new _Sheep2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    break;
+
+                default:
+                    console.log('Cannot create unit of type ' + type);
+                    return null;
+            }
+            newUnit.id = unit.id;
+            newUnit.health = unit.health;
+            newUnit.action = unit.action;
+            newUnit.doingAction = unit.doingAction;
+            switch (newUnit.action) {
+                case newUnit.STATE.RUNNINGNORTH:
+                    newUnit.imageState = 3;
+                    break;
+                case newUnit.STATE.RUNNINGEAST:
+                    newUnit.imageState = 2;
+                    break;
+                case newUnit.STATE.RUNNINGSOUTH:
+                    newUnit.imageState = 0;
+                    break;
+                case newUnit.STATE.RUNNINGWEST:
+                    newUnit.imageState = 1;
+                    break;
+            }
+            return newUnit;
+        }
     }]);
 
     return Spawner;
@@ -2526,7 +2726,46 @@ var Spawner = function () {
 exports.default = Spawner;
 
 /***/ }),
-/* 23 */,
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _NPCObjectBase = __webpack_require__(8);
+
+var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Sheep = function (_NPCObject) {
+    _inherits(Sheep, _NPCObject);
+
+    function Sheep(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Sheep);
+
+        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 196, true, map, bounds));
+
+        _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
+        return _this;
+    }
+
+    return Sheep;
+}(_NPCObjectBase2.default);
+
+exports.default = Sheep;
+
+/***/ }),
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2584,6 +2823,7 @@ var Hero = function () {
         this.deadTime = 0;
         this.totalDeadTime = 1;
         this.dead = false;
+        this.resurected = false;
 
         this.speed = 256;
         this.id = id;
@@ -2607,6 +2847,7 @@ var Hero = function () {
             smallObject.speed = this.speed;
             smallObject.width = this.width;
             smallObject.height = this.height;
+            smallObject.resurected = this.resurected;
             //console.log(smallObject);
             return JSON.stringify(smallObject);
         }
@@ -2746,10 +2987,14 @@ var Hero = function () {
                         fillStyle: "black",
                         time: 0
                     });
+                    this.resurected = true;
                 } else {
                     this.deadTime += delta;
                 }
             } else {
+                if (this.resurected) {
+                    this.resurected = false;
+                }
                 if (this.topText.length > 0) {
                     this.topText.forEach(function (text) {
                         text.time += delta;
@@ -2981,9 +3226,9 @@ var InventoryManager = function () {
 
             var checkState = this.STATES.HIDDEN;
 
-            if (keyCode === keyboard.E) {
+            if (keyCode === keyboard.I) {
                 checkState = this.STATES.INVENTORY;
-            } else if (keyCode === keyboard.R) {
+            } else if (keyCode === keyboard.C) {
                 checkState = this.STATES.CHARACTER;
             }
             this.iconBar.forEach(function (icon) {
@@ -3090,6 +3335,11 @@ var InventoryManager = function () {
             return this.xAction < x && this.xAction + this.widthAction > x && this.yAction < y && this.yAction + this.heightAction > y;
         }
     }, {
+        key: "isInIconBar",
+        value: function isInIconBar(x, y) {
+            return this.xIcon < x && this.xIcon + this.widthSingleIcon * this.iconBar.length > x && this.yIcon - this.heightSingleIcon < y && this.yIcon > y;
+        }
+    }, {
         key: "onMouseDown",
         value: function onMouseDown(mousePosition) {
             var _this5 = this;
@@ -3105,7 +3355,7 @@ var InventoryManager = function () {
         }
     }, {
         key: "onMouseUp",
-        value: function onMouseUp(mousePosition) {
+        value: function onMouseUp(mousePosition, sendNewProjectileListener) {
             var _this6 = this;
 
             if (this.movingObject) {
@@ -3153,7 +3403,7 @@ var InventoryManager = function () {
                         }
                     });
                 }
-                if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) && !this.isInActionBar(mousePosition.x, mousePosition.y)) {
+                if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) && !this.isInActionBar(mousePosition.x, mousePosition.y) && !this.isInIconBar(mousePosition.x, mousePosition.y)) {
                     this.inventory.forEach(function (inventoryObject) {
                         var location = _this6.selectedAction - 1;
                         if (location < 0) location = 9;
@@ -3165,7 +3415,9 @@ var InventoryManager = function () {
                                     switch (inventoryObject.createObjectName) {
                                         case 'Arrow_1':
                                             var angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                            _this6.projectiles.push(new _Arrow_2.default(_this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, inventoryObject.strength, _this6.map, _this6.map.drawSize * 0.5));
+                                            var projectile = new _Arrow_2.default(Math.random(), _this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, inventoryObject.strength, _this6.map);
+                                            sendNewProjectileListener.sendNewProjectile(projectile);
+                                            _this6.projectiles.push(projectile);
                                             //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                             if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                                 _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
@@ -3391,6 +3643,8 @@ var InventoryManager = function () {
             this.yIcon = this.yTop;
             this.widthIcon = width;
             this.heightIcon = height;
+            this.widthSingleIcon = drawWidth;
+            this.heightSingleIcon = drawHeight;
             this.xAction = xAction;
             this.yAction = yAction;
             this.widthAction = drawWidth * 10;
@@ -3834,7 +4088,51 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 29 */,
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GameState = function () {
+    function GameState(ctx) {
+        _classCallCheck(this, GameState);
+
+        this.ctx = ctx;
+    }
+
+    _createClass(GameState, [{
+        key: "getContext",
+        value: function getContext() {
+            return this.ctx;
+        }
+    }, {
+        key: "clear",
+        value: function clear() {
+            this.ctx.clearRect(0, 0, ctx.width, ctx.height);
+        }
+    }, {
+        key: "draw",
+        value: function draw() {
+            //this draws something
+            this.ctx.clearRect(0, 0, ctx.width, ctx.height);
+        }
+    }]);
+
+    return GameState;
+}();
+
+exports.default = GameState;
+
+/***/ }),
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4869,7 +5167,7 @@ var Map = function () {
         value: function loadMap(src, camera, hero, callback) {
             var map = this;
             var objects = [];
-            var enemies = [];
+            var npcs = [];
             this.loadJSON(src, function (data) {
                 //console.log(data);
                 map.cols = data.width;
@@ -4885,10 +5183,13 @@ var Map = function () {
                             layer.objects.forEach(function (object) {
                                 objects.push(object);
                             });
-                        } else if (layer.name === "Enemies") {
+                        } else if (layer.name === "NPC") {
                             layer.objects.forEach(function (object) {
-                                enemies.push(object);
+                                npcs.push(object);
                             });
+                        } else {
+                            console.log("Unknown objectgroup type: '" + layer.name + "' in layer");
+                            console.log(layer);
                         }
                         // objects.concat(layer.objects); <- not working?
                     } else {
@@ -4900,7 +5201,7 @@ var Map = function () {
                 camera.follow(hero);
                 //console.log('#layers:' + map.layers.length);
                 //console.log('#tiles horizontally in tileset:' + map.twidth);
-                callback(objects, enemies);
+                callback(objects, npcs);
             });
         }
     }, {

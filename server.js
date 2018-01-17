@@ -1,14 +1,15 @@
-var express = require('express');
-var app = express();
-var mongo = require("mongodb");
-var MongoClient = mongo.MongoClient;
-var mongoose = require('mongoose');
-var server = require('http').Server(app);
-var WebSocketServer = require('websocket').server;
-var io = require('socket.io').listen(server),
+var express = require('express'),
+    app = express(),
+    mongo = require("mongodb"),
+    MongoClient = mongo.MongoClient,
+    mongoose = require('mongoose'),
+    server = require('http').Server(app),
+    WebSocketServer = require('websocket').server,
+    io = require('socket.io').listen(server),
     bodyParser = require("body-parser"),
-    morgan = require("morgan")
-config = require("./server/config");
+    morgan = require("morgan"),
+    config = require("./server/config"),
+    Manager = require('./server/Manager');
 
 app.set("megaSecret", config.secret);
 
@@ -53,15 +54,13 @@ var userRoutes = require("./server/Routes/UserRoutes")(routes);
 
 app.use(express.static("public/dist/"));
 
-let players = [];
-let socketsConnected = [];
+const manager = new Manager.Manager();
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/reset', function (req, res) {
-    players = [];
-    socketsConnected = [];
+    manager.reset();
     console.log('--RESET--');
     res.send("resetted");
 });
@@ -70,26 +69,11 @@ io.sockets.on('connection', function (socket) {
     console.log('New_connection');
 
     socket.on("new_user", function (hero) {
-        thisPlayer = hero;
-        socket.broadcast.emit("New_connection", hero);
-        socket.emit("otherPlayers", players);
-        socketsConnected.push(socket);
-        players.push(hero);
+        manager.newPlayer(hero, socket);
     });
 
     socket.on('disconnect', function () {
-        let i = socketsConnected.indexOf(socket);
-        console.log('i: ' + i);
-        console.log('socketsConnected length: ' + socketsConnected.length);
-        console.log('players length: ' + players.length);
-        if (i != -1) {
-            //socket.broadcast.emit("user_leave", players[i]);
-            socketsConnected.splice(i, 1);
-            players.splice(i, 1);
-            socket.broadcast.emit("otherPlayers", players);
-            console.log('socketsConnected length: ' + socketsConnected.length);
-            console.log('players length: ' + players.length);
-        }
+        manager.disconnectPlayer(socket);
     });
 
     socket.on("registerUser", function (user) {
@@ -107,39 +91,19 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on("updatePlayer", function (hero) {
-        hero = JSON.parse(hero);
-        console.log(hero);
-        let heroForDatabase = {
-            _id: hero.id,
-            token: hero.token,
-            tileLevel: hero.tileLevel,
-            health: hero.health,
-            position: {
-                x: hero.x,
-                y: hero.y
-            }
-        };
+        manager.updatePlayer(hero, socket);
+    });
 
-        delete hero.token; // Remove the token, noone else should know this value!
-        hero = JSON.stringify(hero);
+    socket.on("updateObject", function (obj) {
+        manager.updateObject(obj, socket);
+    });
 
-        socket.broadcast.emit("updatingPlayer", hero); // Notify all other players
-        let found = false;
-        let heroId = heroForDatabase._id;
-        for (let i = players.length - 1; i >= 0; i--) {
-            if (heroId === JSON.parse(players[i]).id) {
-                players[i] = hero; // Update player in cache
-                found = true;
-            }
-        }
-        if (!found) {
-            socketsConnected.push(socket);
-            players.push(hero);
-        }
+    socket.on("newProjectile", function (projectile) {
+        manager.updateProjectile(projectile, socket);
+    });
 
-        UserController.updateUserFromToken(heroForDatabase, function(res) {
-            console.log(res);
-        });
+    socket.on("updateUnit", function (npcJsonString) {
+        manager.updateNpc(npcJsonString, socket);
     });
 });
 

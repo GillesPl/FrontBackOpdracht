@@ -74,9 +74,9 @@ export default class InventoryManager {
     keyPressed(keyCode, keyboard) {
         let checkState = this.STATES.HIDDEN;
 
-        if (keyCode === keyboard.E) {
+        if (keyCode === keyboard.I) {
             checkState = this.STATES.INVENTORY;
-        } else if (keyCode === keyboard.R) {
+        } else if (keyCode === keyboard.C) {
             checkState = this.STATES.CHARACTER;
         }
         this.iconBar.forEach(icon => {
@@ -178,6 +178,11 @@ export default class InventoryManager {
             this.yAction < y && this.yAction + this.heightAction > y);
     }
 
+    isInIconBar(x, y) {
+        return (this.xIcon < x && this.xIcon + this.widthSingleIcon * this.iconBar.length > x &&
+            this.yIcon - this.heightSingleIcon < y && this.yIcon > y);
+    }
+
     onMouseDown(mousePosition) {
         this.inventory.forEach(inventoryObject => {
             if (inventoryObject.isEquiped && this.state === this.STATES.CHARACTER ||
@@ -190,7 +195,7 @@ export default class InventoryManager {
         this.movingObject = false;
     }
 
-    onMouseUp(mousePosition) {
+    onMouseUp(mousePosition, sendNewProjectileListener) {
         if (this.movingObject) {
             if (this.isInActionBar(mousePosition.x, mousePosition.y)) {
                 this.moveAction(mousePosition, true);
@@ -237,7 +242,7 @@ export default class InventoryManager {
                 });
             }
             if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) &&
-                !this.isInActionBar(mousePosition.x, mousePosition.y)) {
+                !this.isInActionBar(mousePosition.x, mousePosition.y) && !this.isInIconBar(mousePosition.x, mousePosition.y)) {
                 this.inventory.forEach(inventoryObject => {
                     let location = this.selectedAction - 1;
                     if (location < 0) location = 9;
@@ -249,7 +254,9 @@ export default class InventoryManager {
                                 switch (inventoryObject.createObjectName) {
                                     case 'Arrow_1':
                                         let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                        this.projectiles.push(new Arrow_1(this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map, this.map.drawSize * 0.5));
+                                        let projectile = new Arrow_1(Math.random(), this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
+                                        sendNewProjectileListener.sendNewProjectile(projectile);
+                                        this.projectiles.push(projectile);
                                         //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
                                         if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                             this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
@@ -464,6 +471,8 @@ export default class InventoryManager {
         this.yIcon = this.yTop;
         this.widthIcon = width;
         this.heightIcon = height;
+        this.widthSingleIcon = drawWidth;
+        this.heightSingleIcon = drawHeight;
         this.xAction = xAction;
         this.yAction = yAction;
         this.widthAction = drawWidth * 10;

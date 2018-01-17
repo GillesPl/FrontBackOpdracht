@@ -135,7 +135,7 @@ export default class InventoryObject extends GameObject {
             ctx.lineTo(screenX + width / 2 + width / 2 * Math.cos(angle), screenY + width / 2 + width / 2 * Math.sin(angle));
             ctx.moveTo(screenX + width / 2, screenY + width / 2);
             ctx.arc(screenX + width / 2, screenY + width / 2, width / 2, 0, angle);
-            ctx.fillStyle = 'rgb(' + percentage * 200 + 55 + ', ' + (1 - percentage) * 200 + 55 + ', 60, 0.8)';
+            ctx.fillStyle = 'rgba(' + (Math.floor(percentage * 200) + 30) + ', ' + (Math.floor((1 - percentage) * 200) + 30) + ', 60, 0.8)';
             ctx.fill();
             ctx.closePath();
         }

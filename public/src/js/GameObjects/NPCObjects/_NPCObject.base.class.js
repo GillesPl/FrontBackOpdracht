@@ -28,6 +28,7 @@ export default class NPCObject extends GameObject {
         this.action = this.STATE.STOP;
         this.doingAction = 0;
         this.imageState = 0;
+        this.id = -1;
     }
 
     hasDamage() {
@@ -40,7 +41,7 @@ export default class NPCObject extends GameObject {
     }
 
     getImageIndex() {
-        if (this.action === this.STATE.STOP)
+        if (this.action === this.STATE.STOP || !this.moving)
             return this.imageState;
         // else
         return this.imageState + this.cols * Math.floor(this.imageIndex);
@@ -86,36 +87,12 @@ export default class NPCObject extends GameObject {
         if (this.doingAction > 0) {
             this.doingAction -= delta;
         }
+        if (this.doingAction <= 0) {
+            delta += this.doingAction; // Get the difference
+            //this.action = this.STATE.STOP;
+        }
 
         this.move(delta, otherNPCs);
-
-        if (this.doingAction <= 0) {
-            if (this.action !== this.STATE.STOP) {
-                this.action = this.STATE.STOP;
-                this.doingAction = Math.floor(Math.random() * 3) + 2;
-            } else {
-                let previousAction = this.action;
-                this.action = Math.floor(Math.random() * 4) + 1;
-                this.imageIndex = 0;
-                switch (this.action) {
-                    case this.STATE.RUNNINGNORTH:
-                        this.imageState = 3;
-                        break;
-                    case this.STATE.RUNNINGEAST:
-                        this.imageState = 2;
-                        break;
-                    case this.STATE.RUNNINGSOUTH:
-                        this.imageState = 0;
-                        break;
-                    case this.STATE.RUNNINGWEST:
-                        this.imageState = 1;
-                        break;
-                        //default: // STOP
-                        //    break;
-                }
-                this.doingAction = Math.floor(Math.random() * 2) + 1;
-            }
-        }
     }
 
     move(delta, units) {
@@ -137,14 +114,16 @@ export default class NPCObject extends GameObject {
                 //default: // STOP
                 //    break;
         }
+
+        this.moving = false;
         if (!this.unitsOverlap(units, this.x + dirx * this.speed * delta, this.y + diry * this.speed * delta)) {
+            this.moving = true;
             this.x += dirx * this.speed * delta;
             this.y += diry * this.speed * delta;
+            this._collide(dirx, diry);
         }
-
-        this._collide(dirx, diry);
     }
-
+    
     unitsOverlap(units, thisx, thisy) {
         if (thisx === undefined) {
             thisx = this.x;
@@ -160,11 +139,7 @@ export default class NPCObject extends GameObject {
         for (let i = 0; i < units.length; i++) {
             const npc = units[i];
             if (npc !== this) {
-                if (npc.isInObject(left, top) ||
-                    npc.isInObject(right, top) ||
-                    npc.isInObject(right, bottom) ||
-                    npc.isInObject(left, bottom)) {
-                    this.imageIndex = 0;
+                if (npc.isNear(left, top, right, bottom)) {
                     return true;
                 }
             }
@@ -202,6 +177,7 @@ export default class NPCObject extends GameObject {
         if (!collision) {
             return;
         }
+        this.moving = false;
 
         if (diry > 0) {
             row = this.map.getRow(bottom);
@@ -220,5 +196,17 @@ export default class NPCObject extends GameObject {
             this.x = this.map.getX(col + 1);
             this.imageIndex = 0;
         }
+    }
+
+    getSmallObject() {
+        let smallObject = {};
+        smallObject.id = this.id;
+        smallObject.x = this.x;
+        smallObject.y = this.y;
+        smallObject.type = this.type;
+        smallObject.health = this.health;
+        smallObject.action = this.action;
+        smallObject.doingAction = this.doingAction;
+        return JSON.stringify(smallObject);
     }
 }

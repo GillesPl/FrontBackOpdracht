@@ -4,8 +4,9 @@ import Sword_1 from "../InventoryObjects/Sword_1.class";
 import Boots_1 from "../InventoryObjects/Boots_1.class";
 
 export default class DroppedItem extends NonCharacterObject {
-    constructor(Loader, x, y, width, height, type, hero, count) {
-        super(x, y, width, height, 0, false);
+    constructor(Loader, id, x, y, width, height, type, count) {
+        super(id, x, y, width, height, 0, false);
+        this.type = type;
 
         switch (type) {
             case "coin":
@@ -28,5 +29,12 @@ export default class DroppedItem extends NonCharacterObject {
         }
 
         this.canBePickedUp = true;
+    }
+
+    getSmallObject() {
+        let smallObject = super.getSmallObject();
+        smallObject.canBePickedUp = this.canBePickedUp;
+        smallObject.value = this.value;
+        return smallObject;
     }
 }
