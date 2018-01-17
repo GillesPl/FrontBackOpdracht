@@ -1,8 +1,9 @@
 import GameObject from "../_GameObject.base.class";
 
 export default class NPCObject extends GameObject {
-    constructor(x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
+    constructor(type,x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
         super();
+        this.type = type;
         this.x = x;
         this.y = y;
         this.width = width;

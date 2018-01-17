@@ -38,8 +38,11 @@ export default class Hero {
         this.deathAnimationRows = 3;
         this.deadTime = 0;
         this.totalDeadTime = 1;
+        this.respawnTimer = 8;
         this.dead = false;
         this.resurected = false;
+
+        this.deathSound = this.Loader.getSound("explosion");
 
         this.speed = 256;
         this.id = id;
@@ -158,6 +161,10 @@ export default class Hero {
     }
 
     die() {
+        this.deathSound.loop = false;
+        this.deathSound.volume = 1;
+        this.deathSound.play().then(() => {                
+        });
         this.deadTime = 0;
         this.dead = true;
     }
@@ -180,7 +187,7 @@ export default class Hero {
 
     update(delta) {
         if (this.dead) {
-            if (this.deadTime >= this.totalDeadTime) {
+            if (this.deadTime >= this.respawnTimer) {
                 this.dead = false;
                 this.x = this.startX;
                 this.y = this.startY;

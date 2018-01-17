@@ -13,6 +13,7 @@ export default class Spawner {
         this.units = [];
         this.timeToCreate = 0;
 
+
         if (units === undefined) {
             for (let i = 0; i < count; i++) {
                 this.units.push(this.createOfType(type));
@@ -38,6 +39,30 @@ export default class Spawner {
             if (unit.isHit(projectiles)) {
                 parent.updateUnit(unit.getSmallObject());
                 if (unit.health <= 0) {
+                    let sound;
+                    let random = Math.floor((Math.random() * 10) + 1);
+                    switch (unit.type) {
+                        case "Goblins":
+                            if (random >= 5) sound = this.Loader.getSound("goblin-death");
+                            else sound = this.Loader.getSound("goblin-death-2");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then(() => {
+                            });
+                            break;
+                        case "Sheep":
+                            if(random <= 3) sound = this.Loader.getSound("sheep");
+                            else if(random > 3 && random <= 6) sound = this.Loader.getSound("sheep-2");
+                            else sound = this.Loader.getSound("sheep-3");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then(() => {
+                            });
+                            break;
+                        default:
+                            //console.log('Cannot create unit of type ' + unit.type);
+                            return null;
+                    }
                     this.units.splice(this.units.indexOf(unit), 1);
                 }
             }
@@ -127,9 +152,8 @@ export default class Spawner {
             case "Sheep":
                 newUnit = new Sheep(this.Loader, unit.x, unit.y, this.map, this.bounds);
                 break;
-
             default:
-                console.log('Cannot create unit of type ' + type);
+                console.log('Cannot create unit of type ' + unit.type);
                 return null;
         }
         newUnit.id = unit.id;

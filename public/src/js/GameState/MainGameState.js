@@ -79,11 +79,9 @@ export default class MainGameState {
 
         Promise.all(this.loadassets).then(function (loaded) {            
             this.init();
-
+            
             var sound = this.Loader.getSound("ambience");
-            sound.loop = true;
-            sound.play().then(() => {                
-            });
+            this.setSound(sound);
 
             document.onmousemove = function (event) {
                 this.onMouseMove(event);
@@ -122,6 +120,15 @@ export default class MainGameState {
         this.update(delta);
         this.render(delta);
     }
+
+    setSound(sound) {
+        sound.loop = true;
+        sound.volume = 0.1;
+        sound.play().then(() => {                
+        });
+    }
+
+
 
     setUser(user) {
         // Use data from server
@@ -406,7 +413,13 @@ export default class MainGameState {
 
 
             //Sounds
-            this.Loader.loadSound('ambience' , '../../assets/ambiance.mp3')
+            this.Loader.loadSound('ambience' , '../../assets/sounds/ambiance.mp3'),
+            this.Loader.loadSound('goblin-death' , '../../assets/sounds/goblin-death.mp3'),
+            this.Loader.loadSound('goblin-death-2' , '../../assets/sounds/goblin-death-2.mp3'),
+            this.Loader.loadSound('explosion' , '../../assets/sounds/explosion.mp3'),
+            this.Loader.loadSound('sheep' , '../../assets/sounds/sheep.mp3'),
+            this.Loader.loadSound('sheep-2' , '../../assets/sounds/sheep-2.mp3'),
+            this.Loader.loadSound('sheep-3' , '../../assets/sounds/sheep-3.mp3'),
         ];
     }
 
