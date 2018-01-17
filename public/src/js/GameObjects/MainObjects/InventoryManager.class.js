@@ -140,7 +140,7 @@ export default class InventoryManager {
     }
 
     addObject(newObject) {
-        if (newObject.inventoryLocation === undefined) {
+        if (newObject.inventoryLocation === undefined || (newObject.inventoryLocation === -1 && newObject.actionLocation === -1 && !newObject.isEquiped)) {
             newObject.inventoryLocation = this.getEmptyPosition();
         }
 
