@@ -77,8 +77,14 @@ export default class MainGameState {
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
 
-        Promise.all(this.loadassets).then(function (loaded) {
+        Promise.all(this.loadassets).then(function (loaded) {            
             this.init();
+
+            var sound = this.Loader.getSound("ambience");
+            sound.loop = true;
+            sound.play().then(() => {                
+            });
+
             document.onmousemove = function (event) {
                 this.onMouseMove(event);
             }.bind(this);
@@ -396,7 +402,11 @@ export default class MainGameState {
             this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
             this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
             this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
-            this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png')
+            this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
+
+
+            //Sounds
+            this.Loader.loadSound('ambience' , '../../assets/ambiance.mp3')
         ];
     }
 

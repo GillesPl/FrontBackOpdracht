@@ -15,6 +15,7 @@ export default class Projectile extends DamageArea {
         super.update(delta);
         this.x += Math.cos(this.angleInRadians) * this.speed * delta;
         this.y += Math.sin(this.angleInRadians) * this.speed * delta;
+        console.log(this.map);
         if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
             this.destroyed = true;
         }
