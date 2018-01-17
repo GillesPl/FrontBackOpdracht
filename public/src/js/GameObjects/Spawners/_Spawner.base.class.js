@@ -1,5 +1,6 @@
 import Goblin from "../NPCObjects/Goblin.class";
 import Sheep from "../NPCObjects/Sheep.class";
+import Slime from "../NPCObjects/Slime.class";
 
 export default class Spawner {
     constructor(bounds, type, Loader, count, map, id, units) {
@@ -95,8 +96,13 @@ export default class Spawner {
                 case "Goblins":
                     unit = new Goblin(this.Loader, x, y, this.map, this.bounds);
                     break;
+
                 case "Sheep":
                     unit = new Sheep(this.Loader, x, y, this.map, this.bounds);
+                    break;
+
+                case "Slimes":
+                    unit = new Slime(this.Loader, x, y, this.map, this.bounds);
                     break;
 
                 default:
@@ -124,12 +130,17 @@ export default class Spawner {
             case "Goblins":
                 newUnit = new Goblin(this.Loader, unit.x, unit.y, this.map, this.bounds);
                 break;
+
             case "Sheep":
                 newUnit = new Sheep(this.Loader, unit.x, unit.y, this.map, this.bounds);
                 break;
 
+            case "Slimes":
+                newUnit = new Slime(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                break;
+
             default:
-                console.log('Cannot create unit of type ' + type);
+                console.log('Cannot create unit of type ' + unit.type);
                 return null;
         }
         newUnit.id = unit.id;

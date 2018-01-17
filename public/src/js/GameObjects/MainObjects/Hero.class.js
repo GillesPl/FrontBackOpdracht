@@ -49,7 +49,7 @@ export default class Hero {
         }
     }
 
-    getSmallObject() {
+    getSmallObject(inventory) {
         let smallObject = {};
         smallObject.token = this.token;
         smallObject.id = this.id;
@@ -62,7 +62,7 @@ export default class Hero {
         smallObject.width = this.width;
         smallObject.height = this.height;
         smallObject.resurected = this.resurected;
-        //console.log(smallObject);
+        smallObject.items = inventory;
         return JSON.stringify(smallObject);
     }
 

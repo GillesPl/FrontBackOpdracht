@@ -22,7 +22,17 @@ class NPC {
         this.tileLevel = 0;
         this.action = this.STATE.STOP;
         this.doingAction = 0;
-        this.speed = 196;
+        switch (this.type) {
+            case "Sheep":
+            this.speed = 160;
+            break;
+            case "Goblins":
+            this.speed = 196;
+            break;
+            case "Slimes":
+            this.speed = 80;
+            break;
+        }
     }
 
     unitsOverlap(units, thisx, thisy) {
@@ -201,36 +211,38 @@ class NPC {
         switch (this.type) {
             case "Sheep":
                 this.addDrop("Empty_bottle_1", 3, 10);
-                this.addDrop("Armor_1", 1, 1);
                 this.addDrop("Axe_1", 1, 1);
                 this.addDrop("Boots_1", 1, 1);
                 this.addDrop("Bow_1", 1, 1);
                 this.addDrop("Health_bottle_1", 5, 1);
                 this.addDrop("Health_bottle_2", 3, 1);
-                this.addDrop("Helmet_1", 1, 1);
                 this.addDrop("Shield_1", 1, 1);
                 this.addDrop("Shield_2", 1, 1);
                 this.addDrop("Sword_1", 1, 1);
-
                 break;
 
             case "Goblins":
                 this.addDrop("Empty_bottle_4", 3, 10);
-                this.addDrop("Armor_2", 1, 1);
+                this.addDrop("Armor_1", 1, 1);
                 this.addDrop("Axe_2", 1, 1);
-                this.addDrop("Axe_3", 1, 1);
                 this.addDrop("Boots_2", 1, 1);
-                this.addDrop("Boots_3", 1, 1);
                 this.addDrop("Bow_2", 1, 1);
-                this.addDrop("Bow_3", 1, 1);
                 this.addDrop("Health_bottle_3", 5, 1);
+                this.addDrop("Helmet_1", 1, 1);
+                this.addDrop("Shield_3", 1, 1);
+                this.addDrop("Spear", 1, 1);
+                this.addDrop("Sword_2", 1, 1);
+                break;
+
+            case "Slimes":
+                this.addDrop("Armor_2", 1, 1);
+                this.addDrop("Axe_3", 1, 1);
+                this.addDrop("Boots_3", 1, 1);
+                this.addDrop("Bow_3", 1, 1);
                 this.addDrop("Health_bottle_4", 3, 1);
                 this.addDrop("Helmet_2", 1, 1);
                 this.addDrop("Mace", 1, 1);
-                this.addDrop("Shield_3", 1, 1);
                 this.addDrop("Shield_4", 1, 1);
-                this.addDrop("Spear", 1, 1);
-                this.addDrop("Sword_2", 1, 1);
                 this.addDrop("Sword_3", 1, 1);
                 break;
         }

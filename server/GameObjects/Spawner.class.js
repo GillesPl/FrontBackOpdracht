@@ -43,6 +43,9 @@ class Spawner {
             case "Sheep":
                 health = 10;
                 break;
+            case "Slimes":
+                health = 500;
+                break;
             default:
                 health = 10;
                 console.log('Did not found ' + type);
