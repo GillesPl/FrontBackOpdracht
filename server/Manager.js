@@ -9,6 +9,11 @@ var Map = require('./Map/Map.class'),
     Projectile = require('./GameObjects/Projectile.class'),
     Spawner = require('./GameObjects/Spawner.class');
 
+
+    //controllers
+    var UserController = require("./Controllers/UserController");
+    var AuthenticateController = require("./Controllers/AuthenticateController");
+
 class Manager {
     constructor() {
         this.reset();
@@ -181,6 +186,23 @@ class Manager {
         });
         return JSON.stringify(spawners);
     }
+
+    createUser(user,socket) {
+        // i'm so sorry :(
+        UserController.createUserSocket(user , function(res) {
+            socket.emit("requestRegister" , res);
+        }, function (res) {
+            socket.emit("requestLogin", res);
+        });        
+    }   
+    
+    loginUser(user,socket) {
+        AuthenticateController.authenticate(user, function (res) {
+            socket.emit("requestLogin", res);
+        });
+    }
+
+    
 }
 
 module.exports.Manager = Manager;

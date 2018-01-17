@@ -79,17 +79,11 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on("registerUser", function (user) {
-        UserController.createUserSocket(user);
+        manager.createUser(user,socket);
     });
 
     socket.on("requestLogin", function (user) {
-        AuthenticateController.authenticate(user, function (res) {
-            if (res.success == true) {
-                socket.emit("requestLoginSuccess", res);
-            } else {
-                console.log(res.message);
-            }
-        });
+        manager.loginUser(user,socket);
     });
 
     socket.on("updatePlayer", function (hero) {

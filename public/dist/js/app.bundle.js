@@ -1285,7 +1285,7 @@ exports.default = Empty_bottle_4;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(16);
-module.exports = __webpack_require__(55);
+module.exports = __webpack_require__(57);
 
 
 /***/ }),
@@ -1299,15 +1299,15 @@ var _GameStateManager = __webpack_require__(17);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _LoginState = __webpack_require__(58);
+var _LoginState = __webpack_require__(18);
 
 var _LoginState2 = _interopRequireDefault(_LoginState);
 
-var _MainGameState = __webpack_require__(18);
+var _MainGameState = __webpack_require__(20);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(54);
+var _Map = __webpack_require__(56);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -1326,9 +1326,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     gamestatemanager.setState(loginstate);
 
-    socket.on("requestLoginSuccess", function (res) {
-        mainstate.setUser(res.user);
-        gamestatemanager.setState(mainstate);
+    socket.on("requestLogin", function (res) {
+        if (res.success == true) {
+            mainstate.setUser(res.user);
+            gamestatemanager.setState(mainstate);
+        }
     });
 })();
 
@@ -1415,14 +1417,190 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _User = __webpack_require__(19);
+
+var _User2 = _interopRequireDefault(_User);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LoginState = function () {
+    function LoginState(socket) {
+        _classCallCheck(this, LoginState);
+
+        this.socket = socket;
+        this.user;
+        this.body = document.querySelector("body");
+    }
+
+    _createClass(LoginState, [{
+        key: "start",
+        value: function start() {
+            this.clearBody();
+            this.drawBackground();
+            this.drawLogin();
+        }
+    }, {
+        key: "drawBackground",
+        value: function drawBackground() {
+            this.clearBody();
+            var template = "\n        <div class=\"background\">\n           \n        </div>\n        ";
+            this.body.innerHTML = template;
+        }
+    }, {
+        key: "checkErrors",
+        value: function checkErrors(err) {
+            document.querySelector(".errorContainer").innerHTML = err;
+        }
+    }, {
+        key: "drawRegister",
+        value: function drawRegister() {
+            var template = "\n        <div class=\"register\">\n        <h1>Register</h1>\n        <p>Please fill in an email, username and password to register.</p>\n        <div class=\"errorContainer\"></div>\n            <form class=\"startForm\" action=\"/\">\n                <input type=\"email\" placeholder=\"Email\" name=\"email\" id=\"registerEmail\" />\n                <input type=\"text\" placeholder=\"Username\" name=\"username\" id=\"registerUser\" />\n                <input type=\"password\" placeholder=\"Password\" name=\"password\" id=\"registerPassword\" />\n                <button type=\"submit\" class=\"btn-form btnregister\" value=\"Register\">Register</button>              \n            </form>\n            <a href=\"\" class=\"formLink\">Login</a>\n        </div>\n       ";
+            document.querySelector(".background").innerHTML = template;
+
+            this.body.querySelector(".formLink").addEventListener("click", function (e) {
+                e.preventDefault();
+                this.drawLogin();
+            }.bind(this));
+
+            this.body.querySelector(".btnregister").addEventListener("click", function (e) {
+                e.preventDefault();
+                var username = this.body.querySelector("#registerUser").value;
+                var password = this.body.querySelector("#registerPassword").value;
+                var email = this.body.querySelector("#registerEmail").value;
+                var user = new _User2.default(username, password, email);
+                this.registerCall(user);
+            }.bind(this));
+        }
+    }, {
+        key: "drawLogin",
+        value: function drawLogin() {
+            var template = "\n        <div class=\"login\">\n        <h1>Login</h1>\n        <p>Please log in using your email and password.</p>\n        <div class=\"errorContainer\"></div>\n            <form class=\"startForm\" action=\"/\">\n                <input type=\"text\" placeholder=\"Email\" name=\"email\" id=\"loginEmail\" />\n                <input type=\"password\" placeholder=\"Password\" name=\"password\" id=\"loginPassword\" />\n                <button type=\"submit\" class=\"btn-form btnlogin\" value=\"Login\">Login</button>                \n            </form>\n            <a href=\"\" class=\"formLink\">Register</a>\n        </div>\n        ";
+            document.querySelector(".background").innerHTML = template;
+
+            this.body.querySelector(".formLink").addEventListener("click", function (e) {
+                e.preventDefault();
+                this.drawRegister();
+            }.bind(this));
+
+            this.body.querySelector(".btnlogin").addEventListener("click", function (e) {
+                e.preventDefault();
+                var password = this.body.querySelector("#loginPassword").value;
+                var email = this.body.querySelector("#loginEmail").value;
+                var user = new _User2.default(null, password, email);
+                this.loginCall(user);
+            }.bind(this));
+        }
+    }, {
+        key: "registerCall",
+        value: function registerCall(user) {
+            this.socket.emit("registerUser", { user: user });
+            this.socket.on("requestRegister", function (res) {
+                if (res.success == false) this.checkErrors(res.message);
+                console.log(res.user);
+            }.bind(this));
+        }
+    }, {
+        key: "loginCall",
+        value: function loginCall(user) {
+            this.socket.emit("requestLogin", { user: user });
+            this.socket.on("requestLogin", function (res) {
+                if (res.success == false) this.checkErrors(res.message);
+                console.log(res.message);
+            }.bind(this));
+        }
+    }, {
+        key: "clearBody",
+        value: function clearBody() {
+            while (this.body.firstChild) {
+                this.body.removeChild(this.body.firstChild);
+            }
+        }
+    }]);
+
+    return LoginState;
+}();
+
+exports.default = LoginState;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var User = function () {
+    function User(username, password, mail) {
+        _classCallCheck(this, User);
+
+        this.username = username;
+        this.password = password;
+        this.mail = mail;
+    }
+
+    _createClass(User, [{
+        key: "getUsername",
+        value: function getUsername() {
+            return this.username;
+        }
+    }, {
+        key: "setUsername",
+        value: function setUsername(username) {
+            this.username = username;
+        }
+    }, {
+        key: "getPassword",
+        value: function getPassword() {
+            return this.password;
+        }
+    }, {
+        key: "getEmail",
+        value: function getEmail() {
+            return this.mail;
+        }
+    }, {
+        key: "setEmail",
+        value: function setEmail(email) {
+            this.mail = mail;
+        }
+    }]);
+
+    return User;
+}();
+
+exports.default = User;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 // inventoryItems
 
 
-var _Camera = __webpack_require__(19);
+var _Camera = __webpack_require__(21);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(20);
+var _Keyboard = __webpack_require__(22);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
@@ -1430,7 +1608,7 @@ var _Fire = __webpack_require__(2);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
-var _DroppedItem = __webpack_require__(21);
+var _DroppedItem = __webpack_require__(23);
 
 var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
 
@@ -1438,27 +1616,27 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _SpawnerBase = __webpack_require__(22);
+var _SpawnerBase = __webpack_require__(24);
 
 var _SpawnerBase2 = _interopRequireDefault(_SpawnerBase);
 
-var _Hero = __webpack_require__(24);
+var _Hero = __webpack_require__(26);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _InventoryManager = __webpack_require__(25);
+var _InventoryManager = __webpack_require__(27);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(27);
+var _OtherPlayer = __webpack_require__(29);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(28);
+var _Loader = __webpack_require__(30);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState = __webpack_require__(29);
+var _GameState = __webpack_require__(31);
 
 var _GameState2 = _interopRequireDefault(_GameState);
 
@@ -1470,67 +1648,67 @@ var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(30);
+var _Sword_3 = __webpack_require__(32);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(31);
+var _Sword_5 = __webpack_require__(33);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(32);
+var _Shield_ = __webpack_require__(34);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(33);
+var _Shield_3 = __webpack_require__(35);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(34);
+var _Shield_5 = __webpack_require__(36);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(35);
+var _Shield_7 = __webpack_require__(37);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(36);
+var _Axe_ = __webpack_require__(38);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(37);
+var _Axe_3 = __webpack_require__(39);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(38);
+var _Axe_5 = __webpack_require__(40);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(39);
+var _Bow_ = __webpack_require__(41);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(40);
+var _Bow_3 = __webpack_require__(42);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(41);
+var _Bow_5 = __webpack_require__(43);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(42);
+var _Mace = __webpack_require__(44);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(43);
+var _Spear = __webpack_require__(45);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(44);
+var _Armor_ = __webpack_require__(46);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(45);
+var _Armor_3 = __webpack_require__(47);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
@@ -1538,19 +1716,19 @@ var _Boots_ = __webpack_require__(6);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(46);
+var _Boots_3 = __webpack_require__(48);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(47);
+var _Boots_5 = __webpack_require__(49);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(48);
+var _Helmet_ = __webpack_require__(50);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(49);
+var _Helmet_3 = __webpack_require__(51);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
@@ -1558,19 +1736,19 @@ var _Coin = __webpack_require__(4);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(50);
+var _Health_bottle_ = __webpack_require__(52);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(51);
+var _Health_bottle_3 = __webpack_require__(53);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(52);
+var _Health_bottle_5 = __webpack_require__(54);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(53);
+var _Health_bottle_7 = __webpack_require__(55);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
@@ -2232,7 +2410,7 @@ var MainGameState = function () {
 exports.default = MainGameState;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2324,7 +2502,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2446,7 +2624,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2534,7 +2712,7 @@ var DroppedItem = function (_NonCharacterObject) {
 exports.default = DroppedItem;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2550,7 +2728,7 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _Sheep = __webpack_require__(23);
+var _Sheep = __webpack_require__(25);
 
 var _Sheep2 = _interopRequireDefault(_Sheep);
 
@@ -2726,7 +2904,7 @@ var Spawner = function () {
 exports.default = Spawner;
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2766,7 +2944,7 @@ var Sheep = function (_NPCObject) {
 exports.default = Sheep;
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3119,7 +3297,7 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3131,7 +3309,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _InventoryIcon = __webpack_require__(26);
+var _InventoryIcon = __webpack_require__(28);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
@@ -3788,7 +3966,7 @@ var InventoryManager = function () {
 exports.default = InventoryManager;
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3854,7 +4032,7 @@ var InventoryIcon = function () {
 exports.default = InventoryIcon;
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4035,7 +4213,7 @@ var OtherPlayer = function () {
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4088,7 +4266,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4133,7 +4311,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4174,7 +4352,7 @@ var Sword_2 = function (_InventoryObject) {
 exports.default = Sword_2;
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4215,7 +4393,7 @@ var Sword_3 = function (_InventoryObject) {
 exports.default = Sword_3;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4256,7 +4434,7 @@ var Shield_1 = function (_InventoryObject) {
 exports.default = Shield_1;
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4297,7 +4475,7 @@ var Shield_2 = function (_InventoryObject) {
 exports.default = Shield_2;
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4338,7 +4516,7 @@ var Shield_3 = function (_InventoryObject) {
 exports.default = Shield_3;
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4379,7 +4557,7 @@ var Shield_4 = function (_InventoryObject) {
 exports.default = Shield_4;
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4419,7 +4597,7 @@ var Axe_1 = function (_InventoryObject) {
 exports.default = Axe_1;
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4459,7 +4637,7 @@ var Axe_2 = function (_InventoryObject) {
 exports.default = Axe_2;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4499,7 +4677,7 @@ var Axe_3 = function (_InventoryObject) {
 exports.default = Axe_3;
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4540,7 +4718,7 @@ var Bow_1 = function (_InventoryObject) {
 exports.default = Bow_1;
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4581,7 +4759,7 @@ var Bow_2 = function (_InventoryObject) {
 exports.default = Bow_2;
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4622,7 +4800,7 @@ var Bow_3 = function (_InventoryObject) {
 exports.default = Bow_3;
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4662,7 +4840,7 @@ var Mace = function (_InventoryObject) {
 exports.default = Mace;
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4702,7 +4880,7 @@ var Spear = function (_InventoryObject) {
 exports.default = Spear;
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4743,7 +4921,7 @@ var Armor_1 = function (_InventoryObject) {
 exports.default = Armor_1;
 
 /***/ }),
-/* 45 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4784,7 +4962,7 @@ var Armor_2 = function (_InventoryObject) {
 exports.default = Armor_2;
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4825,7 +5003,7 @@ var Boots_2 = function (_InventoryObject) {
 exports.default = Boots_2;
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4866,7 +5044,7 @@ var Boots_3 = function (_InventoryObject) {
 exports.default = Boots_3;
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4907,7 +5085,7 @@ var Helmet_1 = function (_InventoryObject) {
 exports.default = Helmet_1;
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4948,7 +5126,7 @@ var Helmet_2 = function (_InventoryObject) {
 exports.default = Helmet_2;
 
 /***/ }),
-/* 50 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4993,7 +5171,7 @@ var Health_bottle_1 = function (_InventoryObject) {
 exports.default = Health_bottle_1;
 
 /***/ }),
-/* 51 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5038,7 +5216,7 @@ var Health_bottle_2 = function (_InventoryObject) {
 exports.default = Health_bottle_2;
 
 /***/ }),
-/* 52 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5083,7 +5261,7 @@ var Health_bottle_3 = function (_InventoryObject) {
 exports.default = Health_bottle_3;
 
 /***/ }),
-/* 53 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5128,7 +5306,7 @@ var Health_bottle_4 = function (_InventoryObject) {
 exports.default = Health_bottle_4;
 
 /***/ }),
-/* 54 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5325,189 +5503,10 @@ var Map = function () {
 exports.default = Map;
 
 /***/ }),
-/* 55 */
+/* 57 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 56 */,
-/* 57 */,
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _User = __webpack_require__(59);
-
-var _User2 = _interopRequireDefault(_User);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var LoginState = function () {
-    function LoginState(socket) {
-        _classCallCheck(this, LoginState);
-
-        this.socket = socket;
-        this.user;
-        this.body = document.querySelector("body");
-    }
-
-    _createClass(LoginState, [{
-        key: "start",
-        value: function start() {
-            this.clearBody();
-            this.drawChoice();
-        }
-    }, {
-        key: "drawChoice",
-        value: function drawChoice() {
-            this.clearBody();
-            var template = '<div class="choice"><button id="login">Login</button><button id="register">Register</button></div>';
-            this.body.innerHTML = template;
-
-            this.body.querySelector("#login").addEventListener("click", function (e) {
-                e.preventDefault();
-                //console.log(e.target);
-                this.drawLogin();
-            }.bind(this));
-
-            this.body.querySelector("#register").addEventListener("click", function (e) {
-                e.preventDefault();
-                this.drawRegister();
-            }.bind(this));
-        }
-    }, {
-        key: "drawRegister",
-        value: function drawRegister() {
-            this.clearBody();
-            var template = '<div class="register"><form action="/"><input type="email" placeholder="Email" name="email" id="registerEmail" /><input type="text" placeholder="Username" name="username" id="registerUser" /><input type="password" placeholder="Password" name="password" id="registerPassword" /><input type="submit" class="btnregister" value="Register"><input type="button" class="btnback" value="Back"></form></div>';
-            this.body.innerHTML = template;
-
-            this.body.querySelector(".btnback").addEventListener("click", function (e) {
-                this.drawChoice();
-            }.bind(this));
-
-            this.body.querySelector(".btnregister").addEventListener("click", function (e) {
-                e.preventDefault();
-                var username = this.body.querySelector("#registerUser").value;
-                var password = this.body.querySelector("#registerPassword").value;
-                var email = this.body.querySelector("#registerEmail").value;
-                var user = new _User2.default(username, password, email);
-                this.registerCall(user);
-            }.bind(this));
-        }
-    }, {
-        key: "drawLogin",
-        value: function drawLogin() {
-            this.clearBody();
-            var template = '<div class="login"><form action="/"><input type="text" placeholder="email" name="email" id="loginEmail" /><input type="password" placeholder="Password" name="password" id="loginPassword" /><input type="submit" class="btnlogin" value="Login"><input type="button" class="btnback" value="Back"></form></div>';
-            this.body.innerHTML = template;
-
-            this.body.querySelector(".btnback").addEventListener("click", function (e) {
-                e.preventDefault();
-                this.drawChoice();
-            }.bind(this));
-
-            this.body.querySelector(".btnlogin").addEventListener("click", function (e) {
-                e.preventDefault();
-                var password = this.body.querySelector("#loginPassword").value;
-                var email = this.body.querySelector("#loginEmail").value;
-                var user = new _User2.default(null, password, email);
-                this.loginCall(user);
-            }.bind(this));
-        }
-    }, {
-        key: "registerCall",
-        value: function registerCall(user) {
-            this.socket.emit("registerUser", { user: user });
-        }
-    }, {
-        key: "loginCall",
-        value: function loginCall(user) {
-            this.socket.emit("requestLogin", { user: user });
-            this.socket.on("requestLoginFail", function (res) {
-                console.log(res.message);
-            });
-        }
-    }, {
-        key: "clearBody",
-        value: function clearBody() {
-            while (this.body.firstChild) {
-                this.body.removeChild(this.body.firstChild);
-            }
-        }
-    }]);
-
-    return LoginState;
-}();
-
-exports.default = LoginState;
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var User = function () {
-    function User(username, password, mail) {
-        _classCallCheck(this, User);
-
-        this.username = username;
-        this.password = password;
-        this.mail = mail;
-    }
-
-    _createClass(User, [{
-        key: "getUsername",
-        value: function getUsername() {
-            return this.username;
-        }
-    }, {
-        key: "setUsername",
-        value: function setUsername(username) {
-            this.username = username;
-        }
-    }, {
-        key: "getPassword",
-        value: function getPassword() {
-            return this.password;
-        }
-    }, {
-        key: "getEmail",
-        value: function getEmail() {
-            return this.mail;
-        }
-    }, {
-        key: "setEmail",
-        value: function setEmail(email) {
-            this.mail = mail;
-        }
-    }]);
-
-    return User;
-}();
-
-exports.default = User;
 
 /***/ })
 /******/ ]);
