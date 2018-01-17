@@ -3,27 +3,26 @@
 var mongoose = require("mongoose"),
     User = mongoose.model('User'),
     jwt = require("jsonwebtoken"),
-    bcrypt = require("bcrypt")
+    bcrypt = require("bcrypt"),
     config = require("./../config");
 
-
-exports.authenticate = function (player,callback) {
+exports.authenticate = function (req, callback) {
     User.findOne({
-        mail: player.user.mail
+        mail: req.user.mail
     }, function (err, user) {
-        if (!user) {           
+        if (!user) {
             callback({
                 success: false,
                 message: 'Authentication failed. mail not found.'
-            });    
+            });
         } else if (user) {
             // check if password matches            
-            bcrypt.compare(player.user.password, user.password, function (err, correct) {
+            bcrypt.compare(req.user.password, user.password, function (err, correct) {
                 if (err) {
-                   callback({
+                    callback({
                         success: false,
                         message: 'Authentication failed. Wrong password.'
-                    })
+                    });
                 }
                 if (correct) {
                     // if user is found and password is right
@@ -35,15 +34,17 @@ exports.authenticate = function (player,callback) {
                     };
                     var token = jwt.sign(payload, config.secret, {
                         expiresIn: 60 * 60 * 24 // expires in 24 hours also '24h' works
-                    });                   
-
-                    // return the information including token as JSON
-                    callback( {
-                        success: true,
-                        message: 'Enjoy your token!',
-                        token: token
-                    })
-                   
+                    });
+                    user.token = token;
+                    user.save(function (err, user) {
+                        if (err) return callback(err);
+                        // return the information including token as JSON
+                        callback({
+                            success: true,
+                            message: 'Enjoy your token!',
+                            user: user
+                        });
+                    });
                 }
             });
         }

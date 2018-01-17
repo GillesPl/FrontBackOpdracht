@@ -43,7 +43,7 @@ import Empty_bottle_3 from "../GameObjects/InventoryObjects/Empty_bottle_3.class
 import Empty_bottle_4 from "../GameObjects/InventoryObjects/Empty_bottle_4.class";
 
 export default class MainGameState {
-    constructor( map, socket) {
+    constructor(map, socket) {
         this.map = map;
         this.hero;
         this.camera;
@@ -52,7 +52,7 @@ export default class MainGameState {
         this.Loader = new Loader();
         this.otherPlayers = [];
         this.connected = false;
-       
+
         this.nonCharacterObjects = [];
         //this.NPCObjects = [];
         this.spawners = [];
@@ -113,8 +113,15 @@ export default class MainGameState {
         this.render(delta);
     }
 
-    setToken(token) {
-        this.token = token;
+    setUser(user) {
+        // Use data from server
+        this.overwriteHero = {};
+        this.overwriteHero.id = user._id;
+        this.overwriteHero.x = user.position.x;
+        this.overwriteHero.y = user.position.y;
+        this.overwriteHero.health = user.health;
+        this.overwriteHero.tileLevel = user.tileLevel;
+        this.overwriteHero.token = user.token;
     }
 
     loadNonCharacterObjects(objects, gameState) {
@@ -206,7 +213,8 @@ export default class MainGameState {
         this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.E, this.Keyboard.R]);
 
         this.tileAtlas = this.Loader.getImage('tiles');
-        this.hero = new Hero(this.map, 50 * this.map.drawSize, 50 * this.map.drawSize, this.Loader);
+        this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
+
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
         this.loadInventoryObjects();
 

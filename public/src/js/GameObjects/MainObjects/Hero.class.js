@@ -1,5 +1,5 @@
 export default class Hero {
-    constructor(map, x, y, Loader) {
+    constructor(map, x, y, id, health, tileLevel, token, Loader) {
         this.map = map;
         this.x = x;
         this.y = y;
@@ -8,8 +8,9 @@ export default class Hero {
         this.Loader = Loader;
         this.debugging = false;
         this.topText = [];
+        this.token = token;
 
-        this.health = 100;
+        this.health = health;
         this.maxHealth = 100;
         this.armor = 0;
 
@@ -21,7 +22,7 @@ export default class Hero {
         this.imageHeight = 48;
         this.maskWidth = map.drawSize * 0.65;
         this.maskHeight = map.drawSize * 0.8;
-        this.tileLevel = 0; // HeighttileLevel
+        this.tileLevel = tileLevel; // HeighttileLevel
         this.STATE = {
             RUNNINGNORTH: 1,
             RUNNINGEAST: 2,
@@ -40,7 +41,7 @@ export default class Hero {
         this.dead = false;
 
         this.speed = 256;
-        this.id = this.generateId();
+        this.id = id;
 
         if (this.debugging) {
             this.speed = 512;
@@ -49,11 +50,13 @@ export default class Hero {
 
     getSmallObject() {
         let smallObject = {};
+        smallObject.token = this.token;
         smallObject.id = this.id;
         smallObject.x = Math.floor(this.x * 100) / 100;
         smallObject.y = Math.floor(this.y * 100) / 100;
         smallObject.action = this.action;
         smallObject.tileLevel = this.tileLevel;
+        smallObject.health = this.health;
         smallObject.speed = this.speed;
         smallObject.width = this.width;
         smallObject.height = this.height;
@@ -70,7 +73,7 @@ export default class Hero {
         };
     }
 
-    generateId() {
+   /* generateId() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -84,7 +87,7 @@ export default class Hero {
         }
         return time() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
-    }
+    }*/
 
 
     move(delta, dirx, diry) {

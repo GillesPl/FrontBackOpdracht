@@ -37,6 +37,13 @@ var userSchema = new Schema({
     health: {
         type: Number,
         default: 100
+    },
+    tileLevel: {
+        type: Number,
+        default: 0
+    },
+    token: {
+        type: String
     }
 });
 

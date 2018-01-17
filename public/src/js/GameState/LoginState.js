@@ -19,7 +19,7 @@ export default class LoginState  {
 
         this.body.querySelector("#login").addEventListener("click" , function(e) {
             e.preventDefault();
-            console.log(e.target);
+            //console.log(e.target);
             this.drawLogin();
         }.bind(this));
 

@@ -8,8 +8,7 @@ var WebSocketServer = require('websocket').server;
 var io = require('socket.io').listen(server),
     bodyParser = require("body-parser"),
     morgan = require("morgan")
-    config = require("./server/config");
-
+config = require("./server/config");
 
 app.set("megaSecret", config.secret);
 
@@ -93,29 +92,40 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.on("registerUser" , function(user) {
+    socket.on("registerUser", function (user) {
         UserController.createUserSocket(user);
-        
-    })
+    });
 
     socket.on("requestLogin", function (user) {
-       AuthenticateController.authenticate(user,function(res) {
-        if(res.success == true) {
-            //do shit, token bij user steken????
-            //dbupdate user in steken, returnvalue geven naar client met socket.emit("requestLoginSuccess",res) 
-            socket.emit("requestLoginSuccess", res)
-        }
-        else {
-            console.log(res.message);
-        }
-       });
-       
+        AuthenticateController.authenticate(user, function (res) {
+            if (res.success == true) {
+                socket.emit("requestLoginSuccess", res);
+            } else {
+                console.log(res.message);
+            }
+        });
     });
 
     socket.on("updatePlayer", function (hero) {
+        hero = JSON.parse(hero);
+        console.log(hero);
+        let heroForDatabase = {
+            _id: hero.id,
+            token: hero.token,
+            tileLevel: hero.tileLevel,
+            health: hero.health,
+            position: {
+                x: hero.x,
+                y: hero.y
+            }
+        };
+
+        delete hero.token; // Remove the token, noone else should know this value!
+        hero = JSON.stringify(hero);
+
         socket.broadcast.emit("updatingPlayer", hero); // Notify all other players
         let found = false;
-        let heroId = JSON.parse(hero).id;
+        let heroId = heroForDatabase._id;
         for (let i = players.length - 1; i >= 0; i--) {
             if (heroId === JSON.parse(players[i]).id) {
                 players[i] = hero; // Update player in cache
@@ -126,6 +136,10 @@ io.sockets.on('connection', function (socket) {
             socketsConnected.push(socket);
             players.push(hero);
         }
+
+        UserController.updateUserFromToken(heroForDatabase, function(res) {
+            console.log(res);
+        });
     });
 });
 
