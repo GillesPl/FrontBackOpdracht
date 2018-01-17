@@ -716,6 +716,23 @@ var Goblin = function (_NPCObject) {
         var _this = _possibleConstructorReturn(this, (Goblin.__proto__ || Object.getPrototypeOf(Goblin)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
 
         _this.setTilesImage(Loader.getImage('goblin'), 4, 4, 4);
+        _this.addDrop("Empty_bottle_4", 3, 10);
+        _this.addDrop("Armor_2", 1, 1);
+        _this.addDrop("Axe_2", 1, 1);
+        _this.addDrop("Axe_3", 1, 1);
+        _this.addDrop("Boots_2", 1, 1);
+        _this.addDrop("Boots_3", 1, 1);
+        _this.addDrop("Bow_2", 1, 1);
+        _this.addDrop("Bow_3", 1, 1);
+        _this.addDrop("Health_bottle_3", 5, 1);
+        _this.addDrop("Health_bottle_4", 3, 1);
+        _this.addDrop("Helmet_2", 1, 1);
+        _this.addDrop("Mace", 1, 1);
+        _this.addDrop("Shield_3", 1, 1);
+        _this.addDrop("Shield_4", 1, 1);
+        _this.addDrop("Spear", 1, 1);
+        _this.addDrop("Sword_2", 1, 1);
+        _this.addDrop("Sword_3", 1, 1);
         return _this;
     }
 
@@ -772,7 +789,7 @@ var NPCObject = function (_GameObject) {
         _this.attackSpeed = attackSpeed;
         _this.speed = speed;
         _this.passive = passive;
-        _this.canBePickedUp = false;
+        //this.canBePickedUp = false;
         _this.STATE = {
             STOP: 0,
             RUNNINGNORTH: 1,
@@ -785,10 +802,39 @@ var NPCObject = function (_GameObject) {
         _this.doingAction = 0;
         _this.imageState = 0;
         _this.id = -1;
+        _this.possibledrops = [];
         return _this;
     }
 
     _createClass(NPCObject, [{
+        key: "addDrop",
+        value: function addDrop(name, amount, chance) {
+            this.possibledrops.push({
+                name: name,
+                amount: amount,
+                chance: chance
+            });
+        }
+    }, {
+        key: "getDrop",
+        value: function getDrop() {
+            var totalChance = 0;
+            this.possibledrops.forEach(function (drop) {
+                totalChance += drop.chance;
+            });
+            var rand = Math.random() * totalChance;
+
+            for (var i = 0; i < this.possibledrops.length; i++) {
+                var drop = this.possibledrops[i];
+                if (drop.chance >= rand) {
+                    return drop.name;
+                }
+                rand -= drop.chance;
+            }
+
+            return null; // Shouldn't happen
+        }
+    }, {
         key: "hasDamage",
         value: function hasDamage() {
             return this.damageDone > 0 ? false : this.damage >= 0;
@@ -2009,14 +2055,8 @@ var MainGameState = function () {
                         _this.nonCharacterObjects.push(new _DroppedItem2.default(_this.Loader, object.id, object.x * _this.map.scale, object.y * _this.map.scale, 16, 16, "coin", object.properties.Count));
                         break;
 
-                    case "Sword_1":
-                    case "Boots_1":
-                        _this.nonCharacterObjects.push(new _DroppedItem2.default(_this.Loader, object.id, object.x * _this.map.scale, object.y * _this.map.scale, 32, 32, object.name, object.properties.Count));
-                        break;
-
                     default:
-                        console.log("Object '" + object.name + "' doesn't  exist.");
-                        console.log(object);
+                        _this.nonCharacterObjects.push(new _DroppedItem2.default(_this.Loader, object.id, object.x * _this.map.scale, object.y * _this.map.scale, 32, 32, object.name, object.properties.Count));
                         break;
                 }
             });
@@ -2775,17 +2815,129 @@ var _nonCharacterObjectBase = __webpack_require__(3);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
 
-var _Coin = __webpack_require__(4);
-
-var _Coin2 = _interopRequireDefault(_Coin);
-
 var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
+var _Sword_3 = __webpack_require__(34);
+
+var _Sword_4 = _interopRequireDefault(_Sword_3);
+
+var _Sword_5 = __webpack_require__(35);
+
+var _Sword_6 = _interopRequireDefault(_Sword_5);
+
+var _Shield_ = __webpack_require__(36);
+
+var _Shield_2 = _interopRequireDefault(_Shield_);
+
+var _Shield_3 = __webpack_require__(37);
+
+var _Shield_4 = _interopRequireDefault(_Shield_3);
+
+var _Shield_5 = __webpack_require__(38);
+
+var _Shield_6 = _interopRequireDefault(_Shield_5);
+
+var _Shield_7 = __webpack_require__(39);
+
+var _Shield_8 = _interopRequireDefault(_Shield_7);
+
+var _Axe_ = __webpack_require__(40);
+
+var _Axe_2 = _interopRequireDefault(_Axe_);
+
+var _Axe_3 = __webpack_require__(41);
+
+var _Axe_4 = _interopRequireDefault(_Axe_3);
+
+var _Axe_5 = __webpack_require__(42);
+
+var _Axe_6 = _interopRequireDefault(_Axe_5);
+
+var _Bow_ = __webpack_require__(43);
+
+var _Bow_2 = _interopRequireDefault(_Bow_);
+
+var _Bow_3 = __webpack_require__(44);
+
+var _Bow_4 = _interopRequireDefault(_Bow_3);
+
+var _Bow_5 = __webpack_require__(45);
+
+var _Bow_6 = _interopRequireDefault(_Bow_5);
+
+var _Mace = __webpack_require__(46);
+
+var _Mace2 = _interopRequireDefault(_Mace);
+
+var _Spear = __webpack_require__(47);
+
+var _Spear2 = _interopRequireDefault(_Spear);
+
+var _Armor_ = __webpack_require__(48);
+
+var _Armor_2 = _interopRequireDefault(_Armor_);
+
+var _Armor_3 = __webpack_require__(49);
+
+var _Armor_4 = _interopRequireDefault(_Armor_3);
+
 var _Boots_ = __webpack_require__(6);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
+
+var _Boots_3 = __webpack_require__(50);
+
+var _Boots_4 = _interopRequireDefault(_Boots_3);
+
+var _Boots_5 = __webpack_require__(51);
+
+var _Boots_6 = _interopRequireDefault(_Boots_5);
+
+var _Helmet_ = __webpack_require__(52);
+
+var _Helmet_2 = _interopRequireDefault(_Helmet_);
+
+var _Helmet_3 = __webpack_require__(53);
+
+var _Helmet_4 = _interopRequireDefault(_Helmet_3);
+
+var _Coin = __webpack_require__(4);
+
+var _Coin2 = _interopRequireDefault(_Coin);
+
+var _Health_bottle_ = __webpack_require__(54);
+
+var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
+
+var _Health_bottle_3 = __webpack_require__(55);
+
+var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
+
+var _Health_bottle_5 = __webpack_require__(56);
+
+var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
+
+var _Health_bottle_7 = __webpack_require__(57);
+
+var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
+
+var _Empty_bottle_ = __webpack_require__(13);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+var _Empty_bottle_3 = __webpack_require__(14);
+
+var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
+
+var _Empty_bottle_5 = __webpack_require__(15);
+
+var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
+
+var _Empty_bottle_7 = __webpack_require__(16);
+
+var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2794,6 +2946,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// inventoryItems
+
 
 var DroppedItem = function (_NonCharacterObject) {
     _inherits(DroppedItem, _NonCharacterObject);
@@ -2811,14 +2966,154 @@ var DroppedItem = function (_NonCharacterObject) {
                 _this.value = new _Coin2.default(Loader, count);
                 break;
 
-            case "Sword_1":
-                _this.setImage(Loader.getImage('sword_1'));
-                _this.value = new _Sword_2.default(Loader, count);
+            case "Armor_1":
+                _this.setImage(Loader.getImage('armor_1'));
+                _this.value = new _Armor_2.default(Loader, count);
+                break;
+
+            case "Armor_2":
+                _this.setImage(Loader.getImage('armor_2'));
+                _this.value = new _Armor_4.default(Loader, count);
+                break;
+
+            case "Axe_1":
+                _this.setImage(Loader.getImage('axe_1'));
+                _this.value = new _Axe_2.default(Loader, count);
+                break;
+
+            case "Axe_2":
+                _this.setImage(Loader.getImage('axe_2'));
+                _this.value = new _Axe_4.default(Loader, count);
+                break;
+
+            case "Axe_3":
+                _this.setImage(Loader.getImage('axe_3'));
+                _this.value = new _Axe_6.default(Loader, count);
                 break;
 
             case "Boots_1":
                 _this.setImage(Loader.getImage('boots_1'));
                 _this.value = new _Boots_2.default(Loader, count);
+                break;
+
+            case "Boots_2":
+                _this.setImage(Loader.getImage('boots_2'));
+                _this.value = new _Boots_4.default(Loader, count);
+                break;
+
+            case "Boots_3":
+                _this.setImage(Loader.getImage('boots_3'));
+                _this.value = new _Boots_6.default(Loader, count);
+                break;
+
+            case "Bow_1":
+                _this.setImage(Loader.getImage('bow_1'));
+                _this.value = new _Bow_2.default(Loader, count);
+                break;
+
+            case "Bow_2":
+                _this.setImage(Loader.getImage('bow_2'));
+                _this.value = new _Bow_4.default(Loader, count);
+                break;
+
+            case "Bow_3":
+                _this.setImage(Loader.getImage('bow_3'));
+                _this.value = new _Bow_6.default(Loader, count);
+                break;
+
+            case "Empty_bottle_1":
+                _this.setImage(Loader.getImage('empty_bottle_1'));
+                _this.value = new _Empty_bottle_2.default(Loader, count);
+                break;
+
+            case "Empty_bottle_2":
+                _this.setImage(Loader.getImage('empty_bottle_2'));
+                _this.value = new _Empty_bottle_4.default(Loader, count);
+                break;
+
+            case "Empty_bottle_3":
+                _this.setImage(Loader.getImage('empty_bottle_3'));
+                _this.value = new _Empty_bottle_6.default(Loader, count);
+                break;
+
+            case "Empty_bottle_4":
+                _this.setImage(Loader.getImage('empty_bottle_4'));
+                _this.value = new _Empty_bottle_8.default(Loader, count);
+                break;
+
+            case "Health_bottle_1":
+                _this.setImage(Loader.getImage('health_bottle_1'));
+                _this.value = new _Health_bottle_2.default(Loader, count);
+                break;
+
+            case "Health_bottle_2":
+                _this.setImage(Loader.getImage('health_bottle_2'));
+                _this.value = new _Health_bottle_4.default(Loader, count);
+                break;
+
+            case "Health_bottle_3":
+                _this.setImage(Loader.getImage('health_bottle_3'));
+                _this.value = new _Health_bottle_6.default(Loader, count);
+                break;
+
+            case "Health_bottle_4":
+                _this.setImage(Loader.getImage('health_bottle_4'));
+                _this.value = new _Health_bottle_8.default(Loader, count);
+                break;
+
+            case "Helmet_1":
+                _this.setImage(Loader.getImage('helmet_1'));
+                _this.value = new _Helmet_2.default(Loader, count);
+                break;
+
+            case "Helmet_2":
+                _this.setImage(Loader.getImage('helmet_2'));
+                _this.value = new _Helmet_4.default(Loader, count);
+                break;
+
+            case "Mace":
+                _this.setImage(Loader.getImage('mace'));
+                _this.value = new _Mace2.default(Loader, count);
+                break;
+
+            case "Shield_bottle_1":
+                _this.setImage(Loader.getImage('shield_bottle_1'));
+                _this.value = new Shield_bottle_1(Loader, count);
+                break;
+
+            case "Shield_bottle_2":
+                _this.setImage(Loader.getImage('shield_bottle_2'));
+                _this.value = new Shield_bottle_2(Loader, count);
+                break;
+
+            case "Shield_bottle_3":
+                _this.setImage(Loader.getImage('shield_bottle_3'));
+                _this.value = new Shield_bottle_3(Loader, count);
+                break;
+
+            case "Shield_bottle_4":
+                _this.setImage(Loader.getImage('shield_bottle_4'));
+                _this.value = new Shield_bottle_4(Loader, count);
+                break;
+
+            case "Spear":
+                _this.setImage(Loader.getImage('spear'));
+                _this.value = new _Spear2.default(Loader, count);
+                break;
+
+            case "Sword_1":
+                _this.setImage(Loader.getImage('sword_1'));
+                _this.value = new _Sword_2.default(Loader, count);
+                break;
+
+            case "Sword_2":
+                _this.setImage(Loader.getImage('sword_2'));
+                _this.value = new _Sword_4.default(Loader, count);
+                break;
+
+            case "Sword_3":
+                _this.setImage(Loader.getImage('sword_3'));
+                _this.value = new _Sword_6.default(Loader, count);
                 break;
 
             default:
@@ -3068,6 +3363,17 @@ var Sheep = function (_NPCObject) {
         var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 196, true, map, bounds));
 
         _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
+        _this.addDrop("Empty_bottle_1", 3, 10);
+        _this.addDrop("Armor_1", 1, 1);
+        _this.addDrop("Axe_1", 1, 1);
+        _this.addDrop("Boots_1", 1, 1);
+        _this.addDrop("Bow_1", 1, 1);
+        _this.addDrop("Health_bottle_1", 5, 1);
+        _this.addDrop("Health_bottle_2", 3, 1);
+        _this.addDrop("Helmet_1", 1, 1);
+        _this.addDrop("Shield_1", 1, 1);
+        _this.addDrop("Shield_2", 1, 1);
+        _this.addDrop("Sword_1", 1, 1);
         return _this;
     }
 

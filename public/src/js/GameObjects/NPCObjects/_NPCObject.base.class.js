@@ -16,7 +16,7 @@ export default class NPCObject extends GameObject {
         this.attackSpeed = attackSpeed;
         this.speed = speed;
         this.passive = passive;
-        this.canBePickedUp = false;
+        //this.canBePickedUp = false;
         this.STATE = {
             STOP: 0,
             RUNNINGNORTH: 1,
@@ -29,6 +29,33 @@ export default class NPCObject extends GameObject {
         this.doingAction = 0;
         this.imageState = 0;
         this.id = -1;
+        this.possibledrops = [];
+    }
+
+    addDrop(name, amount, chance) {
+        this.possibledrops.push({
+            name: name,
+            amount: amount,
+            chance: chance
+        });
+    }
+
+    getDrop() {
+        let totalChance = 0;
+        this.possibledrops.forEach(drop => {
+            totalChance += drop.chance;
+        });
+        let rand = Math.random() * totalChance;
+
+        for (let i = 0; i < this.possibledrops.length; i++) {
+            const drop = this.possibledrops[i];
+            if (drop.chance >= rand) {
+                return drop.name;
+            }
+            rand -= drop.chance;
+        }
+
+        return null; // Shouldn't happen
     }
 
     hasDamage() {

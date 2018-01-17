@@ -141,15 +141,9 @@ export default class MainGameState {
                         16, 16, "coin", object.properties.Count));
                     break;
 
-                case "Sword_1":
-                case "Boots_1":
+                default:
                     this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x * this.map.scale, object.y * this.map.scale,
                         32, 32, object.name, object.properties.Count));
-                    break;
-
-                default:
-                    console.log("Object '" + object.name + "' doesn't  exist.");
-                    console.log(object);
                     break;
             }
         });
