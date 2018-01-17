@@ -1,6 +1,7 @@
 "use strict";
 var User = require("./../Models/User.model"),
-    bcrypt = require("bcrypt");
+    bcrypt = require("bcrypt"),
+    AuthenticateController = require("./AuthenticateController");
 
 exports.getUsers = function (req, res) {
     User.find({}, function (err, users) {
@@ -22,37 +23,37 @@ exports.updateUserFromToken = function (req, res) {
     User.findOneAndUpdate({
         token: req.token
     }, req, {
-        new: true
-    }, function (err, user) {
-        if (err) return res(err);
-        if (user._id != req._id) return res("id's don't match");
-        user.save(function (err, user) {
+            new: true
+        }, function (err, user) {
             if (err) return res(err);
-            res(user);
+            if (user._id != req._id) return res("id's don't match");
+            user.save(function (err, user) {
+                if (err) return res(err);
+                res(user);
+            });
         });
-    });
 };
 
 exports.updateUser = function (req, res) {
     User.findOneAndUpdate({
         _id: req.params.userId
     }, req.body, {
-        new: true
-    }, function (err, user) {
-        if (err) return res.status(400).send(err);
-        if (req.body.password === undefined) return res.json(user);
-        bcrypt.genSalt(10, function (err, salt) {
+            new: true
+        }, function (err, user) {
             if (err) return res.status(400).send(err);
-            bcrypt.hash(user.password, salt, function (err, hash) {
+            if (req.body.password === undefined) return res.json(user);
+            bcrypt.genSalt(10, function (err, salt) {
                 if (err) return res.status(400).send(err);
-                user.password = hash;
-                user.save(function (err, user) {
+                bcrypt.hash(user.password, salt, function (err, hash) {
                     if (err) return res.status(400).send(err);
-                    res.json(user);
+                    user.password = hash;
+                    user.save(function (err, user) {
+                        if (err) return res.status(400).send(err);
+                        res.json(user);
+                    });
                 });
             });
         });
-    });
 };
 
 exports.getUserSocket = function (id) {
@@ -62,20 +63,54 @@ exports.getUserSocket = function (id) {
     });
 }
 
-exports.createUserSocket = function (user) {
+exports.createUserSocket = function (user, callback,logincallback) {
+    let message = "";
+    if (user.user.username == undefined || user.user.username == null || user.user.username == "") {
+        message += "Username is undefined \n";
+    }
+
+    if (user.user.password == undefined || user.user.password == null || user.user.password == "") {
+        message += "Password is undefined \n";
+    }
+
+    if (user.user.mail == undefined || user.user.mail == null || user.user.mail == "") {
+        message += "Mail is undefined \n";
+    }
+
+    if (message != "") return callback({
+        success: false,
+        message: message
+    })
     var newuser = new User();
     newuser.username = user.user.username;
     newuser.password = user.user.password;
     newuser.mail = user.user.mail
-    console.log(newuser);
+
     bcrypt.genSalt(10, function (err, salt) {
-        if (err) console.log(err.message);
+        if (err) return callback({
+            success: false,
+            message: err.message,
+        });
         bcrypt.hash(newuser.password, salt, function (err, hash) {
-            if (err) console.log(err.message);
+            if (err) return callback({
+                success: false,
+                message: err.message,
+            });
+            //i'm so sorry for this
+            let usercopy = JSON.parse(JSON.stringify(newuser));
             newuser.password = hash;
             newuser.save(function (err, user) {
-                if (err) console.log(err.message);
-                return user;
+                if (err) return callback(err.message);
+                callback({
+                    success: true,
+                    message: 'User has been created',
+                    user: user
+                });
+                AuthenticateController.authenticate({user: usercopy},function(res) {
+                    console.log(res);
+                    logincallback(res);
+                });
+                return;
             });
         });
     });

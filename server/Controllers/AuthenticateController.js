@@ -6,12 +6,12 @@ var mongoose = require("mongoose"),
     bcrypt = require("bcrypt"),
     config = require("./../config");
 
-exports.authenticate = function (req, callback) {
+exports.authenticate = function (req, callback) {    
     User.findOne({
         mail: req.user.mail
     }, function (err, user) {
         if (!user) {
-            callback({
+            return callback({
                 success: false,
                 message: 'Authentication failed. mail not found.'
             });
@@ -19,11 +19,11 @@ exports.authenticate = function (req, callback) {
             // check if password matches            
             bcrypt.compare(req.user.password, user.password, function (err, correct) {
                 if (err) {
-                    callback({
+                    return callback({
                         success: false,
                         message: 'Authentication failed. Wrong password.'
                     });
-                }
+                }                
                 if (correct) {
                     // if user is found and password is right
                     // create a token with only our given payload
@@ -32,6 +32,7 @@ exports.authenticate = function (req, callback) {
                         username: user.username,
                         mail: user.mail
                     };
+                    console.log(correct);
                     var token = jwt.sign(payload, config.secret, {
                         expiresIn: 60 * 60 * 24 // expires in 24 hours also '24h' works
                     });
@@ -39,12 +40,18 @@ exports.authenticate = function (req, callback) {
                     user.save(function (err, user) {
                         if (err) return callback(err);
                         // return the information including token as JSON
-                        callback({
+                        return callback({
                             success: true,
                             message: 'Enjoy your token!',
                             user: user
                         });
                     });
+                }
+                else {
+                    return callback({
+                        success: false,
+                        message: 'Authentication failed. Wrong password.'
+                    }); 
                 }
             });
         }
