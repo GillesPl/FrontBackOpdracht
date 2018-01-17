@@ -1,6 +1,7 @@
 export default class Loader {
     constructor() {
         this.images = {};
+        this.sounds = {};
     }
 
     loadImage(key, src) {
@@ -23,5 +24,21 @@ export default class Loader {
 
     getImage(key) {
         return (key in this.images) ? this.images[key] : null;
+    }
+
+
+    loadSound(key,src) {
+        let sound = new Audio();
+        this.sounds[key] = sound;                
+        sound.src = src;
+        let error = sound.onerror;
+        if(error) {
+            console.error(error)
+        }
+        return 
+    }
+
+    getSound(key) {
+        return (key in this.sounds) ? this.sounds[key] : null;
     }
 }

@@ -253,7 +253,7 @@ export default class InventoryManager {
                                 //console.log('bow used, creating ' + inventoryObject.createObjectName);
                                 switch (inventoryObject.createObjectName) {
                                     case 'Arrow_1':
-                                        let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
+                                        let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
                                         let projectile = new Arrow_1(Math.random(), this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
                                         sendNewDamageAreaListener.sendNewDamageArea(projectile);
                                         this.damageAreas.push(projectile);
