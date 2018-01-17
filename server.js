@@ -8,8 +8,13 @@ var express = require('express'),
     io = require('socket.io').listen(server),
     bodyParser = require("body-parser"),
     morgan = require("morgan"),
-    config = require("./server/config"),
-    Manager = require('./server/Manager');
+    config = require("./server/config");
+
+//models
+var Item = require("./server/Models/Item.model");
+var User = require("./server/Models/User.model");
+
+var Manager = require('./server/Manager');
 
 app.set("megaSecret", config.secret);
 
@@ -20,9 +25,6 @@ app.use(bodyParser.json());
 
 app.use(morgan("dev"));
 
-//models
-var Item = require("./server/Models/Item.model");
-var User = require("./server/Models/User.model");
 
 //controllers
 var UserController = require("./server/Controllers/UserController");

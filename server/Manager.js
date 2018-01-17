@@ -2,11 +2,12 @@
 Try catch rond alle json parse op server
 */
 
-var Map = require('./Map/Map.class');
-var Player = require('./GameObjects/Player.class');
-var NonCharacterObject = require('./GameObjects/NonCharacterObject.class');
-var Projectile = require('./GameObjects/Projectile.class');
-var Spawner = require('./GameObjects/Spawner.class');
+var Map = require('./Map/Map.class'),
+    UserController = require('./Controllers/UserController'),
+    Player = require('./GameObjects/Player.class'),
+    NonCharacterObject = require('./GameObjects/NonCharacterObject.class'),
+    Projectile = require('./GameObjects/Projectile.class'),
+    Spawner = require('./GameObjects/Spawner.class');
 
 class Manager {
     constructor() {
@@ -39,7 +40,7 @@ class Manager {
     }
 
     updatePlayer(playerJsonString, socket) {
-        
+
         let player = JSON.parse(playerJsonString);
         console.log(player);
         let playerForDatabase = {
@@ -61,8 +62,8 @@ class Manager {
                 socket.broadcast.emit("updatingPlayer", playerJsonString); // Notify all other players
             }
         });
-        
-        UserController.updateUserFromToken(heroForDatabase, function(res) {
+
+        UserController.updateUserFromToken(playerForDatabase, function (res) {
             console.log(res);
         });
     }
