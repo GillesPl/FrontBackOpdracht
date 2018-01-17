@@ -648,6 +648,25 @@
                  "width":374.712121212121,
                  "x":373.727272727273,
                  "y":743.439393939394
+                }, 
+                {
+                 "height":406.333,
+                 "id":35,
+                 "name":"Slimes",
+                 "properties":
+                    {
+                     "Count":4
+                    },
+                 "propertytypes":
+                    {
+                     "Count":"int"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":962.000000000001,
+                 "x":362.999999999999,
+                 "y":1191.50016666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -655,7 +674,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":35,
+ "nextobjectid":36,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",

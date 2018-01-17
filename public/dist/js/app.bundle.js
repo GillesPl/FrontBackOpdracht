@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 41);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -93,7 +93,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var InventoryObject = function (_GameObject) {
     _inherits(InventoryObject, _GameObject);
 
-    function InventoryObject(typeId, stackLimit, stackCount) {
+    function InventoryObject(typeId, stackLimit, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, InventoryObject);
 
         var _this = _possibleConstructorReturn(this, (InventoryObject.__proto__ || Object.getPrototypeOf(InventoryObject)).call(this));
@@ -124,27 +124,32 @@ var InventoryObject = function (_GameObject) {
         _this.createObjectName = "none";
         _this.usedObject = null;
         _this.isEquipable = false;
+        _this.isEquiped = false;
         _this.isUsable = false;
         _this.strength = 0;
         _this.interval = 0;
         _this.stackLimit = stackLimit;
         _this.stackCount = stackCount > stackLimit ? stackLimit : stackCount;
-        _this.inventoryLocation = 0;
         _this.shownLocation = 0;
         _this.isHolding = false;
         _this.isMouseInObject = false;
         _this.mouseInObjectTime = 0;
-        _this.actionLocation = -1;
+        _this.inventoryLocation = inventoryLocation === undefined ? -1 : inventoryLocation;
+        _this.actionLocation = actionLocation === undefined ? -1 : actionLocation;
         return _this;
     }
 
     _createClass(InventoryObject, [{
         key: "setEquipable",
-        value: function setEquipable(area, strength) {
+        value: function setEquipable(area, strength, isEquiped) {
             this.isEquipable = true;
             this.area = area;
             this.strength = strength;
             this.isEquiped = false;
+            if (isEquiped) {
+                this.setEquiped(true, -1);
+                this.shownLocation = -1;
+            }
             this.isUsable = false;
         }
     }, {
@@ -196,6 +201,17 @@ var InventoryObject = function (_GameObject) {
         key: "onMouseMove",
         value: function onMouseMove(mousePosition) {
             this.isMouseInObject = this.isInObject(mousePosition.x, mousePosition.y);
+        }
+    }, {
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.name = this.typeId;
+            smallObject.count = this.stackCount;
+            smallObject.inventoryLocation = this.inventoryLocation;
+            smallObject.actionLocation = this.actionLocation;
+            smallObject.isEquipped = this.isEquiped;
+            return smallObject;
         }
     }, {
         key: "update",
@@ -261,20 +277,26 @@ var InventoryObject = function (_GameObject) {
                 if (this.isEquipable) {
                     ctx.fillStyle = "#106010";
                     ctx.fillText("Equipable", drawX, drawY += dy);
+                    ctx.fillText(this.typeId, drawX, drawY += dy);
                     ctx.fillStyle = "white";
                     ctx.fillText("Armor: " + this.strength, drawX, drawY += dy);
                 } else if (this.isUsable) {
                     ctx.fillStyle = "#601010";
                     ctx.fillText("Usable", drawX, drawY += dy);
+                    ctx.fillText(this.typeId, drawX, drawY += dy);
                     ctx.fillStyle = "white";
                     ctx.fillText("Effect: " + this.strength, drawX, drawY += dy);
                 } else if (this.weapontype !== this.WEAPONTYPES.NONE) {
                     ctx.fillStyle = "#101060";
                     ctx.fillText("Weapon", drawX, drawY += dy);
+                    ctx.fillText(this.typeId, drawX, drawY += dy);
                     ctx.fillStyle = "white";
                     ctx.fillText("Damage: " + this.strength, drawX, drawY += dy);
                     ctx.fillText("Reload time: " + this.intervalTime + "s", drawX, drawY += dy);
                     ctx.fillText("Dps: " + Math.round(this.strength / this.intervalTime * 100) / 100 + "/s", drawX, drawY += dy);
+                } else {
+                    ctx.fillStyle = "#606060";
+                    ctx.fillText(this.typeId, drawX, drawY += dy);
                 }
                 ctx.globalAlpha = 1;
             }
@@ -443,167 +465,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_1 = function (_InventoryObject) {
-    _inherits(Empty_bottle_1, _InventoryObject);
-
-    function Empty_bottle_1(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_1);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_1.__proto__ || Object.getPrototypeOf(Empty_bottle_1)).call(this, "empty_bottle_1", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_1'));
-        return _this;
-    }
-
-    return Empty_bottle_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_1;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_2 = function (_InventoryObject) {
-    _inherits(Empty_bottle_2, _InventoryObject);
-
-    function Empty_bottle_2(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_2);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_2.__proto__ || Object.getPrototypeOf(Empty_bottle_2)).call(this, "empty_bottle_2", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_2'));
-        return _this;
-    }
-
-    return Empty_bottle_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_2;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_3 = function (_InventoryObject) {
-    _inherits(Empty_bottle_3, _InventoryObject);
-
-    function Empty_bottle_3(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_3);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_3.__proto__ || Object.getPrototypeOf(Empty_bottle_3)).call(this, "empty_bottle_3", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_3'));
-        return _this;
-    }
-
-    return Empty_bottle_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_3;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Empty_bottle_4 = function (_InventoryObject) {
-    _inherits(Empty_bottle_4, _InventoryObject);
-
-    function Empty_bottle_4(Loader, stackCount) {
-        _classCallCheck(this, Empty_bottle_4);
-
-        var _this = _possibleConstructorReturn(this, (Empty_bottle_4.__proto__ || Object.getPrototypeOf(Empty_bottle_4)).call(this, "empty_bottle_4", 50, stackCount));
-
-        _this.setImage(Loader.getImage('empty_bottle_4'));
-        return _this;
-    }
-
-    return Empty_bottle_4;
-}(_InventoryObjectBase2.default);
-
-exports.default = Empty_bottle_4;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _nonCharacterObjectBase = __webpack_require__(7);
+var _nonCharacterObjectBase = __webpack_require__(3);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
 
@@ -633,7 +495,7 @@ var Fire = function (_NonCharacterObject) {
 exports.default = Fire;
 
 /***/ }),
-/* 7 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -721,912 +583,7 @@ var NonCharacterObject = function (_GameObject) {
 exports.default = NonCharacterObject;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Sword_1 = function (_InventoryObject) {
-    _inherits(Sword_1, _InventoryObject);
-
-    function Sword_1(Loader, stackCount) {
-        _classCallCheck(this, Sword_1);
-
-        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
-        var _this = _possibleConstructorReturn(this, (Sword_1.__proto__ || Object.getPrototypeOf(Sword_1)).call(this, "sword_1", 10, stackCount));
-
-        _this.setImage(Loader.getImage('sword_1'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 10, 1, "DamageArea_1");
-        return _this;
-    }
-
-    return Sword_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Sword_1;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Sword_2 = function (_InventoryObject) {
-    _inherits(Sword_2, _InventoryObject);
-
-    function Sword_2(Loader, stackCount) {
-        _classCallCheck(this, Sword_2);
-
-        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
-        var _this = _possibleConstructorReturn(this, (Sword_2.__proto__ || Object.getPrototypeOf(Sword_2)).call(this, "sword_2", 10, stackCount));
-
-        _this.setImage(Loader.getImage('sword_2'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 1, "DamageArea_1");
-        return _this;
-    }
-
-    return Sword_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Sword_2;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Sword_3 = function (_InventoryObject) {
-    _inherits(Sword_3, _InventoryObject);
-
-    function Sword_3(Loader, stackCount) {
-        _classCallCheck(this, Sword_3);
-
-        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
-        var _this = _possibleConstructorReturn(this, (Sword_3.__proto__ || Object.getPrototypeOf(Sword_3)).call(this, "sword_3", 10, stackCount));
-
-        _this.setImage(Loader.getImage('sword_3'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.5, "DamageArea_1");
-        return _this;
-    }
-
-    return Sword_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Sword_3;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Shield_1 = function (_InventoryObject) {
-    _inherits(Shield_1, _InventoryObject);
-
-    function Shield_1(Loader, stackCount) {
-        _classCallCheck(this, Shield_1);
-
-        var _this = _possibleConstructorReturn(this, (Shield_1.__proto__ || Object.getPrototypeOf(Shield_1)).call(this, "shield_1", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.OFF_HAND, 10);
-        _this.setImage(Loader.getImage('shield_1'));
-        return _this;
-    }
-
-    return Shield_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Shield_1;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Shield_2 = function (_InventoryObject) {
-    _inherits(Shield_2, _InventoryObject);
-
-    function Shield_2(Loader, stackCount) {
-        _classCallCheck(this, Shield_2);
-
-        var _this = _possibleConstructorReturn(this, (Shield_2.__proto__ || Object.getPrototypeOf(Shield_2)).call(this, "shield_2", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.OFF_HAND, 15);
-        _this.setImage(Loader.getImage('shield_2'));
-        return _this;
-    }
-
-    return Shield_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Shield_2;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Shield_3 = function (_InventoryObject) {
-    _inherits(Shield_3, _InventoryObject);
-
-    function Shield_3(Loader, stackCount) {
-        _classCallCheck(this, Shield_3);
-
-        var _this = _possibleConstructorReturn(this, (Shield_3.__proto__ || Object.getPrototypeOf(Shield_3)).call(this, "shield_3", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.OFF_HAND, 25);
-        _this.setImage(Loader.getImage('shield_3'));
-        return _this;
-    }
-
-    return Shield_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Shield_3;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Shield_4 = function (_InventoryObject) {
-    _inherits(Shield_4, _InventoryObject);
-
-    function Shield_4(Loader, stackCount) {
-        _classCallCheck(this, Shield_4);
-
-        var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.OFF_HAND, 50);
-        _this.setTilesImage(Loader.getImage('shield_4'), 4, 4, 16);
-        return _this;
-    }
-
-    return Shield_4;
-}(_InventoryObjectBase2.default);
-
-exports.default = Shield_4;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Axe_1 = function (_InventoryObject) {
-    _inherits(Axe_1, _InventoryObject);
-
-    function Axe_1(Loader, stackCount) {
-        _classCallCheck(this, Axe_1);
-
-        var _this = _possibleConstructorReturn(this, (Axe_1.__proto__ || Object.getPrototypeOf(Axe_1)).call(this, "axe_1", 10, stackCount));
-
-        _this.setImage(Loader.getImage('axe_1'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 15, 4, "DamageArea_1");
-        return _this;
-    }
-
-    return Axe_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Axe_1;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Axe_2 = function (_InventoryObject) {
-    _inherits(Axe_2, _InventoryObject);
-
-    function Axe_2(Loader, stackCount) {
-        _classCallCheck(this, Axe_2);
-
-        var _this = _possibleConstructorReturn(this, (Axe_2.__proto__ || Object.getPrototypeOf(Axe_2)).call(this, "axe_2", 10, stackCount));
-
-        _this.setImage(Loader.getImage('axe_2'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 30, 4, "DamageArea_1");
-        return _this;
-    }
-
-    return Axe_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Axe_2;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Axe_3 = function (_InventoryObject) {
-    _inherits(Axe_3, _InventoryObject);
-
-    function Axe_3(Loader, stackCount) {
-        _classCallCheck(this, Axe_3);
-
-        var _this = _possibleConstructorReturn(this, (Axe_3.__proto__ || Object.getPrototypeOf(Axe_3)).call(this, "axe_3", 10, stackCount));
-
-        _this.setImage(Loader.getImage('axe_3'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 100, 4, "DamageArea_1");
-        return _this;
-    }
-
-    return Axe_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Axe_3;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Bow_1 = function (_InventoryObject) {
-    _inherits(Bow_1, _InventoryObject);
-
-    function Bow_1(Loader, stackCount) {
-        _classCallCheck(this, Bow_1);
-
-        var _this = _possibleConstructorReturn(this, (Bow_1.__proto__ || Object.getPrototypeOf(Bow_1)).call(this, "bow_1", 10, stackCount));
-
-        _this.setImage(Loader.getImage('bow_1'));
-        _this.setWeapon(_this.WEAPONTYPES.RANGED, 10, 3, "Arrow_1");
-        return _this;
-    }
-
-    return Bow_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Bow_1;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Bow_2 = function (_InventoryObject) {
-    _inherits(Bow_2, _InventoryObject);
-
-    function Bow_2(Loader, stackCount) {
-        _classCallCheck(this, Bow_2);
-
-        var _this = _possibleConstructorReturn(this, (Bow_2.__proto__ || Object.getPrototypeOf(Bow_2)).call(this, "bow_2", 10, stackCount));
-
-        _this.setImage(Loader.getImage('bow_2'));
-        _this.setWeapon(_this.WEAPONTYPES.RANGED, 20, 1, "Arrow_1");
-        return _this;
-    }
-
-    return Bow_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Bow_2;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Bow_3 = function (_InventoryObject) {
-    _inherits(Bow_3, _InventoryObject);
-
-    function Bow_3(Loader, stackCount) {
-        _classCallCheck(this, Bow_3);
-
-        var _this = _possibleConstructorReturn(this, (Bow_3.__proto__ || Object.getPrototypeOf(Bow_3)).call(this, "bow_3", 10, stackCount));
-
-        _this.setImage(Loader.getImage('bow_3'));
-        _this.setWeapon(_this.WEAPONTYPES.RANGED, 40, 0.5, "Arrow_1");
-        return _this;
-    }
-
-    return Bow_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Bow_3;
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Mace = function (_InventoryObject) {
-    _inherits(Mace, _InventoryObject);
-
-    function Mace(Loader, stackCount) {
-        _classCallCheck(this, Mace);
-
-        var _this = _possibleConstructorReturn(this, (Mace.__proto__ || Object.getPrototypeOf(Mace)).call(this, "mace", 10, stackCount));
-
-        _this.setImage(Loader.getImage('mace'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 250, 10, "DamageArea_1");
-        return _this;
-    }
-
-    return Mace;
-}(_InventoryObjectBase2.default);
-
-exports.default = Mace;
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Spear = function (_InventoryObject) {
-    _inherits(Spear, _InventoryObject);
-
-    function Spear(Loader, stackCount) {
-        _classCallCheck(this, Spear);
-
-        var _this = _possibleConstructorReturn(this, (Spear.__proto__ || Object.getPrototypeOf(Spear)).call(this, "spear", 10, stackCount));
-
-        _this.setImage(Loader.getImage('spear'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 75, 4, "DamageArea_1");
-        return _this;
-    }
-
-    return Spear;
-}(_InventoryObjectBase2.default);
-
-exports.default = Spear;
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Armor_1 = function (_InventoryObject) {
-    _inherits(Armor_1, _InventoryObject);
-
-    function Armor_1(Loader, stackCount) {
-        _classCallCheck(this, Armor_1);
-
-        var _this = _possibleConstructorReturn(this, (Armor_1.__proto__ || Object.getPrototypeOf(Armor_1)).call(this, "armor_1", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.BODY, 20);
-        _this.setImage(Loader.getImage('armor_1'));
-        return _this;
-    }
-
-    return Armor_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Armor_1;
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Armor_2 = function (_InventoryObject) {
-    _inherits(Armor_2, _InventoryObject);
-
-    function Armor_2(Loader, stackCount) {
-        _classCallCheck(this, Armor_2);
-
-        var _this = _possibleConstructorReturn(this, (Armor_2.__proto__ || Object.getPrototypeOf(Armor_2)).call(this, "armor_2", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.BODY, 40);
-        _this.setImage(Loader.getImage('armor_2'));
-        return _this;
-    }
-
-    return Armor_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Armor_2;
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Boots_1 = function (_InventoryObject) {
-    _inherits(Boots_1, _InventoryObject);
-
-    function Boots_1(Loader, stackCount) {
-        _classCallCheck(this, Boots_1);
-
-        var _this = _possibleConstructorReturn(this, (Boots_1.__proto__ || Object.getPrototypeOf(Boots_1)).call(this, "boots_1", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.BOOTS, 4);
-        _this.setImage(Loader.getImage('boots_1'));
-        return _this;
-    }
-
-    return Boots_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Boots_1;
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Boots_2 = function (_InventoryObject) {
-    _inherits(Boots_2, _InventoryObject);
-
-    function Boots_2(Loader, stackCount) {
-        _classCallCheck(this, Boots_2);
-
-        var _this = _possibleConstructorReturn(this, (Boots_2.__proto__ || Object.getPrototypeOf(Boots_2)).call(this, "boots_2", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.BOOTS, 8);
-        _this.setImage(Loader.getImage('boots_2'));
-        return _this;
-    }
-
-    return Boots_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Boots_2;
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Boots_3 = function (_InventoryObject) {
-    _inherits(Boots_3, _InventoryObject);
-
-    function Boots_3(Loader, stackCount) {
-        _classCallCheck(this, Boots_3);
-
-        var _this = _possibleConstructorReturn(this, (Boots_3.__proto__ || Object.getPrototypeOf(Boots_3)).call(this, "boots_3", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.BOOTS, 20);
-        _this.setImage(Loader.getImage('boots_3'));
-        return _this;
-    }
-
-    return Boots_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Boots_3;
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Helmet_1 = function (_InventoryObject) {
-    _inherits(Helmet_1, _InventoryObject);
-
-    function Helmet_1(Loader, stackCount) {
-        _classCallCheck(this, Helmet_1);
-
-        var _this = _possibleConstructorReturn(this, (Helmet_1.__proto__ || Object.getPrototypeOf(Helmet_1)).call(this, "helmet_1", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.HEAD, 10);
-        _this.setImage(Loader.getImage('helmet_1'));
-        return _this;
-    }
-
-    return Helmet_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Helmet_1;
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Helmet_2 = function (_InventoryObject) {
-    _inherits(Helmet_2, _InventoryObject);
-
-    function Helmet_2(Loader, stackCount) {
-        _classCallCheck(this, Helmet_2);
-
-        var _this = _possibleConstructorReturn(this, (Helmet_2.__proto__ || Object.getPrototypeOf(Helmet_2)).call(this, "helmet_2", 50, stackCount));
-
-        _this.setEquipable(_this.AREAS.HEAD, 25);
-        _this.setImage(Loader.getImage('helmet_2'));
-        return _this;
-    }
-
-    return Helmet_2;
-}(_InventoryObjectBase2.default);
-
-exports.default = Helmet_2;
-
-/***/ }),
-/* 30 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1651,10 +608,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Coin = function (_InventoryObject) {
     _inherits(Coin, _InventoryObject);
 
-    function Coin(Loader, stackCount) {
+    function Coin(Loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Coin);
 
-        var _this = _possibleConstructorReturn(this, (Coin.__proto__ || Object.getPrototypeOf(Coin)).call(this, "coin", 999999, stackCount));
+        var _this = _possibleConstructorReturn(this, (Coin.__proto__ || Object.getPrototypeOf(Coin)).call(this, "coin", 999999, stackCount, inventoryLocation, actionLocation));
 
         _this.setImage(Loader.getImage('coin'));
         _this.setWeapon(_this.WEAPONTYPES.MELEE, 1, 1, "DamageArea_1");
@@ -1667,7 +624,7 @@ var Coin = function (_InventoryObject) {
 exports.default = Coin;
 
 /***/ }),
-/* 31 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1681,10 +638,6 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(2);
-
-var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1693,26 +646,27 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Health_bottle_1 = function (_InventoryObject) {
-    _inherits(Health_bottle_1, _InventoryObject);
+var Sword_1 = function (_InventoryObject) {
+    _inherits(Sword_1, _InventoryObject);
 
-    function Health_bottle_1(Loader, stackCount) {
-        _classCallCheck(this, Health_bottle_1);
+    function Sword_1(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Sword_1);
 
-        var _this = _possibleConstructorReturn(this, (Health_bottle_1.__proto__ || Object.getPrototypeOf(Health_bottle_1)).call(this, "health_bottle_1", 50, stackCount));
+        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
+        var _this = _possibleConstructorReturn(this, (Sword_1.__proto__ || Object.getPrototypeOf(Sword_1)).call(this, "sword_1", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setUsable(_this.USES.HEALTH, 10, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_1'));
+        _this.setImage(Loader.getImage('sword_1'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 10, 1, "DamageArea_1");
         return _this;
     }
 
-    return Health_bottle_1;
+    return Sword_1;
 }(_InventoryObjectBase2.default);
 
-exports.default = Health_bottle_1;
+exports.default = Sword_1;
 
 /***/ }),
-/* 32 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1726,10 +680,6 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(3);
-
-var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1738,26 +688,26 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Health_bottle_2 = function (_InventoryObject) {
-    _inherits(Health_bottle_2, _InventoryObject);
+var Boots_1 = function (_InventoryObject) {
+    _inherits(Boots_1, _InventoryObject);
 
-    function Health_bottle_2(Loader, stackCount) {
-        _classCallCheck(this, Health_bottle_2);
+    function Boots_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Boots_1);
 
-        var _this = _possibleConstructorReturn(this, (Health_bottle_2.__proto__ || Object.getPrototypeOf(Health_bottle_2)).call(this, "health_bottle_2", 50, stackCount));
+        var _this = _possibleConstructorReturn(this, (Boots_1.__proto__ || Object.getPrototypeOf(Boots_1)).call(this, "boots_1", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setUsable(_this.USES.HEALTH, 25, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_2'));
+        _this.setEquipable(_this.AREAS.BOOTS, 4, isEquipped);
+        _this.setImage(Loader.getImage('boots_1'));
         return _this;
     }
 
-    return Health_bottle_2;
+    return Boots_1;
 }(_InventoryObjectBase2.default);
 
-exports.default = Health_bottle_2;
+exports.default = Boots_1;
 
 /***/ }),
-/* 33 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1767,97 +717,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-var _Empty_bottle_ = __webpack_require__(4);
-
-var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Health_bottle_3 = function (_InventoryObject) {
-    _inherits(Health_bottle_3, _InventoryObject);
-
-    function Health_bottle_3(Loader, stackCount) {
-        _classCallCheck(this, Health_bottle_3);
-
-        var _this = _possibleConstructorReturn(this, (Health_bottle_3.__proto__ || Object.getPrototypeOf(Health_bottle_3)).call(this, "health_bottle_3", 50, stackCount));
-
-        _this.setUsable(_this.USES.HEALTH, 50, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_3'));
-        return _this;
-    }
-
-    return Health_bottle_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Health_bottle_3;
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-var _Empty_bottle_ = __webpack_require__(5);
-
-var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Health_bottle_4 = function (_InventoryObject) {
-    _inherits(Health_bottle_4, _InventoryObject);
-
-    function Health_bottle_4(Loader, stackCount) {
-        _classCallCheck(this, Health_bottle_4);
-
-        var _this = _possibleConstructorReturn(this, (Health_bottle_4.__proto__ || Object.getPrototypeOf(Health_bottle_4)).call(this, "health_bottle_4", 50, stackCount));
-
-        _this.setUsable(_this.USES.HEALTH, 100, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_4'));
-        return _this;
-    }
-
-    return Health_bottle_4;
-}(_InventoryObjectBase2.default);
-
-exports.default = Health_bottle_4;
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _NPCObjectBase = __webpack_require__(36);
+var _NPCObjectBase = __webpack_require__(8);
 
 var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
@@ -1887,7 +747,7 @@ var Goblin = function (_NPCObject) {
 exports.default = Goblin;
 
 /***/ }),
-/* 36 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2146,7 +1006,7 @@ var NPCObject = function (_GameObject) {
 exports.default = NPCObject;
 
 /***/ }),
-/* 37 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2156,7 +1016,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _ProjectileBase = __webpack_require__(38);
+var _ProjectileBase = __webpack_require__(10);
 
 var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
 
@@ -2186,7 +1046,7 @@ var Arrow_1 = function (_Projectile) {
 exports.default = Arrow_1;
 
 /***/ }),
-/* 38 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2200,7 +1060,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _DamageAreaBase = __webpack_require__(39);
+var _DamageAreaBase = __webpack_require__(11);
 
 var _DamageAreaBase2 = _interopRequireDefault(_DamageAreaBase);
 
@@ -2262,7 +1122,7 @@ var Projectile = function (_DamageArea) {
 exports.default = Projectile;
 
 /***/ }),
-/* 39 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2365,7 +1225,7 @@ var DamageArea = function (_GameObject) {
 exports.default = DamageArea;
 
 /***/ }),
-/* 40 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2375,7 +1235,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _DamageAreaBase = __webpack_require__(39);
+var _DamageAreaBase = __webpack_require__(11);
 
 var _DamageAreaBase2 = _interopRequireDefault(_DamageAreaBase);
 
@@ -2405,29 +1265,189 @@ var DamageArea_1 = function (_DamageArea) {
 exports.default = DamageArea_1;
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(42);
-module.exports = __webpack_require__(59);
-
-
-/***/ }),
-/* 42 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(43);
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_1 = function (_InventoryObject) {
+    _inherits(Empty_bottle_1, _InventoryObject);
+
+    function Empty_bottle_1(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Empty_bottle_1);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_1.__proto__ || Object.getPrototypeOf(Empty_bottle_1)).call(this, "empty_bottle_1", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('empty_bottle_1'));
+        return _this;
+    }
+
+    return Empty_bottle_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_1;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_2 = function (_InventoryObject) {
+    _inherits(Empty_bottle_2, _InventoryObject);
+
+    function Empty_bottle_2(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Empty_bottle_2);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_2.__proto__ || Object.getPrototypeOf(Empty_bottle_2)).call(this, "empty_bottle_2", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('empty_bottle_2'));
+        return _this;
+    }
+
+    return Empty_bottle_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_2;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_3 = function (_InventoryObject) {
+    _inherits(Empty_bottle_3, _InventoryObject);
+
+    function Empty_bottle_3(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Empty_bottle_3);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_3.__proto__ || Object.getPrototypeOf(Empty_bottle_3)).call(this, "empty_bottle_3", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('empty_bottle_3'));
+        return _this;
+    }
+
+    return Empty_bottle_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_3;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Empty_bottle_4 = function (_InventoryObject) {
+    _inherits(Empty_bottle_4, _InventoryObject);
+
+    function Empty_bottle_4(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Empty_bottle_4);
+
+        var _this = _possibleConstructorReturn(this, (Empty_bottle_4.__proto__ || Object.getPrototypeOf(Empty_bottle_4)).call(this, "empty_bottle_4", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('empty_bottle_4'));
+        return _this;
+    }
+
+    return Empty_bottle_4;
+}(_InventoryObjectBase2.default);
+
+exports.default = Empty_bottle_4;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(18);
+module.exports = __webpack_require__(59);
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _GameStateManager = __webpack_require__(19);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _LoginState = __webpack_require__(44);
+var _LoginState = __webpack_require__(20);
 
 var _LoginState2 = _interopRequireDefault(_LoginState);
 
-var _MainGameState = __webpack_require__(46);
+var _MainGameState = __webpack_require__(22);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
@@ -2459,7 +1479,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 })();
 
 /***/ }),
-/* 43 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2529,7 +1549,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 44 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2541,7 +1561,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _User = __webpack_require__(45);
+var _User = __webpack_require__(21);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -2619,19 +1639,23 @@ var LoginState = function () {
     }, {
         key: "registerCall",
         value: function registerCall(user) {
-            this.socket.emit("registerUser", { user: user });
+            this.socket.emit("registerUser", {
+                user: user
+            });
             this.socket.on("requestRegister", function (res) {
                 if (res.success == false) this.checkErrors(res.message);
-                console.log(res.user);
+                //console.log(res.user);
             }.bind(this));
         }
     }, {
         key: "loginCall",
         value: function loginCall(user) {
-            this.socket.emit("requestLogin", { user: user });
+            this.socket.emit("requestLogin", {
+                user: user
+            });
             this.socket.on("requestLogin", function (res) {
                 if (res.success == false) this.checkErrors(res.message);
-                console.log(res.message);
+                //console.log(res.message);
             }.bind(this));
         }
     }, {
@@ -2649,7 +1673,7 @@ var LoginState = function () {
 exports.default = LoginState;
 
 /***/ }),
-/* 45 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2705,7 +1729,7 @@ var User = function () {
 exports.default = User;
 
 /***/ }),
-/* 46 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2720,183 +1744,183 @@ var _createClass = function () { function defineProperties(target, props) { for 
 // inventoryItems
 
 
-var _Camera = __webpack_require__(47);
+var _Camera = __webpack_require__(23);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(48);
+var _Keyboard = __webpack_require__(24);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
-var _Fire = __webpack_require__(6);
+var _Fire = __webpack_require__(2);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
-var _DroppedItem = __webpack_require__(49);
+var _DroppedItem = __webpack_require__(25);
 
 var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
 
-var _Goblin = __webpack_require__(35);
+var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _SpawnerBase = __webpack_require__(50);
+var _SpawnerBase = __webpack_require__(26);
 
 var _SpawnerBase2 = _interopRequireDefault(_SpawnerBase);
 
-var _Hero = __webpack_require__(52);
+var _Hero = __webpack_require__(28);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _InventoryManager = __webpack_require__(53);
+var _InventoryManager = __webpack_require__(29);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(55);
+var _OtherPlayer = __webpack_require__(31);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(56);
+var _Loader = __webpack_require__(32);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState = __webpack_require__(57);
+var _GameState = __webpack_require__(33);
 
 var _GameState2 = _interopRequireDefault(_GameState);
 
-var _ProjectileBase = __webpack_require__(38);
+var _ProjectileBase = __webpack_require__(10);
 
 var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
 
-var _Arrow_ = __webpack_require__(37);
+var _Arrow_ = __webpack_require__(9);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
-var _DamageArea_ = __webpack_require__(40);
+var _DamageArea_ = __webpack_require__(12);
 
 var _DamageArea_2 = _interopRequireDefault(_DamageArea_);
 
-var _Sword_ = __webpack_require__(8);
+var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(9);
+var _Sword_3 = __webpack_require__(34);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(10);
+var _Sword_5 = __webpack_require__(35);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(11);
+var _Shield_ = __webpack_require__(36);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(12);
+var _Shield_3 = __webpack_require__(37);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(13);
+var _Shield_5 = __webpack_require__(38);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(14);
+var _Shield_7 = __webpack_require__(39);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(15);
+var _Axe_ = __webpack_require__(40);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(16);
+var _Axe_3 = __webpack_require__(41);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(17);
+var _Axe_5 = __webpack_require__(42);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(18);
+var _Bow_ = __webpack_require__(43);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(19);
+var _Bow_3 = __webpack_require__(44);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(20);
+var _Bow_5 = __webpack_require__(45);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(21);
+var _Mace = __webpack_require__(46);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(22);
+var _Spear = __webpack_require__(47);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(23);
+var _Armor_ = __webpack_require__(48);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(24);
+var _Armor_3 = __webpack_require__(49);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
-var _Boots_ = __webpack_require__(25);
+var _Boots_ = __webpack_require__(6);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(26);
+var _Boots_3 = __webpack_require__(50);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(27);
+var _Boots_5 = __webpack_require__(51);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(28);
+var _Helmet_ = __webpack_require__(52);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(29);
+var _Helmet_3 = __webpack_require__(53);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
-var _Coin = __webpack_require__(30);
+var _Coin = __webpack_require__(4);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(31);
+var _Health_bottle_ = __webpack_require__(54);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(32);
+var _Health_bottle_3 = __webpack_require__(55);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(33);
+var _Health_bottle_5 = __webpack_require__(56);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(34);
+var _Health_bottle_7 = __webpack_require__(57);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
-var _Empty_bottle_ = __webpack_require__(2);
+var _Empty_bottle_ = __webpack_require__(13);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
-var _Empty_bottle_3 = __webpack_require__(3);
+var _Empty_bottle_3 = __webpack_require__(14);
 
 var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
 
-var _Empty_bottle_5 = __webpack_require__(4);
+var _Empty_bottle_5 = __webpack_require__(15);
 
 var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 
-var _Empty_bottle_7 = __webpack_require__(5);
+var _Empty_bottle_7 = __webpack_require__(16);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
@@ -3001,6 +2025,7 @@ var MainGameState = function () {
             this.overwriteHero.health = user.health;
             this.overwriteHero.tileLevel = user.tileLevel;
             this.overwriteHero.token = user.token;
+            this.overwriteInventory = user.items;
         }
     }, {
         key: "loadNonCharacterObjects",
@@ -3058,39 +2083,112 @@ var MainGameState = function () {
     }, {
         key: "loadInventoryObjects",
         value: function loadInventoryObjects() {
+            var _this4 = this;
+
             var inventoryObjects = [];
-            inventoryObjects.push(new _Sword_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Sword_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Sword_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Shield_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Shield_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Shield_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Shield_8.default(this.Loader, 5));
-            inventoryObjects.push(new _Axe_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Axe_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Axe_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Bow_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Bow_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Bow_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Mace2.default(this.Loader, 5));
-            inventoryObjects.push(new _Spear2.default(this.Loader, 5));
-            inventoryObjects.push(new _Armor_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Armor_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Boots_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Boots_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Boots_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Helmet_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Helmet_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Coin2.default(this.Loader, 500));
-            inventoryObjects.push(new _Health_bottle_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Health_bottle_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Health_bottle_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Health_bottle_8.default(this.Loader, 5));
-            inventoryObjects.push(new _Empty_bottle_2.default(this.Loader, 5));
-            inventoryObjects.push(new _Empty_bottle_4.default(this.Loader, 5));
-            inventoryObjects.push(new _Empty_bottle_6.default(this.Loader, 5));
-            inventoryObjects.push(new _Empty_bottle_8.default(this.Loader, 5));
+            this.overwriteInventory.forEach(function (item) {
+                _this4.createInventoryObject(inventoryObjects, item);
+            });
             this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader, this.hero, this.projectiles, this.map);
+        }
+    }, {
+        key: "createInventoryObject",
+        value: function createInventoryObject(inventoryObjects, object) {
+            switch (object.name) {
+                case "sword_1":
+                    inventoryObjects.push(new _Sword_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "sword_2":
+                    inventoryObjects.push(new _Sword_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "sword_3":
+                    inventoryObjects.push(new _Sword_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "shield_1":
+                    inventoryObjects.push(new _Shield_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "shield_2":
+                    inventoryObjects.push(new _Shield_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "shield_3":
+                    inventoryObjects.push(new _Shield_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "shield_4":
+                    inventoryObjects.push(new _Shield_8.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "axe_1":
+                    inventoryObjects.push(new _Axe_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "axe_2":
+                    inventoryObjects.push(new _Axe_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "axe_3":
+                    inventoryObjects.push(new _Axe_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "bow_1":
+                    inventoryObjects.push(new _Bow_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "bow_2":
+                    inventoryObjects.push(new _Bow_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "bow_3":
+                    inventoryObjects.push(new _Bow_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "mace":
+                    inventoryObjects.push(new _Mace2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "spear":
+                    inventoryObjects.push(new _Spear2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "armor_1":
+                    inventoryObjects.push(new _Armor_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "armor_2":
+                    inventoryObjects.push(new _Armor_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "boots_1":
+                    inventoryObjects.push(new _Boots_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "boots_2":
+                    inventoryObjects.push(new _Boots_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "boots_3":
+                    inventoryObjects.push(new _Boots_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "helmet_1":
+                    inventoryObjects.push(new _Helmet_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "helmet_2":
+                    inventoryObjects.push(new _Helmet_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    break;
+                case "coin":
+                    inventoryObjects.push(new _Coin2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "health_bottle_1":
+                    inventoryObjects.push(new _Health_bottle_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "health_bottle_2":
+                    inventoryObjects.push(new _Health_bottle_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "health_bottle_3":
+                    inventoryObjects.push(new _Health_bottle_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "health_bottle_4":
+                    inventoryObjects.push(new _Health_bottle_8.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "empty_bottle_1":
+                    inventoryObjects.push(new _Empty_bottle_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "empty_bottle_2":
+                    inventoryObjects.push(new _Empty_bottle_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "empty_bottle_3":
+                    inventoryObjects.push(new _Empty_bottle_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+                case "empty_bottle_4":
+                    inventoryObjects.push(new _Empty_bottle_8.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    break;
+            }
         }
 
         // send map in this
@@ -3108,7 +2206,7 @@ var MainGameState = function () {
             this.loadInventoryObjects();
 
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
-                this.socket.emit("new_user", this.hero.getSmallObject());
+                this.socket.emit("new_user", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
                 this.loadSocket(this.socket);
                 //this.loadNonCharacterObjects(objects);
                 //this.loadNPCs(npcs);
@@ -3139,46 +2237,46 @@ var MainGameState = function () {
     }, {
         key: "loadSocket",
         value: function loadSocket(client) {
-            var _this4 = this;
+            var _this5 = this;
 
             client.on('connect', function () {
-                _this4.connected = true;
-                clearTimeout(_this4.timeout);
+                _this5.connected = true;
+                clearTimeout(_this5.timeout);
                 console.log('connected');
             });
             client.on('disconnect', function () {
-                _this4.connected = false;
+                _this5.connected = false;
                 console.log('disconnected');
-                _this4.retryConnectOnFailure(3000, client, _this4); // Try again in 3s
+                _this5.retryConnectOnFailure(3000, client, _this5); // Try again in 3s
             });
             client.on("otherPlayers", function (othersJsonString) {
-                _this4.otherPlayers = [];
+                _this5.otherPlayers = [];
                 var others = JSON.parse(othersJsonString);
                 others.forEach(function (playerJsonString) {
                     var player = JSON.parse(playerJsonString);
-                    if (player.id != _this4.hero.id) {
-                        _this4.otherPlayers.push(new _OtherPlayer2.default(player, _this4.Loader, _this4.map));
+                    if (player.id != _this5.hero.id) {
+                        _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.Loader, _this5.map));
                     }
                 });
             });
             client.on("New_connection", function (playerString) {
                 var player = JSON.parse(playerString);
-                _this4.otherPlayers.push(new _OtherPlayer2.default(player, _this4.Loader, _this4.map));
+                _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.Loader, _this5.map));
             });
             client.on("user_leave", function (playerString) {
                 var player = JSON.parse(playerString);
                 //console.log('player left');
                 var toDeleteIndex = 0;
-                for (var _i = 0; _i < _this4.otherPlayers.length; _i++) {
-                    if (_this4.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
+                for (var _i = 0; _i < _this5.otherPlayers.length; _i++) {
+                    if (_this5.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
                 }
-                _this4.otherPlayers.splice(i, 1);
+                _this5.otherPlayers.splice(i, 1);
                 //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
             });
             client.on("updatingPlayer", function (heroString) {
                 var found = false; // is player in cache
                 var hero = JSON.parse(heroString);
-                _this4.otherPlayers.forEach(function (player) {
+                _this5.otherPlayers.forEach(function (player) {
                     if (player.id === hero.id) {
                         //console.log('info from ' + player.id);
                         player.action = hero.action;
@@ -3189,41 +2287,41 @@ var MainGameState = function () {
                     }
                 });
                 if (!found) {
-                    _this4.otherPlayers.push(new _OtherPlayer2.default(hero, _this4.Loader, _this4.map));
+                    _this5.otherPlayers.push(new _OtherPlayer2.default(hero, _this5.Loader, _this5.map));
                 }
             });
             client.on("allObjects", function (objectsString) {
                 var objects = JSON.parse(objectsString);
-                _this4.loadNonCharacterObjects(objects);
+                _this5.loadNonCharacterObjects(objects);
             });
             client.on("newProjectile", function (projectileJsonString) {
                 var projectile = JSON.parse(projectileJsonString);
                 var newProjectile = null;
                 switch (projectile.name) {
                     case "Arrow_1":
-                        newProjectile = new _Arrow_2.default(projectile.id, _this4.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this4.map);
+                        newProjectile = new _Arrow_2.default(projectile.id, _this5.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                     case "DamageArea_1":
-                        newProjectile = new _DamageArea_2.default(projectile.id, _this4.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this4.map);
+                        newProjectile = new _DamageArea_2.default(projectile.id, _this5.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                 }
 
-                _this4.InventoryManager.damageAreas.push(newProjectile);
+                _this5.InventoryManager.damageAreas.push(newProjectile);
             });
             client.on("allSpawners", function (spawnersString) {
                 var spawners = JSON.parse(spawnersString);
-                _this4.loadSpawners(spawners);
+                _this5.loadSpawners(spawners);
             });
             client.on("newUnit", function (unitString) {
                 var unit = JSON.parse(unitString);
-                console.log(unit);
-                _this4.spawners.forEach(function (spawner) {
+                //console.log(unit);
+                _this5.spawners.forEach(function (spawner) {
                     spawner.newUnit(unit);
                 });
             });
             client.on("updateUnit", function (unitString) {
                 var unit = JSON.parse(unitString);
-                _this4.spawners.forEach(function (spawner) {
+                _this5.spawners.forEach(function (spawner) {
                     spawner.updateUnit(unit);
                 });
             });
@@ -3236,7 +2334,7 @@ var MainGameState = function () {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'), this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
+            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.Loader.loadImage('slime', '../../assets/sprites/slime.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'), this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
@@ -3252,42 +2350,42 @@ var MainGameState = function () {
     }, {
         key: "update",
         value: function update(delta) {
-            var _this5 = this;
+            var _this6 = this;
 
             var dirx = 0;
             var diry = 0;
             if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                     this.hero.action = this.hero.STATE.RUNNINGWEST;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
                 }
                 dirx = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                     this.hero.action = this.hero.STATE.RUNNINGEAST;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
                 }
                 dirx = 1;
             } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                     this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
                 }
                 diry = -1;
             } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
                 if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                     this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
                 }
                 diry = 1;
             } else {
                 if (this.hero.action != this.hero.STATE.STOP) {
                     this.hero.action = this.hero.STATE.STOP;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
                 }
             }
             if (this.hero.resurected) {
-                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             }
 
             this.hero.move(delta, dirx, diry);
@@ -3297,27 +2395,27 @@ var MainGameState = function () {
             this.projectiles.forEach(function (projectile) {
                 projectile.update(delta);
                 if (projectile.destroyed) {
-                    _this5.projectiles.splice(_this5.projectiles.indexOf(projectile), 1);
+                    _this6.projectiles.splice(_this6.projectiles.indexOf(projectile), 1);
                 }
             });
             this.nonCharacterObjects.forEach(function (thisObject) {
                 thisObject.update(delta);
                 if (thisObject.hasDamage()) {
-                    var playerBounds = _this5.hero.getPlayerBounds();
+                    var playerBounds = _this6.hero.getPlayerBounds();
                     if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                        _this5.hero.takeDamage(thisObject.doDamage());
+                        _this6.hero.takeDamage(thisObject.doDamage());
                     }
                 }
                 if (thisObject.canBePickedUp) {
-                    var _playerBounds = _this5.hero.getPlayerBounds();
+                    var _playerBounds = _this6.hero.getPlayerBounds();
                     if (thisObject.isNear(_playerBounds.xMin, _playerBounds.yMin, _playerBounds.xMax, _playerBounds.yMax)) {
-                        var countLeft = _this5.InventoryManager.addObject(thisObject.value);
+                        var countLeft = _this6.InventoryManager.addObject(thisObject.value);
                         if (countLeft === 0) {
-                            _this5.nonCharacterObjects.splice(_this5.nonCharacterObjects.indexOf(thisObject), 1);
+                            _this6.nonCharacterObjects.splice(_this6.nonCharacterObjects.indexOf(thisObject), 1);
                         } else {
                             thisObject.value.stackCount = countLeft;
                         }
-                        _this5.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
+                        _this6.socket.emit("updateObject", JSON.stringify(thisObject.getSmallObject()));
                     }
                 }
             });
@@ -3325,7 +2423,7 @@ var MainGameState = function () {
             //    npc.update(delta);
             //});
             this.spawners.forEach(function (spawner) {
-                spawner.update(delta, _this5.projectiles, _this5);
+                spawner.update(delta, _this6.projectiles, _this6);
             });
             this.InventoryManager.update(delta);
             this.hero.update(delta);
@@ -3346,7 +2444,7 @@ var MainGameState = function () {
     }, {
         key: "render",
         value: function render(delta) {
-            var _this6 = this;
+            var _this7 = this;
 
             var canvas = document.querySelector("canvas");
             canvas.width = window.innerWidth;
@@ -3368,15 +2466,15 @@ var MainGameState = function () {
             // draw map top layer
 
             var _loop = function _loop(_i2) {
-                _this6._drawLayer(_i2);
+                _this7._drawLayer(_i2);
 
                 if (layersUnderPlayer === _i2) {
-                    _this6.hero.draw(_this6.ctx);
+                    _this7.hero.draw(_this7.ctx);
                 }
 
                 if (objectLayersUnder - 1 === _i2) {
-                    _this6.nonCharacterObjects.forEach(function (thisObject) {
-                        thisObject.draw(_this6.ctx, _this6.camera.getScreenX(thisObject.x), _this6.camera.getScreenY(thisObject.y));
+                    _this7.nonCharacterObjects.forEach(function (thisObject) {
+                        thisObject.draw(_this7.ctx, _this7.camera.getScreenX(thisObject.x), _this7.camera.getScreenY(thisObject.y));
                     });
 
                     //this.NPCObjects.forEach(npc => {
@@ -3384,19 +2482,19 @@ var MainGameState = function () {
                     //        this.camera.getScreenX(npc.x),
                     //        this.camera.getScreenY(npc.y));
                     //});
-                    _this6.spawners.forEach(function (spawner) {
-                        spawner.draw(_this6.ctx, _this6.camera);
+                    _this7.spawners.forEach(function (spawner) {
+                        spawner.draw(_this7.ctx, _this7.camera);
                     });
 
-                    _this6.projectiles.forEach(function (projectile) {
-                        projectile.draw(_this6.ctx, _this6.camera.getScreenX(projectile.x), _this6.camera.getScreenY(projectile.y));
+                    _this7.projectiles.forEach(function (projectile) {
+                        projectile.draw(_this7.ctx, _this7.camera.getScreenX(projectile.x), _this7.camera.getScreenY(projectile.y));
                     });
                 }
 
-                _this6.otherPlayers.forEach(function (player) {
-                    var thisLayersUnder = _this6.getLayersUnder(player.tileLevel);
+                _this7.otherPlayers.forEach(function (player) {
+                    var thisLayersUnder = _this7.getLayersUnder(player.tileLevel);
                     if (thisLayersUnder - 1 === _i2) {
-                        player.draw(_this6.ctx, _this6.camera.getScreenX(player.x), _this6.camera.getScreenY(player.y));
+                        player.draw(_this7.ctx, _this7.camera.getScreenX(player.x), _this7.camera.getScreenY(player.y));
                     }
                 });
             };
@@ -3442,25 +2540,26 @@ var MainGameState = function () {
     }, {
         key: "events",
         value: function events() {
+            var self = this;
             document.addEventListener("keypress", function (event) {
                 if (event.key === 'f') {
-                    this.fullscreen();
+                    self.fullscreen();
                 }
             }, this);
             document.addEventListener("fullscreenchange", function () {
-                this.fullscreenState = document.fullscreen;
+                self.fullscreenState = document.fullscreen;
             }, this);
 
             document.addEventListener("mozfullscreenchange", function () {
-                this.fullscreenState = document.mozFullScreen;
+                self.fullscreenState = document.mozFullScreen;
             }, this);
 
             document.addEventListener("webkitfullscreenchange", function () {
-                this.fullscreenState = document.webkitIsFullScreen;
+                self.fullscreenState = document.webkitIsFullScreen;
             }, this);
 
             document.addEventListener("msfullscreenchange", function () {
-                this.fullscreenState = document.msFullscreenElement;
+                self.fullscreenState = document.msFullscreenElement;
             }, this);
         }
     }, {
@@ -3554,7 +2653,7 @@ var MainGameState = function () {
 exports.default = MainGameState;
 
 /***/ }),
-/* 47 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3646,7 +2745,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 48 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3768,7 +2867,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 49 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3782,131 +2881,131 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _nonCharacterObjectBase = __webpack_require__(7);
+var _nonCharacterObjectBase = __webpack_require__(3);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
 
-var _Sword_ = __webpack_require__(8);
+var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(9);
+var _Sword_3 = __webpack_require__(34);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(10);
+var _Sword_5 = __webpack_require__(35);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(11);
+var _Shield_ = __webpack_require__(36);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(12);
+var _Shield_3 = __webpack_require__(37);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(13);
+var _Shield_5 = __webpack_require__(38);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(14);
+var _Shield_7 = __webpack_require__(39);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(15);
+var _Axe_ = __webpack_require__(40);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(16);
+var _Axe_3 = __webpack_require__(41);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(17);
+var _Axe_5 = __webpack_require__(42);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(18);
+var _Bow_ = __webpack_require__(43);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(19);
+var _Bow_3 = __webpack_require__(44);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(20);
+var _Bow_5 = __webpack_require__(45);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(21);
+var _Mace = __webpack_require__(46);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(22);
+var _Spear = __webpack_require__(47);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(23);
+var _Armor_ = __webpack_require__(48);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(24);
+var _Armor_3 = __webpack_require__(49);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
-var _Boots_ = __webpack_require__(25);
+var _Boots_ = __webpack_require__(6);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(26);
+var _Boots_3 = __webpack_require__(50);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(27);
+var _Boots_5 = __webpack_require__(51);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(28);
+var _Helmet_ = __webpack_require__(52);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(29);
+var _Helmet_3 = __webpack_require__(53);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
-var _Coin = __webpack_require__(30);
+var _Coin = __webpack_require__(4);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(31);
+var _Health_bottle_ = __webpack_require__(54);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(32);
+var _Health_bottle_3 = __webpack_require__(55);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(33);
+var _Health_bottle_5 = __webpack_require__(56);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(34);
+var _Health_bottle_7 = __webpack_require__(57);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
-var _Empty_bottle_ = __webpack_require__(2);
+var _Empty_bottle_ = __webpack_require__(13);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
-var _Empty_bottle_3 = __webpack_require__(3);
+var _Empty_bottle_3 = __webpack_require__(14);
 
 var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
 
-var _Empty_bottle_5 = __webpack_require__(4);
+var _Empty_bottle_5 = __webpack_require__(15);
 
 var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 
-var _Empty_bottle_7 = __webpack_require__(5);
+var _Empty_bottle_7 = __webpack_require__(16);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
@@ -4111,7 +3210,7 @@ var DroppedItem = function (_NonCharacterObject) {
 exports.default = DroppedItem;
 
 /***/ }),
-/* 50 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4123,13 +3222,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Goblin = __webpack_require__(35);
+var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _Sheep = __webpack_require__(51);
+var _Sheep = __webpack_require__(27);
 
 var _Sheep2 = _interopRequireDefault(_Sheep);
+
+var _Slime = __webpack_require__(65);
+
+var _Slime2 = _interopRequireDefault(_Slime);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4261,8 +3364,13 @@ var Spawner = function () {
                     case "Goblins":
                         unit = new _Goblin2.default(this.Loader, x, y, this.map, this.bounds);
                         break;
+
                     case "Sheep":
                         unit = new _Sheep2.default(this.Loader, x, y, this.map, this.bounds);
+                        break;
+
+                    case "Slimes":
+                        unit = new _Slime2.default(this.Loader, x, y, this.map, this.bounds);
                         break;
 
                     default:
@@ -4286,9 +3394,15 @@ var Spawner = function () {
                 case "Goblins":
                     newUnit = new _Goblin2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
                     break;
+
                 case "Sheep":
                     newUnit = new _Sheep2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
                     break;
+
+                case "Slimes":
+                    newUnit = new _Slime2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    break;
+
                 default:
                     console.log('Cannot create unit of type ' + unit.type);
                     return null;
@@ -4321,7 +3435,7 @@ var Spawner = function () {
 exports.default = Spawner;
 
 /***/ }),
-/* 51 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4331,7 +3445,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _NPCObjectBase = __webpack_require__(36);
+var _NPCObjectBase = __webpack_require__(8);
 
 var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
@@ -4349,7 +3463,7 @@ var Sheep = function (_NPCObject) {
     function Sheep(Loader, x, y, map, bounds) {
         _classCallCheck(this, Sheep);
 
-        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, "Sheep", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 196, true, map, bounds));
+        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, "Sheep", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 160, true, map, bounds));
 
         _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
         return _this;
@@ -4361,7 +3475,7 @@ var Sheep = function (_NPCObject) {
 exports.default = Sheep;
 
 /***/ }),
-/* 52 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4433,7 +3547,7 @@ var Hero = function () {
 
     _createClass(Hero, [{
         key: 'getSmallObject',
-        value: function getSmallObject() {
+        value: function getSmallObject(inventory) {
             var smallObject = {};
             smallObject.token = this.token;
             smallObject.id = this.id;
@@ -4446,7 +3560,7 @@ var Hero = function () {
             smallObject.width = this.width;
             smallObject.height = this.height;
             smallObject.resurected = this.resurected;
-            //console.log(smallObject);
+            smallObject.items = inventory;
             return JSON.stringify(smallObject);
         }
     }, {
@@ -4720,7 +3834,7 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 53 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4732,15 +3846,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _InventoryIcon = __webpack_require__(54);
+var _InventoryIcon = __webpack_require__(30);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
-var _Arrow_ = __webpack_require__(37);
+var _Arrow_ = __webpack_require__(9);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
-var _DamageArea_ = __webpack_require__(40);
+var _DamageArea_ = __webpack_require__(12);
 
 var _DamageArea_2 = _interopRequireDefault(_DamageArea_);
 
@@ -4757,7 +3871,7 @@ var InventoryManager = function () {
         this.inventory = [];
         var i = 0;
         inventoryObjects.forEach(function (inventoryObject) {
-            _this.addObject(inventoryObject, i++);
+            _this.addObject(inventoryObject);
         });
 
         //this.inventory = inventoryObjects;
@@ -4900,9 +4014,9 @@ var InventoryManager = function () {
         }
     }, {
         key: "addObject",
-        value: function addObject(newObject, location) {
-            if (location === undefined || location === -1) {
-                location = this.getEmptyPosition();
+        value: function addObject(newObject) {
+            if (newObject.inventoryLocation === undefined) {
+                newObject.inventoryLocation = this.getEmptyPosition();
             }
 
             this.inventory.forEach(function (oldObject) {
@@ -4922,8 +4036,7 @@ var InventoryManager = function () {
                 }
             });
             if (newObject.stackCount > 0) {
-                newObject.shownLocation = location;
-                newObject.inventoryLocation = location;
+                newObject.shownLocation = newObject.inventoryLocation;
                 this.inventory.push(newObject);
                 return 0;
             }
@@ -5260,6 +4373,15 @@ var InventoryManager = function () {
             });
         }
     }, {
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = [];
+            this.inventory.forEach(function (item) {
+                smallObject.push(item.getSmallObject());
+            });
+            return smallObject;
+        }
+    }, {
         key: "draw",
         value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
             var drawWidth = Math.round(width / this.iterations * 5) / 5;
@@ -5415,7 +4537,7 @@ var InventoryManager = function () {
 exports.default = InventoryManager;
 
 /***/ }),
-/* 54 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5481,7 +4603,7 @@ var InventoryIcon = function () {
 exports.default = InventoryIcon;
 
 /***/ }),
-/* 55 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5662,7 +4784,7 @@ var OtherPlayer = function () {
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 56 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5733,7 +4855,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 57 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5778,6 +4900,1008 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Sword_2 = function (_InventoryObject) {
+    _inherits(Sword_2, _InventoryObject);
+
+    function Sword_2(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Sword_2);
+
+        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
+        var _this = _possibleConstructorReturn(this, (Sword_2.__proto__ || Object.getPrototypeOf(Sword_2)).call(this, "sword_2", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('sword_2'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 1, "DamageArea_1");
+        return _this;
+    }
+
+    return Sword_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Sword_2;
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Sword_3 = function (_InventoryObject) {
+    _inherits(Sword_3, _InventoryObject);
+
+    function Sword_3(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Sword_3);
+
+        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
+        var _this = _possibleConstructorReturn(this, (Sword_3.__proto__ || Object.getPrototypeOf(Sword_3)).call(this, "sword_3", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('sword_3'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.5, "DamageArea_1");
+        return _this;
+    }
+
+    return Sword_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Sword_3;
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shield_1 = function (_InventoryObject) {
+    _inherits(Shield_1, _InventoryObject);
+
+    function Shield_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Shield_1);
+
+        var _this = _possibleConstructorReturn(this, (Shield_1.__proto__ || Object.getPrototypeOf(Shield_1)).call(this, "shield_1", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.OFF_HAND, 10, isEquipped);
+        _this.setImage(Loader.getImage('shield_1'));
+        return _this;
+    }
+
+    return Shield_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Shield_1;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shield_2 = function (_InventoryObject) {
+    _inherits(Shield_2, _InventoryObject);
+
+    function Shield_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Shield_2);
+
+        var _this = _possibleConstructorReturn(this, (Shield_2.__proto__ || Object.getPrototypeOf(Shield_2)).call(this, "shield_2", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.OFF_HAND, 15, isEquipped);
+        _this.setImage(Loader.getImage('shield_2'));
+        return _this;
+    }
+
+    return Shield_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Shield_2;
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shield_3 = function (_InventoryObject) {
+    _inherits(Shield_3, _InventoryObject);
+
+    function Shield_3(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Shield_3);
+
+        var _this = _possibleConstructorReturn(this, (Shield_3.__proto__ || Object.getPrototypeOf(Shield_3)).call(this, "shield_3", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.OFF_HAND, 25, isEquipped);
+        _this.setImage(Loader.getImage('shield_3'));
+        return _this;
+    }
+
+    return Shield_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Shield_3;
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shield_4 = function (_InventoryObject) {
+    _inherits(Shield_4, _InventoryObject);
+
+    function Shield_4(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Shield_4);
+
+        var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.OFF_HAND, 50, isEquipped);
+        _this.setTilesImage(Loader.getImage('shield_4'), 4, 4, 16);
+        return _this;
+    }
+
+    return Shield_4;
+}(_InventoryObjectBase2.default);
+
+exports.default = Shield_4;
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Axe_1 = function (_InventoryObject) {
+    _inherits(Axe_1, _InventoryObject);
+
+    function Axe_1(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Axe_1);
+
+        var _this = _possibleConstructorReturn(this, (Axe_1.__proto__ || Object.getPrototypeOf(Axe_1)).call(this, "axe_1", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('axe_1'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 15, 4, "DamageArea_1");
+        return _this;
+    }
+
+    return Axe_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Axe_1;
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Axe_2 = function (_InventoryObject) {
+    _inherits(Axe_2, _InventoryObject);
+
+    function Axe_2(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Axe_2);
+
+        var _this = _possibleConstructorReturn(this, (Axe_2.__proto__ || Object.getPrototypeOf(Axe_2)).call(this, "axe_2", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('axe_2'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 30, 4, "DamageArea_1");
+        return _this;
+    }
+
+    return Axe_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Axe_2;
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Axe_3 = function (_InventoryObject) {
+    _inherits(Axe_3, _InventoryObject);
+
+    function Axe_3(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Axe_3);
+
+        var _this = _possibleConstructorReturn(this, (Axe_3.__proto__ || Object.getPrototypeOf(Axe_3)).call(this, "axe_3", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('axe_3'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 100, 4, "DamageArea_1");
+        return _this;
+    }
+
+    return Axe_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Axe_3;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bow_1 = function (_InventoryObject) {
+    _inherits(Bow_1, _InventoryObject);
+
+    function Bow_1(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Bow_1);
+
+        var _this = _possibleConstructorReturn(this, (Bow_1.__proto__ || Object.getPrototypeOf(Bow_1)).call(this, "bow_1", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('bow_1'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 10, 3, "Arrow_1");
+        return _this;
+    }
+
+    return Bow_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Bow_1;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bow_2 = function (_InventoryObject) {
+    _inherits(Bow_2, _InventoryObject);
+
+    function Bow_2(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Bow_2);
+
+        var _this = _possibleConstructorReturn(this, (Bow_2.__proto__ || Object.getPrototypeOf(Bow_2)).call(this, "bow_2", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('bow_2'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 20, 1, "Arrow_1");
+        return _this;
+    }
+
+    return Bow_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Bow_2;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bow_3 = function (_InventoryObject) {
+    _inherits(Bow_3, _InventoryObject);
+
+    function Bow_3(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Bow_3);
+
+        var _this = _possibleConstructorReturn(this, (Bow_3.__proto__ || Object.getPrototypeOf(Bow_3)).call(this, "bow_3", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('bow_3'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 40, 0.5, "Arrow_1");
+        return _this;
+    }
+
+    return Bow_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Bow_3;
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Mace = function (_InventoryObject) {
+    _inherits(Mace, _InventoryObject);
+
+    function Mace(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Mace);
+
+        var _this = _possibleConstructorReturn(this, (Mace.__proto__ || Object.getPrototypeOf(Mace)).call(this, "mace", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('mace'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 250, 10, "DamageArea_1");
+        return _this;
+    }
+
+    return Mace;
+}(_InventoryObjectBase2.default);
+
+exports.default = Mace;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Spear = function (_InventoryObject) {
+    _inherits(Spear, _InventoryObject);
+
+    function Spear(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Spear);
+
+        var _this = _possibleConstructorReturn(this, (Spear.__proto__ || Object.getPrototypeOf(Spear)).call(this, "spear", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(Loader.getImage('spear'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 75, 4, "DamageArea_1");
+        return _this;
+    }
+
+    return Spear;
+}(_InventoryObjectBase2.default);
+
+exports.default = Spear;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Armor_1 = function (_InventoryObject) {
+    _inherits(Armor_1, _InventoryObject);
+
+    function Armor_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Armor_1);
+
+        var _this = _possibleConstructorReturn(this, (Armor_1.__proto__ || Object.getPrototypeOf(Armor_1)).call(this, "armor_1", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.BODY, 20, isEquipped);
+        _this.setImage(Loader.getImage('armor_1'));
+        return _this;
+    }
+
+    return Armor_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Armor_1;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Armor_2 = function (_InventoryObject) {
+    _inherits(Armor_2, _InventoryObject);
+
+    function Armor_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Armor_2);
+
+        var _this = _possibleConstructorReturn(this, (Armor_2.__proto__ || Object.getPrototypeOf(Armor_2)).call(this, "armor_2", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.BODY, 40, isEquipped);
+        _this.setImage(Loader.getImage('armor_2'));
+        return _this;
+    }
+
+    return Armor_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Armor_2;
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Boots_2 = function (_InventoryObject) {
+    _inherits(Boots_2, _InventoryObject);
+
+    function Boots_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Boots_2);
+
+        var _this = _possibleConstructorReturn(this, (Boots_2.__proto__ || Object.getPrototypeOf(Boots_2)).call(this, "boots_2", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.BOOTS, 8, isEquipped);
+        _this.setImage(Loader.getImage('boots_2'));
+        return _this;
+    }
+
+    return Boots_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Boots_2;
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Boots_3 = function (_InventoryObject) {
+    _inherits(Boots_3, _InventoryObject);
+
+    function Boots_3(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Boots_3);
+
+        var _this = _possibleConstructorReturn(this, (Boots_3.__proto__ || Object.getPrototypeOf(Boots_3)).call(this, "boots_3", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.BOOTS, 20, isEquipped);
+        _this.setImage(Loader.getImage('boots_3'));
+        return _this;
+    }
+
+    return Boots_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Boots_3;
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Helmet_1 = function (_InventoryObject) {
+    _inherits(Helmet_1, _InventoryObject);
+
+    function Helmet_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Helmet_1);
+
+        var _this = _possibleConstructorReturn(this, (Helmet_1.__proto__ || Object.getPrototypeOf(Helmet_1)).call(this, "helmet_1", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.HEAD, 10, isEquipped);
+        _this.setImage(Loader.getImage('helmet_1'));
+        return _this;
+    }
+
+    return Helmet_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Helmet_1;
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Helmet_2 = function (_InventoryObject) {
+    _inherits(Helmet_2, _InventoryObject);
+
+    function Helmet_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Helmet_2);
+
+        var _this = _possibleConstructorReturn(this, (Helmet_2.__proto__ || Object.getPrototypeOf(Helmet_2)).call(this, "helmet_2", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.HEAD, 25, isEquipped);
+        _this.setImage(Loader.getImage('helmet_2'));
+        return _this;
+    }
+
+    return Helmet_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Helmet_2;
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+var _Empty_bottle_ = __webpack_require__(13);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Health_bottle_1 = function (_InventoryObject) {
+    _inherits(Health_bottle_1, _InventoryObject);
+
+    function Health_bottle_1(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Health_bottle_1);
+
+        var _this = _possibleConstructorReturn(this, (Health_bottle_1.__proto__ || Object.getPrototypeOf(Health_bottle_1)).call(this, "health_bottle_1", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setUsable(_this.USES.HEALTH, 10, new _Empty_bottle_2.default(Loader, 1));
+        _this.setImage(Loader.getImage('health_bottle_1'));
+        return _this;
+    }
+
+    return Health_bottle_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Health_bottle_1;
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+var _Empty_bottle_ = __webpack_require__(14);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Health_bottle_2 = function (_InventoryObject) {
+    _inherits(Health_bottle_2, _InventoryObject);
+
+    function Health_bottle_2(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Health_bottle_2);
+
+        var _this = _possibleConstructorReturn(this, (Health_bottle_2.__proto__ || Object.getPrototypeOf(Health_bottle_2)).call(this, "health_bottle_2", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setUsable(_this.USES.HEALTH, 25, new _Empty_bottle_2.default(Loader, 1));
+        _this.setImage(Loader.getImage('health_bottle_2'));
+        return _this;
+    }
+
+    return Health_bottle_2;
+}(_InventoryObjectBase2.default);
+
+exports.default = Health_bottle_2;
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+var _Empty_bottle_ = __webpack_require__(15);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Health_bottle_3 = function (_InventoryObject) {
+    _inherits(Health_bottle_3, _InventoryObject);
+
+    function Health_bottle_3(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Health_bottle_3);
+
+        var _this = _possibleConstructorReturn(this, (Health_bottle_3.__proto__ || Object.getPrototypeOf(Health_bottle_3)).call(this, "health_bottle_3", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setUsable(_this.USES.HEALTH, 50, new _Empty_bottle_2.default(Loader, 1));
+        _this.setImage(Loader.getImage('health_bottle_3'));
+        return _this;
+    }
+
+    return Health_bottle_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Health_bottle_3;
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+var _Empty_bottle_ = __webpack_require__(16);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Health_bottle_4 = function (_InventoryObject) {
+    _inherits(Health_bottle_4, _InventoryObject);
+
+    function Health_bottle_4(Loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Health_bottle_4);
+
+        var _this = _possibleConstructorReturn(this, (Health_bottle_4.__proto__ || Object.getPrototypeOf(Health_bottle_4)).call(this, "health_bottle_4", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setUsable(_this.USES.HEALTH, 100, new _Empty_bottle_2.default(Loader, 1));
+        _this.setImage(Loader.getImage('health_bottle_4'));
+        return _this;
+    }
+
+    return Health_bottle_4;
+}(_InventoryObjectBase2.default);
+
+exports.default = Health_bottle_4;
+
+/***/ }),
 /* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5790,7 +5914,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Fire = __webpack_require__(6);
+var _Fire = __webpack_require__(2);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
@@ -5979,6 +6103,51 @@ exports.default = Map;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _NPCObjectBase = __webpack_require__(8);
+
+var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Slime = function (_NPCObject) {
+    _inherits(Slime, _NPCObject);
+
+    function Slime(Loader, x, y, map, bounds) {
+        _classCallCheck(this, Slime);
+
+        var _this = _possibleConstructorReturn(this, (Slime.__proto__ || Object.getPrototypeOf(Slime)).call(this, "Slimes", x, y, map.drawSize * 2, map.drawSize * 2, 500, 10, 3, 80, false, map, bounds));
+
+        _this.setTilesImage(Loader.getImage('slime'), 4, 4, 4);
+        return _this;
+    }
+
+    return Slime;
+}(_NPCObjectBase2.default);
+
+exports.default = Slime;
 
 /***/ })
 /******/ ]);

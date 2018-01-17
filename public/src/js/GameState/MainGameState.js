@@ -139,6 +139,7 @@ export default class MainGameState {
         this.overwriteHero.health = user.health;
         this.overwriteHero.tileLevel = user.tileLevel;
         this.overwriteHero.token = user.token;
+        this.overwriteInventory = user.items;
     }
 
     loadNonCharacterObjects(objects) {
@@ -188,38 +189,108 @@ export default class MainGameState {
 
     loadInventoryObjects() {
         let inventoryObjects = [];
-        inventoryObjects.push(new Sword_1(this.Loader, 5));
-        inventoryObjects.push(new Sword_2(this.Loader, 5));
-        inventoryObjects.push(new Sword_3(this.Loader, 5));
-        inventoryObjects.push(new Shield_1(this.Loader, 5));
-        inventoryObjects.push(new Shield_2(this.Loader, 5));
-        inventoryObjects.push(new Shield_3(this.Loader, 5));
-        inventoryObjects.push(new Shield_4(this.Loader, 5));
-        inventoryObjects.push(new Axe_1(this.Loader, 5));
-        inventoryObjects.push(new Axe_2(this.Loader, 5));
-        inventoryObjects.push(new Axe_3(this.Loader, 5));
-        inventoryObjects.push(new Bow_1(this.Loader, 5));
-        inventoryObjects.push(new Bow_2(this.Loader, 5));
-        inventoryObjects.push(new Bow_3(this.Loader, 5));
-        inventoryObjects.push(new Mace(this.Loader, 5));
-        inventoryObjects.push(new Spear(this.Loader, 5));
-        inventoryObjects.push(new Armor_1(this.Loader, 5));
-        inventoryObjects.push(new Armor_2(this.Loader, 5));
-        inventoryObjects.push(new Boots_1(this.Loader, 5));
-        inventoryObjects.push(new Boots_2(this.Loader, 5));
-        inventoryObjects.push(new Boots_3(this.Loader, 5));
-        inventoryObjects.push(new Helmet_1(this.Loader, 5));
-        inventoryObjects.push(new Helmet_2(this.Loader, 5));
-        inventoryObjects.push(new Coin(this.Loader, 500));
-        inventoryObjects.push(new Health_bottle_1(this.Loader, 5));
-        inventoryObjects.push(new Health_bottle_2(this.Loader, 5));
-        inventoryObjects.push(new Health_bottle_3(this.Loader, 5));
-        inventoryObjects.push(new Health_bottle_4(this.Loader, 5));
-        inventoryObjects.push(new Empty_bottle_1(this.Loader, 5));
-        inventoryObjects.push(new Empty_bottle_2(this.Loader, 5));
-        inventoryObjects.push(new Empty_bottle_3(this.Loader, 5));
-        inventoryObjects.push(new Empty_bottle_4(this.Loader, 5));
+        this.overwriteInventory.forEach(item => {
+            this.createInventoryObject(inventoryObjects, item);
+        });
         this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader, this.hero, this.projectiles, this.map);
+    }
+
+    createInventoryObject(inventoryObjects, object) {
+        switch (object.name) {
+            case "sword_1":
+                inventoryObjects.push(new Sword_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "sword_2":
+                inventoryObjects.push(new Sword_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "sword_3":
+                inventoryObjects.push(new Sword_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "shield_1":
+                inventoryObjects.push(new Shield_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "shield_2":
+                inventoryObjects.push(new Shield_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "shield_3":
+                inventoryObjects.push(new Shield_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "shield_4":
+                inventoryObjects.push(new Shield_4(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "axe_1":
+                inventoryObjects.push(new Axe_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "axe_2":
+                inventoryObjects.push(new Axe_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "axe_3":
+                inventoryObjects.push(new Axe_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "bow_1":
+                inventoryObjects.push(new Bow_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "bow_2":
+                inventoryObjects.push(new Bow_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "bow_3":
+                inventoryObjects.push(new Bow_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "mace":
+                inventoryObjects.push(new Mace(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "spear":
+                inventoryObjects.push(new Spear(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "armor_1":
+                inventoryObjects.push(new Armor_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "armor_2":
+                inventoryObjects.push(new Armor_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "boots_1":
+                inventoryObjects.push(new Boots_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "boots_2":
+                inventoryObjects.push(new Boots_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "boots_3":
+                inventoryObjects.push(new Boots_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "helmet_1":
+                inventoryObjects.push(new Helmet_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "helmet_2":
+                inventoryObjects.push(new Helmet_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                break;
+            case "coin":
+                inventoryObjects.push(new Coin(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "health_bottle_1":
+                inventoryObjects.push(new Health_bottle_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "health_bottle_2":
+                inventoryObjects.push(new Health_bottle_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "health_bottle_3":
+                inventoryObjects.push(new Health_bottle_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "health_bottle_4":
+                inventoryObjects.push(new Health_bottle_4(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "empty_bottle_1":
+                inventoryObjects.push(new Empty_bottle_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "empty_bottle_2":
+                inventoryObjects.push(new Empty_bottle_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "empty_bottle_3":
+                inventoryObjects.push(new Empty_bottle_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+            case "empty_bottle_4":
+                inventoryObjects.push(new Empty_bottle_4(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                break;
+        }
     }
 
     // send map in this
@@ -244,7 +315,7 @@ export default class MainGameState {
         this.loadInventoryObjects();
 
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
-            this.socket.emit("new_user", this.hero.getSmallObject());
+            this.socket.emit("new_user", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             this.loadSocket(this.socket);
             //this.loadNonCharacterObjects(objects);
             //this.loadNPCs(npcs);
@@ -347,7 +418,7 @@ export default class MainGameState {
         });
         client.on("newUnit", (unitString) => {
             const unit = JSON.parse(unitString);
-            console.log(unit);
+            //console.log(unit);
             this.spawners.forEach(spawner => {
                 spawner.newUnit(unit);
             })
@@ -375,6 +446,7 @@ export default class MainGameState {
             this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
             this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
             this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
+            this.Loader.loadImage('slime', '../../assets/sprites/slime.png'),
             this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
             this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
 
@@ -433,35 +505,35 @@ export default class MainGameState {
         if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
             if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                 this.hero.action = this.hero.STATE.RUNNINGWEST;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             }
             dirx = -1;
         } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
             if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                 this.hero.action = this.hero.STATE.RUNNINGEAST;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             }
             dirx = 1;
         } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
             if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                 this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             }
             diry = -1;
         } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
             if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                 this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             }
             diry = 1;
         } else {
             if (this.hero.action != this.hero.STATE.STOP) {
                 this.hero.action = this.hero.STATE.STOP;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject());
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
             }
         }
         if (this.hero.resurected) {
-            this.socket.emit("updatePlayer", this.hero.getSmallObject());
+            this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
         }
 
         this.hero.move(delta, dirx, diry);
@@ -606,25 +678,26 @@ export default class MainGameState {
     }
 
     events() {
+        let self = this;
         document.addEventListener("keypress", function (event) {
             if (event.key === 'f') {
-                this.fullscreen();
+                self.fullscreen();
             }
         }, this);
         document.addEventListener("fullscreenchange", function () {
-            this.fullscreenState = document.fullscreen;
+            self.fullscreenState = document.fullscreen;
         }, this);
 
         document.addEventListener("mozfullscreenchange", function () {
-            this.fullscreenState = document.mozFullScreen;
+            self.fullscreenState = document.mozFullScreen;
         }, this);
 
         document.addEventListener("webkitfullscreenchange", function () {
-            this.fullscreenState = document.webkitIsFullScreen;
+            self.fullscreenState = document.webkitIsFullScreen;
         }, this);
 
         document.addEventListener("msfullscreenchange", function () {
-            this.fullscreenState = document.msFullscreenElement;
+            self.fullscreenState = document.msFullscreenElement;
         }, this);
     }
 

@@ -11,11 +11,14 @@ var ItemSchema = new Schema({
     count: {
         type: Number
     },
-    inventoryLocation : {
+    inventoryLocation: {
         type: Number
     },
     actionLocation: {
         type: Number
+    },
+    isEquipped: {
+        type: Boolean
     }
 });
 
