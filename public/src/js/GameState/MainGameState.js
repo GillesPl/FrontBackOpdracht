@@ -492,6 +492,8 @@ export default class MainGameState {
             this.Loader.loadSound('sheep' , '../../assets/sounds/sheep.mp3'),
             this.Loader.loadSound('sheep-2' , '../../assets/sounds/sheep-2.mp3'),
             this.Loader.loadSound('sheep-3' , '../../assets/sounds/sheep-3.mp3'),
+            this.Loader.loadSound('slime' , '../../assets/sounds/slime.mp3'),
+            this.Loader.loadSound('default' , '../../assets/sounds/default.mp3'),
         ];
     }
 

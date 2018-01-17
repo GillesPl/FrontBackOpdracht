@@ -51,16 +51,26 @@ export default class Spawner {
                             sound.play().then();
                             break;
                         case "Sheep":
-                            if(random <= 3) sound = this.Loader.getSound("sheep");
-                            else if(random > 3 && random <= 6) sound = this.Loader.getSound("sheep-2");
+                            if (random <= 3) sound = this.Loader.getSound("sheep");
+                            else if (random > 3 && random <= 6) sound = this.Loader.getSound("sheep-2");
                             else sound = this.Loader.getSound("sheep-3");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
+
+                        case "Slimes":
+                            sound = this.Loader.getSound("default");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then();
+                            break;
                         default:
-                            //console.log('Cannot create unit of type ' + unit.type);
-                            return null;
+                            sound = this.Loader.getSound("default");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then();
+                            break;
                     }
                     this.units.splice(this.units.indexOf(unit), 1);
                 }
