@@ -60,7 +60,7 @@ export default class Spawner {
                             break;
 
                         case "Slimes":
-                            sound = this.Loader.getSound("default");
+                            sound = this.Loader.getSound("slime");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();

@@ -4302,7 +4302,7 @@ var Spawner = function () {
                                 break;
 
                             case "Slimes":
-                                sound = _this2.Loader.getSound("default");
+                                sound = _this2.Loader.getSound("slime");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
