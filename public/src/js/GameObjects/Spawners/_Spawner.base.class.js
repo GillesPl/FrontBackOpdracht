@@ -38,22 +38,49 @@ export default class Spawner {
         this.units.forEach(unit => {
             unit.update(delta, this.units);
             if (unit.isHit(projectiles)) {
+                let sound;
+                let random = Math.floor((Math.random() * 10) + 1);
                 parent.updateUnit(unit.getSmallObject());
-                if (unit.health <= 0) {
-                    let sound;
-                    let random = Math.floor((Math.random() * 10) + 1);
+                if (unit.health > 0) {
                     switch (unit.type) {
                         case "Goblins":
-                            if (random >= 5) sound = this.Loader.getSound("goblin-death");
-                            else sound = this.Loader.getSound("goblin-death-2");
+                            sound = this.Loader.getSound("goblin-death");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                         case "Sheep":
                             if (random <= 3) sound = this.Loader.getSound("sheep");
-                            else if (random > 3 && random <= 6) sound = this.Loader.getSound("sheep-2");
-                            else sound = this.Loader.getSound("sheep-3");
+                            else sound = this.Loader.getSound("sheep-2");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then();
+                            break;
+
+                        case "Slimes":
+                            sound = this.Loader.getSound("slime");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then();
+                            break;
+                        default:
+                            sound = this.Loader.getSound("default");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then();
+                            break;
+                    }
+                }
+                else {
+                    switch (unit.type) {
+                        case "Goblins":
+                            sound = this.Loader.getSound("goblin-death-2");
+                            sound.loop = false;
+                            sound.volume = 1;
+                            sound.play().then();
+                            break;
+                        case "Sheep":
+                            sound = this.Loader.getSound("sheep-3");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();

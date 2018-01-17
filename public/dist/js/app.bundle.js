@@ -2967,10 +2967,17 @@ var MainGameState = function () {
 
             Promise.all(this.loadassets).then(function (loaded) {
                 this.init();
-
                 var sound = this.Loader.getSound("ambience");
                 this.setSound(sound);
-
+                document.ontouchmove = function (event) {
+                    this.onMouseMove(event);
+                }.bind(this);
+                document.ontouchstart = function (event) {
+                    this.onMouseDown(event);
+                }.bind(this);
+                document.ontouchend = function (event) {
+                    this.onMouseUp(event);
+                }.bind(this);
                 document.onmousemove = function (event) {
                     this.onMouseMove(event);
                 }.bind(this);
@@ -3515,27 +3522,30 @@ var MainGameState = function () {
     }, {
         key: "onMouseDown",
         value: function onMouseDown(event) {
+            console.log(event);
             var mousePosition = {
-                x: event.pageX,
-                y: event.pageY
+                x: event.type.toLowerCase() === 'mousedown' ? event.pageX : event.touches[0].pageX,
+                y: event.type.toLowerCase() === 'mousedown' ? event.pageY : event.touches[0].pageY
             };
             this.InventoryManager.onMouseDown(mousePosition);
         }
     }, {
         key: "onMouseUp",
         value: function onMouseUp(event) {
+            console.log(event);
             var mousePosition = {
-                x: event.pageX,
-                y: event.pageY
+                x: event.type.toLowerCase() === 'mouseup' ? event.pageX : event.changedTouches[0].pageX,
+                y: event.type.toLowerCase() === 'mouseup' ? event.pageY : event.changedTouches[0].pageY
             };
             this.InventoryManager.onMouseUp(mousePosition, this);
         }
     }, {
         key: "onMouseMove",
         value: function onMouseMove(event) {
+            console.log(event);
             var mousePosition = {
-                x: event.pageX,
-                y: event.pageY
+                x: event.type.toLowerCase() === 'mousemove' ? event.pageX : event.touches[0].pageX,
+                y: event.type.toLowerCase() === 'mousemove' ? event.pageY : event.touches[0].pageY
             };
             this.InventoryManager.onMouseMove(mousePosition);
         }
@@ -4283,19 +4293,47 @@ var Spawner = function () {
             this.units.forEach(function (unit) {
                 unit.update(delta, _this2.units);
                 if (unit.isHit(projectiles)) {
+                    var sound = void 0;
+                    var random = Math.floor(Math.random() * 10 + 1);
                     parent.updateUnit(unit.getSmallObject());
-                    if (unit.health <= 0) {
-                        var sound = void 0;
-                        var random = Math.floor(Math.random() * 10 + 1);
+                    if (unit.health > 0) {
                         switch (unit.type) {
                             case "Goblins":
-                                if (random >= 5) sound = _this2.Loader.getSound("goblin-death");else sound = _this2.Loader.getSound("goblin-death-2");
+                                sound = _this2.Loader.getSound("goblin-death");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
                             case "Sheep":
-                                if (random <= 3) sound = _this2.Loader.getSound("sheep");else if (random > 3 && random <= 6) sound = _this2.Loader.getSound("sheep-2");else sound = _this2.Loader.getSound("sheep-3");
+                                if (random <= 3) sound = _this2.Loader.getSound("sheep");else sound = _this2.Loader.getSound("sheep-2");
+                                sound.loop = false;
+                                sound.volume = 1;
+                                sound.play().then();
+                                break;
+
+                            case "Slimes":
+                                sound = _this2.Loader.getSound("slime");
+                                sound.loop = false;
+                                sound.volume = 1;
+                                sound.play().then();
+                                break;
+                            default:
+                                sound = _this2.Loader.getSound("default");
+                                sound.loop = false;
+                                sound.volume = 1;
+                                sound.play().then();
+                                break;
+                        }
+                    } else {
+                        switch (unit.type) {
+                            case "Goblins":
+                                sound = _this2.Loader.getSound("goblin-death-2");
+                                sound.loop = false;
+                                sound.volume = 1;
+                                sound.play().then();
+                                break;
+                            case "Sheep":
+                                sound = _this2.Loader.getSound("sheep-3");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();

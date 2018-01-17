@@ -77,12 +77,19 @@ export default class MainGameState {
         this.ctx.width = window.innerWidth;
         this.ctx.height = window.innerHeight;
 
-        Promise.all(this.loadassets).then(function (loaded) {            
+        Promise.all(this.loadassets).then(function (loaded) {
             this.init();
-            
             var sound = this.Loader.getSound("ambience");
             this.setSound(sound);
-
+            document.ontouchmove = function (event) {
+                this.onMouseMove(event);
+            }.bind(this);
+            document.ontouchstart = function (event) {
+                this.onMouseDown(event);
+            }.bind(this);
+            document.ontouchend = function (event) {
+                this.onMouseUp(event);
+            }.bind(this);
             document.onmousemove = function (event) {
                 this.onMouseMove(event);
             }.bind(this);
@@ -124,7 +131,7 @@ export default class MainGameState {
     setSound(sound) {
         sound.loop = true;
         sound.volume = 0.1;
-        sound.play().then(() => {                
+        sound.play().then(() => {
         });
     }
 
@@ -297,16 +304,16 @@ export default class MainGameState {
     init() {
         this.Keyboard = new Keyboard(this);
         this.Keyboard.listenForEvents([this.Keyboard.LEFT,
-            this.Keyboard.RIGHT,
-            this.Keyboard.UP,
-            this.Keyboard.DOWN,
-            this.Keyboard.A,
-            this.Keyboard.D,
-            this.Keyboard.W,
-            this.Keyboard.S
+        this.Keyboard.RIGHT,
+        this.Keyboard.UP,
+        this.Keyboard.DOWN,
+        this.Keyboard.A,
+        this.Keyboard.D,
+        this.Keyboard.W,
+        this.Keyboard.S
         ], [this.Keyboard.I,
-            this.Keyboard.C
-        ]);
+        this.Keyboard.C
+            ]);
 
         this.tileAtlas = this.Loader.getImage('tiles');
         this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
@@ -437,63 +444,63 @@ export default class MainGameState {
 
     load() {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
-            this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
-            this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
-            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
-            this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
-            this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
-            this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
-            this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
-            this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
-            this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
-            this.Loader.loadImage('slime', '../../assets/sprites/slime.png'),
-            this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
-            this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
+        this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
+        this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
+        this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
+        this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
+        this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
+        this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
+        this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
+        this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
+        this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
+        this.Loader.loadImage('slime', '../../assets/sprites/slime.png'),
+        this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
+        this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
 
-            // InventoryItems
-            this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
-            this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
-            this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
-            this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
-            this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
-            this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
-            this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
-            this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
-            this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
-            this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
-            this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
-            this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
-            this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
-            this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
-            this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
-            this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
-            this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
-            this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
-            this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
-            this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
-            this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
-            this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
-            this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
-            this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
-            this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
-            this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
-            this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
-            this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
-            this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
-            this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
-            this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
+        // InventoryItems
+        this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
+        this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
+        this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
+        this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
+        this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
+        this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
+        this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
+        this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
+        this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
+        this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
+        this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
+        this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
+        this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
+        this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
+        this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
+        this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
+        this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
+        this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
+        this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
+        this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
+        this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
+        this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
+        this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
+        this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
+        this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
+        this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
+        this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
+        this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
+        this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
+        this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
+        this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
 
 
-            //Sounds
-            this.Loader.loadSound('ambience' , '../../assets/sounds/ambiance.mp3'),
-            this.Loader.loadSound('goblin-death' , '../../assets/sounds/goblin-death.mp3'),
-            this.Loader.loadSound('goblin-death-2' , '../../assets/sounds/goblin-death-2.mp3'),
-            this.Loader.loadSound('explosion' , '../../assets/sounds/explosion.mp3'),
-            this.Loader.loadSound('sheep' , '../../assets/sounds/sheep.mp3'),
-            this.Loader.loadSound('sheep-2' , '../../assets/sounds/sheep-2.mp3'),
-            this.Loader.loadSound('sheep-3' , '../../assets/sounds/sheep-3.mp3'),
-            this.Loader.loadSound('slime' , '../../assets/sounds/slime.mp3'),
-            this.Loader.loadSound('default' , '../../assets/sounds/default.mp3'),
+        //Sounds
+        this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'),
+        this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'),
+        this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'),
+        this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'),
+        this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'),
+        this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'),
+        this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'),
+        this.Loader.loadSound('slime', '../../assets/sounds/slime.mp3'),
+        this.Loader.loadSound('default', '../../assets/sounds/default.mp3'),
         ];
     }
 
@@ -657,24 +664,39 @@ export default class MainGameState {
     }
 
     onMouseDown(event) {
+        console.log(event);
         let mousePosition = {
-            x: event.pageX,
-            y: event.pageY
+            x: (event.type.toLowerCase() === 'mousedown')
+                ? event.pageX
+                : event.touches[0].pageX,
+            y: (event.type.toLowerCase() === 'mousedown')
+                ? event.pageY
+                : event.touches[0].pageY
         };
         this.InventoryManager.onMouseDown(mousePosition);
     }
     onMouseUp(event) {
+        console.log(event);
         let mousePosition = {
-            x: event.pageX,
-            y: event.pageY
+            x: (event.type.toLowerCase() === 'mouseup')
+                ? event.pageX
+                : event.changedTouches[0].pageX,
+            y: (event.type.toLowerCase() === 'mouseup')
+                ? event.pageY
+                : event.changedTouches[0].pageY
         };
         this.InventoryManager.onMouseUp(mousePosition, this);
     }
 
     onMouseMove(event) {
+        console.log(event);
         let mousePosition = {
-            x: event.pageX,
-            y: event.pageY
+            x: (event.type.toLowerCase() === 'mousemove')
+                ? event.pageX
+                : event.touches[0].pageX,
+            y: (event.type.toLowerCase() === 'mousemove')
+                ? event.pageY
+                : event.touches[0].pageY
         };
         this.InventoryManager.onMouseMove(mousePosition);
     }
