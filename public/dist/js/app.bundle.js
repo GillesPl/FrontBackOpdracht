@@ -4187,13 +4187,13 @@ var Spawner = function () {
                                 if (random >= 5) sound = _this2.Loader.getSound("goblin-death");else sound = _this2.Loader.getSound("goblin-death-2");
                                 sound.loop = false;
                                 sound.volume = 1;
-                                sound.play().then(function () {});
+                                sound.play().then();
                                 break;
                             case "Sheep":
                                 if (random <= 3) sound = _this2.Loader.getSound("sheep");else if (random > 3 && random <= 6) sound = _this2.Loader.getSound("sheep-2");else sound = _this2.Loader.getSound("sheep-3");
                                 sound.loop = false;
                                 sound.volume = 1;
-                                sound.play().then(function () {});
+                                sound.play().then();
                                 break;
                             default:
                                 //console.log('Cannot create unit of type ' + unit.type);
