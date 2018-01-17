@@ -65,8 +65,8 @@ export default class NPCObject extends GameObject {
     isHit(projectiles) {
         for (let i = 0; i < projectiles.length; i++) {
             const projectile = projectiles[i];
-            if (this.isInObject(projectile.x, projectile.y)) {
-                let damage = projectile.doDamage()
+            if (this.isNear(projectile.x, projectile.y, projectile.x + projectile.width, projectile.y + projectile.height)) {
+                let damage = projectile.doDamage();
                 this.health -= damage;
                 this.topText.push({
                     text: "-" + damage,
@@ -123,7 +123,7 @@ export default class NPCObject extends GameObject {
             this._collide(dirx, diry);
         }
     }
-    
+
     unitsOverlap(units, thisx, thisy) {
         if (thisx === undefined) {
             thisx = this.x;

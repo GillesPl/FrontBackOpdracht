@@ -19,14 +19,13 @@ exports.getUser = function (req, res) {
 // Used by server code (not API)
 exports.updateUserFromToken = function (req, res) {
     delete req.password; // Just to be safe remove the password field 
-    console.log(req);
     User.findOneAndUpdate({
         token: req.token
     }, req, {
         new: true
     }, function (err, user) {
         if (err) return res(err);
-        if (user._id !== req._id) return res("id's don't match");
+        if (user._id != req._id) return res("id's don't match");
         user.save(function (err, user) {
             if (err) return res(err);
             res(user);

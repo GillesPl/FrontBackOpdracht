@@ -40,7 +40,6 @@ class Manager {
     }
 
     updatePlayer(playerJsonString, socket) {
-
         let player = JSON.parse(playerJsonString);
         console.log(player);
         let playerForDatabase = {

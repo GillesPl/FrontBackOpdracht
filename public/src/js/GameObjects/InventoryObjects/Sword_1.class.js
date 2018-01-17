@@ -5,5 +5,6 @@ export default class Sword_1 extends InventoryObject {
         super("sword_1", 10, stackCount);
         //this.setEquipable(this.AREAS.ONE_HANDED, 10);
         this.setImage(Loader.getImage('sword_1'));
+        this.setWeapon(this.WEAPONTYPES.MELEE, 10, 1, "DamageArea_1");
     }
 }

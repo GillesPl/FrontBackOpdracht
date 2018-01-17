@@ -25,11 +25,9 @@ app.use(bodyParser.json());
 
 app.use(morgan("dev"));
 
-
 //controllers
 var UserController = require("./server/Controllers/UserController");
 var AuthenticateController = require("./server/Controllers/AuthenticateController");
-
 
 /*app.use('/css',express.static(__dirname + 'public/css'));
 app.use('/js',express.static(__dirname + 'public/js'));

@@ -1,18 +1,19 @@
 import GameObject from "../_GameObject.base.class";
 
-export default class Projectile extends GameObject {
-    constructor(id, name, x, y, angleInRadians, strength, width, height, map) {
+export default class DamageArea extends GameObject {
+    constructor(id, name, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
         super();
         this.id = id;
         this.name = name;
         this.x = x;
         this.y = y;
-        this.strength = strength;
         this.angleInRadians = angleInRadians;
+        this.strength = strength;
         this.width = width;
         this.height = height;
         this.map = map;
-        this.speed = 512;
+        this.lifeTime = 0;
+        this.totalLifeTime = totalLifeTime;
         this.destroyed = false;
     }
 
@@ -23,9 +24,10 @@ export default class Projectile extends GameObject {
         smallObject.x = this.x;
         smallObject.y = this.y;
         smallObject.strength = this.strength;
-        smallObject.angleInRadians = this.angleInRadians;
         smallObject.width = this.width;
         smallObject.height = this.height;
+        smallObject.lifeTime = this.lifeTime;
+        smallObject.totalLifeTime = this.totalLifeTime;
         return JSON.stringify(smallObject);
     }
 
@@ -36,9 +38,8 @@ export default class Projectile extends GameObject {
 
     update(delta) {
         super.update(delta);
-        this.x += Math.cos(this.angleInRadians) * this.speed * delta;
-        this.y += Math.sin(this.angleInRadians) * this.speed * delta;
-        if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
+        this.lifeTime += delta;
+        if (this.totalLifeTime <= this.lifeTime) {
             this.destroyed = true;
         }
     }
@@ -50,11 +51,11 @@ export default class Projectile extends GameObject {
                 this.getImageY() * this.tileHeight, // Src y
                 this.tileWidth, // Src width
                 this.tileHeight, // Src height
-                screenX,
-                screenY,
+                screenX + this.width / 2 + this.width / 2 * Math.cos(this.angleInRadians),
+                screenY + this.height / 2 + this.height / 2 * Math.sin(this.angleInRadians),
                 this.width,
                 this.height,
-                this.angleInRadians + Math.PI / 4 * 5 // The image is rotated
+                this.angleInRadians // The image is rotated
             );
         } else {
             super.draw(ctx, screenX, screenY);

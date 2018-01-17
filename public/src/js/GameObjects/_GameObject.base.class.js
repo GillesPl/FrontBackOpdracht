@@ -75,9 +75,9 @@ export default class GameObject {
 
     draw(ctx, screenX, screenY) {
         if (this.image === null) {
-            this.ctx.fillText("Object", screenX, screenY);
-            this.ctx.fillStyle = "purple";
-            this.ctx.fillRect(screenX, screenY, this.width, this.height);
+            ctx.fillText("Object", screenX, screenY);
+            ctx.fillStyle = "purple";
+            ctx.fillRect(screenX, screenY, this.width, this.height);
         } else {
             ctx.drawImage(
                 this.image, // Image

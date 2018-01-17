@@ -1,8 +1,9 @@
 import InventoryIcon from "./InventoryIcon.class";
-import Arrow_1 from "../Projectiles/Arrow_1.class";
+import Arrow_1 from "../Damage/Arrow_1.class";
+import DamageArea_1 from "../Damage/DamageArea_1.class";
 
 export default class InventoryManager {
-    constructor(inventoryObjects, Loader, hero, projectiles, map) {
+    constructor(inventoryObjects, Loader, hero, damageAreas, map) {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
@@ -20,7 +21,7 @@ export default class InventoryManager {
         this.iterations = 8;
         this.imageCharacter = Loader.getImage("characterModel");
         this.imageBack = Loader.getImage("inventoryTileSet");
-        this.projectiles = projectiles;
+        this.damageAreas = damageAreas;
         this.map = map;
         this.backCols = 4;
         this.backRows = 4;
@@ -195,7 +196,7 @@ export default class InventoryManager {
         this.movingObject = false;
     }
 
-    onMouseUp(mousePosition, sendNewProjectileListener) {
+    onMouseUp(mousePosition, sendNewDamageAreaListener) {
         if (this.movingObject) {
             if (this.isInActionBar(mousePosition.x, mousePosition.y)) {
                 this.moveAction(mousePosition, true);
@@ -255,9 +256,38 @@ export default class InventoryManager {
                                     case 'Arrow_1':
                                         let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
                                         let projectile = new Arrow_1(Math.random(), this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
-                                        sendNewProjectileListener.sendNewProjectile(projectile);
-                                        this.projectiles.push(projectile);
+                                        sendNewDamageAreaListener.sendNewDamageArea(projectile);
+                                        this.damageAreas.push(projectile);
                                         //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                                        if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
+                                            this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
+                                        } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
+                                            this.hero.setDirection(this.hero.STATE.RUNNINGNORTH);
+                                        } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
+                                            this.hero.setDirection(this.hero.STATE.RUNNINGSOUTH);
+                                        } else {
+                                            this.hero.setDirection(this.hero.STATE.RUNNINGWEST);
+                                        }
+                                        break;
+                                }
+                            }
+                        } else if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.MELEE) {
+                            if (inventoryObject.interval === 0) {
+                                inventoryObject.interval = inventoryObject.intervalTime;
+                                //console.log('melee used, creating ' + inventoryObject.createObjectName);
+                                switch (inventoryObject.createObjectName) {
+                                    case 'DamageArea_1':
+                                        let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
+                                        let damageArea = new DamageArea_1(
+                                            Math.random(),
+                                            this.Loader,
+                                            this.hero.x - this.hero.width / 2 + this.hero.width / 3 * (Math.cos(angleInRadians)),
+                                            this.hero.y - this.hero.height / 2 + this.hero.height / 3 * (Math.sin(angleInRadians)),
+                                            angleInRadians,
+                                            inventoryObject.strength,
+                                            this.map);
+                                        sendNewDamageAreaListener.sendNewDamageArea(damageArea);
+                                        this.damageAreas.push(damageArea);
                                         if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
                                             this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
                                         } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {

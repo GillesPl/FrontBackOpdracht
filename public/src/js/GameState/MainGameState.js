@@ -9,7 +9,9 @@ import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class"
 import OtherPlayer from "../GameObjects/MainObjects/OtherPlayer.class";
 import Loader from "../Loader/Loader";
 import GameState from "./GameState";
-import Pojectile from "../GameObjects/Projectiles/_Projectile.base.class";
+import Pojectile from "../GameObjects/Damage/_Projectile.base.class";
+import Arrow_1 from "../GameObjects/Damage/Arrow_1.class";
+import DamageArea_1 from "../GameObjects/Damage/DamageArea_1.class";
 
 // inventoryItems
 import Sword_1 from "../GameObjects/InventoryObjects/Sword_1.class";
@@ -43,7 +45,6 @@ import Empty_bottle_1 from "../GameObjects/InventoryObjects/Empty_bottle_1.class
 import Empty_bottle_2 from "../GameObjects/InventoryObjects/Empty_bottle_2.class";
 import Empty_bottle_3 from "../GameObjects/InventoryObjects/Empty_bottle_3.class";
 import Empty_bottle_4 from "../GameObjects/InventoryObjects/Empty_bottle_4.class";
-import Arrow_1 from "../GameObjects/Projectiles/Arrow_1.class";
 
 export default class MainGameState {
     constructor(map, socket) {
@@ -322,6 +323,9 @@ export default class MainGameState {
                 case "Arrow_1":
                     newProjectile = new Arrow_1(projectile.id, this.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
+                case "DamageArea_1":
+                    newProjectile = new DamageArea_1(projectile.id, projectile.x, projectile.y, projectile.strength, this.map);
+                    break;
             }
 
             this.InventoryManager.projectiles.push(newProjectile);
@@ -361,6 +365,7 @@ export default class MainGameState {
             this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
             this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
             this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
+            this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
 
             // InventoryItems
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
@@ -397,8 +402,8 @@ export default class MainGameState {
         ];
     }
 
-    sendNewProjectile(projectile) {
-        this.socket.emit("newProjectile", projectile.getSmallObject());
+    sendNewDamageArea(damageArea) {
+        this.socket.emit("newProjectile", damageArea.getSmallObject());
     }
 
     update(delta) {
