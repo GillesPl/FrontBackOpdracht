@@ -33,7 +33,8 @@ var AuthenticateController = require("./server/Controllers/AuthenticateControlle
 app.use('/js',express.static(__dirname + 'public/js'));
 app.use('/assets',express.static(__dirname + 'public/assets'));*/
 
-var url = "mongodb://localhost:27017/georgescape";
+//var url = "mongodb://localhost:27017/georgescape";
+var url = "mongodb://admin:admin@ds157185.mlab.com:57185/backend-mmorpg-api";
 
 mongoose.connect(url, {
     useMongoClient: true
@@ -77,17 +78,11 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on("registerUser", function (user) {
-        UserController.createUserSocket(user);
+        manager.createUser(user,socket);
     });
 
     socket.on("requestLogin", function (user) {
-        AuthenticateController.authenticate(user, function (res) {
-            if (res.success == true) {
-                socket.emit("requestLoginSuccess", res);
-            } else {
-                console.log(res.message);
-            }
-        });
+        manager.loginUser(user,socket);
     });
 
     socket.on("updatePlayer", function (hero) {

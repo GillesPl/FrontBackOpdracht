@@ -16,9 +16,11 @@ import Map from "./Map/Map.class";
 
     gamestatemanager.setState(loginstate);
 
-    socket.on("requestLoginSuccess", function (res) {
-        mainstate.setUser(res.user);
-        gamestatemanager.setState(mainstate);
+    socket.on("requestLogin", function (res) {
+        if(res.success == true) {
+            mainstate.setUser(res.user);
+            gamestatemanager.setState(mainstate);
+        }    
     });
 
 })();

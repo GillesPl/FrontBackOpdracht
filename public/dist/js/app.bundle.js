@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -983,272 +983,9 @@ var NPCObject = function (_GameObject) {
 exports.default = NPCObject;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _ProjectileBase = __webpack_require__(10);
-
-var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Arrow_1 = function (_Projectile) {
-    _inherits(Arrow_1, _Projectile);
-
-    function Arrow_1(id, Loader, x, y, angleInRadians, strength, map) {
-        _classCallCheck(this, Arrow_1);
-
-        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
-
-        _this.setImage(Loader.getImage('arrow_1'));
-        return _this;
-    }
-
-    return Arrow_1;
-}(_ProjectileBase2.default);
-
-exports.default = Arrow_1;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _DamageAreaBase = __webpack_require__(11);
-
-var _DamageAreaBase2 = _interopRequireDefault(_DamageAreaBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Projectile = function (_DamageArea) {
-    _inherits(Projectile, _DamageArea);
-
-    function Projectile(id, name, x, y, angleInRadians, strength, width, height, map) {
-        _classCallCheck(this, Projectile);
-
-        var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this, id, name, x, y, strength, width, height, 3, map));
-
-        _this.angleInRadians = angleInRadians;
-        _this.speed = 512;
-        return _this;
-    }
-
-    _createClass(Projectile, [{
-        key: "getSmallObject",
-        value: function getSmallObject() {
-            var smallObject = JSON.parse(_get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "getSmallObject", this).call(this));
-            smallObject.angleInRadians = this.angleInRadians;
-            return JSON.stringify(smallObject);
-        }
-    }, {
-        key: "doDamage",
-        value: function doDamage() {
-            this.destroyed = true;
-            return this.strength;
-        }
-    }, {
-        key: "update",
-        value: function update(delta) {
-            _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "update", this).call(this, delta);
-            this.x += Math.cos(this.angleInRadians) * this.speed * delta;
-            this.y += Math.sin(this.angleInRadians) * this.speed * delta;
-            if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
-                this.destroyed = true;
-            }
-        }
-    }, {
-        key: "draw",
-        value: function draw(ctx, screenX, screenY) {
-            if (this.image !== null) {
-                this.drawRotatedImage(ctx, this.image, this.getImageX() * this.tileWidth, // Src x
-                this.getImageY() * this.tileHeight, // Src y
-                this.tileWidth, // Src width
-                this.tileHeight, // Src height
-                screenX, screenY, this.width, this.height, this.angleInRadians + Math.PI / 4 * 5 // The image is rotated
-                );
-            } else {
-                _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "draw", this).call(this, ctx, screenX, screenY);
-            }
-        }
-    }]);
-
-    return Projectile;
-}(_DamageAreaBase2.default);
-
-exports.default = Projectile;
-
-/***/ }),
+/* 9 */,
+/* 10 */,
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _GameObjectBase = __webpack_require__(1);
-
-var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DamageArea = function (_GameObject) {
-    _inherits(DamageArea, _GameObject);
-
-    function DamageArea(id, name, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
-        _classCallCheck(this, DamageArea);
-
-        var _this = _possibleConstructorReturn(this, (DamageArea.__proto__ || Object.getPrototypeOf(DamageArea)).call(this));
-
-        _this.id = id;
-        _this.name = name;
-        _this.x = x;
-        _this.y = y;
-        _this.angleInRadians = angleInRadians;
-        _this.strength = strength;
-        _this.width = width;
-        _this.height = height;
-        _this.map = map;
-        _this.lifeTime = 0;
-        _this.totalLifeTime = totalLifeTime;
-        _this.destroyed = false;
-        return _this;
-    }
-
-    _createClass(DamageArea, [{
-        key: "getSmallObject",
-        value: function getSmallObject() {
-            var smallObject = {};
-            smallObject.id = this.id;
-            smallObject.name = this.name;
-            smallObject.x = this.x;
-            smallObject.y = this.y;
-            smallObject.strength = this.strength;
-            smallObject.width = this.width;
-            smallObject.height = this.height;
-            smallObject.lifeTime = this.lifeTime;
-            smallObject.totalLifeTime = this.totalLifeTime;
-            return JSON.stringify(smallObject);
-        }
-    }, {
-        key: "doDamage",
-        value: function doDamage() {
-            this.destroyed = true;
-            return this.strength;
-        }
-    }, {
-        key: "update",
-        value: function update(delta) {
-            _get(DamageArea.prototype.__proto__ || Object.getPrototypeOf(DamageArea.prototype), "update", this).call(this, delta);
-            this.lifeTime += delta;
-            if (this.totalLifeTime <= this.lifeTime) {
-                this.destroyed = true;
-            }
-        }
-    }, {
-        key: "draw",
-        value: function draw(ctx, screenX, screenY) {
-            if (this.image !== null) {
-                this.drawRotatedImage(ctx, this.image, this.getImageX() * this.tileWidth, // Src x
-                this.getImageY() * this.tileHeight, // Src y
-                this.tileWidth, // Src width
-                this.tileHeight, // Src height
-                screenX + this.width / 2 + this.width / 2 * Math.cos(this.angleInRadians), screenY + this.height / 2 + this.height / 2 * Math.sin(this.angleInRadians), this.width, this.height, this.angleInRadians // The image is rotated
-                );
-            } else {
-                _get(DamageArea.prototype.__proto__ || Object.getPrototypeOf(DamageArea.prototype), "draw", this).call(this, ctx, screenX, screenY);
-            }
-        }
-    }]);
-
-    return DamageArea;
-}(_GameObjectBase2.default);
-
-exports.default = DamageArea;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _DamageAreaBase = __webpack_require__(11);
-
-var _DamageAreaBase2 = _interopRequireDefault(_DamageAreaBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var DamageArea_1 = function (_DamageArea) {
-    _inherits(DamageArea_1, _DamageArea);
-
-    function DamageArea_1(id, Loader, x, y, angleInRadians, strength, map) {
-        _classCallCheck(this, DamageArea_1);
-
-        var _this = _possibleConstructorReturn(this, (DamageArea_1.__proto__ || Object.getPrototypeOf(DamageArea_1)).call(this, id, "DamageArea_1", x, y, angleInRadians, strength, map.drawSize * 1, map.drawSize * 1, 0.2, map));
-
-        _this.setImage(Loader.getImage('damageArea_1'));
-        return _this;
-    }
-
-    return DamageArea_1;
-}(_DamageAreaBase2.default);
-
-exports.default = DamageArea_1;
-
-/***/ }),
-/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1288,7 +1025,7 @@ var Empty_bottle_1 = function (_InventoryObject) {
 exports.default = Empty_bottle_1;
 
 /***/ }),
-/* 14 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1328,7 +1065,7 @@ var Empty_bottle_2 = function (_InventoryObject) {
 exports.default = Empty_bottle_2;
 
 /***/ }),
-/* 15 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1368,7 +1105,7 @@ var Empty_bottle_3 = function (_InventoryObject) {
 exports.default = Empty_bottle_3;
 
 /***/ }),
-/* 16 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1408,33 +1145,33 @@ var Empty_bottle_4 = function (_InventoryObject) {
 exports.default = Empty_bottle_4;
 
 /***/ }),
-/* 17 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(18);
-module.exports = __webpack_require__(59);
+__webpack_require__(16);
+module.exports = __webpack_require__(57);
 
 
 /***/ }),
-/* 18 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _GameStateManager = __webpack_require__(19);
+var _GameStateManager = __webpack_require__(17);
 
 var _GameStateManager2 = _interopRequireDefault(_GameStateManager);
 
-var _LoginState = __webpack_require__(20);
+var _LoginState = __webpack_require__(18);
 
 var _LoginState2 = _interopRequireDefault(_LoginState);
 
-var _MainGameState = __webpack_require__(22);
+var _MainGameState = __webpack_require__(20);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(58);
+var _Map = __webpack_require__(56);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -1453,14 +1190,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     gamestatemanager.setState(loginstate);
 
-    socket.on("requestLoginSuccess", function (res) {
-        mainstate.setUser(res.user);
-        gamestatemanager.setState(mainstate);
+    socket.on("requestLogin", function (res) {
+        if (res.success == true) {
+            mainstate.setUser(res.user);
+            gamestatemanager.setState(mainstate);
+        }
     });
 })();
 
 /***/ }),
-/* 19 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1530,7 +1269,7 @@ var GameStateManager = function () {
 exports.default = GameStateManager;
 
 /***/ }),
-/* 20 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1542,7 +1281,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _User = __webpack_require__(21);
+var _User = __webpack_require__(19);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -1563,35 +1302,30 @@ var LoginState = function () {
         key: "start",
         value: function start() {
             this.clearBody();
-            this.drawChoice();
+            this.drawBackground();
+            this.drawLogin();
         }
     }, {
-        key: "drawChoice",
-        value: function drawChoice() {
+        key: "drawBackground",
+        value: function drawBackground() {
             this.clearBody();
-            var template = '<div class="choice"><button id="login">Login</button><button id="register">Register</button></div>';
+            var template = "\n        <div class=\"background\">\n           \n        </div>\n        ";
             this.body.innerHTML = template;
-
-            this.body.querySelector("#login").addEventListener("click", function (e) {
-                e.preventDefault();
-                //console.log(e.target);
-                this.drawLogin();
-            }.bind(this));
-
-            this.body.querySelector("#register").addEventListener("click", function (e) {
-                e.preventDefault();
-                this.drawRegister();
-            }.bind(this));
+        }
+    }, {
+        key: "checkErrors",
+        value: function checkErrors(err) {
+            document.querySelector(".errorContainer").innerHTML = err;
         }
     }, {
         key: "drawRegister",
         value: function drawRegister() {
-            this.clearBody();
-            var template = '<div class="register"><form action="/"><input type="email" placeholder="Email" name="email" id="registerEmail" /><input type="text" placeholder="Username" name="username" id="registerUser" /><input type="password" placeholder="Password" name="password" id="registerPassword" /><input type="submit" class="btnregister" value="Register"><input type="button" class="btnback" value="Back"></form></div>';
-            this.body.innerHTML = template;
+            var template = "\n        <div class=\"register\">\n        <h1>Register</h1>\n        <p>Please fill in an email, username and password to register.</p>\n        <div class=\"errorContainer\"></div>\n            <form class=\"startForm\" action=\"/\">\n                <input type=\"email\" placeholder=\"Email\" name=\"email\" id=\"registerEmail\" />\n                <input type=\"text\" placeholder=\"Username\" name=\"username\" id=\"registerUser\" />\n                <input type=\"password\" placeholder=\"Password\" name=\"password\" id=\"registerPassword\" />\n                <button type=\"submit\" class=\"btn-form btnregister\" value=\"Register\">Register</button>              \n            </form>\n            <a href=\"\" class=\"formLink\">Login</a>\n        </div>\n       ";
+            document.querySelector(".background").innerHTML = template;
 
-            this.body.querySelector(".btnback").addEventListener("click", function (e) {
-                this.drawChoice();
+            this.body.querySelector(".formLink").addEventListener("click", function (e) {
+                e.preventDefault();
+                this.drawLogin();
             }.bind(this));
 
             this.body.querySelector(".btnregister").addEventListener("click", function (e) {
@@ -1606,13 +1340,12 @@ var LoginState = function () {
     }, {
         key: "drawLogin",
         value: function drawLogin() {
-            this.clearBody();
-            var template = '<div class="login"><form action="/"><input type="text" placeholder="email" name="email" id="loginEmail" /><input type="password" placeholder="Password" name="password" id="loginPassword" /><input type="submit" class="btnlogin" value="Login"><input type="button" class="btnback" value="Back"></form></div>';
-            this.body.innerHTML = template;
+            var template = "\n        <div class=\"login\">\n        <h1>Login</h1>\n        <p>Please log in using your email and password.</p>\n        <div class=\"errorContainer\"></div>\n            <form class=\"startForm\" action=\"/\">\n                <input type=\"text\" placeholder=\"Email\" name=\"email\" id=\"loginEmail\" />\n                <input type=\"password\" placeholder=\"Password\" name=\"password\" id=\"loginPassword\" />\n                <button type=\"submit\" class=\"btn-form btnlogin\" value=\"Login\">Login</button>                \n            </form>\n            <a href=\"\" class=\"formLink\">Register</a>\n        </div>\n        ";
+            document.querySelector(".background").innerHTML = template;
 
-            this.body.querySelector(".btnback").addEventListener("click", function (e) {
+            this.body.querySelector(".formLink").addEventListener("click", function (e) {
                 e.preventDefault();
-                this.drawChoice();
+                this.drawRegister();
             }.bind(this));
 
             this.body.querySelector(".btnlogin").addEventListener("click", function (e) {
@@ -1627,14 +1360,19 @@ var LoginState = function () {
         key: "registerCall",
         value: function registerCall(user) {
             this.socket.emit("registerUser", { user: user });
+            this.socket.on("requestRegister", function (res) {
+                if (res.success == false) this.checkErrors(res.message);
+                console.log(res.user);
+            }.bind(this));
         }
     }, {
         key: "loginCall",
         value: function loginCall(user) {
             this.socket.emit("requestLogin", { user: user });
-            this.socket.on("requestLoginFail", function (res) {
+            this.socket.on("requestLogin", function (res) {
+                if (res.success == false) this.checkErrors(res.message);
                 console.log(res.message);
-            });
+            }.bind(this));
         }
     }, {
         key: "clearBody",
@@ -1651,7 +1389,7 @@ var LoginState = function () {
 exports.default = LoginState;
 
 /***/ }),
-/* 21 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1707,7 +1445,7 @@ var User = function () {
 exports.default = User;
 
 /***/ }),
-/* 22 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1722,11 +1460,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 // inventoryItems
 
 
-var _Camera = __webpack_require__(23);
+var _Camera = __webpack_require__(21);
 
 var _Camera2 = _interopRequireDefault(_Camera);
 
-var _Keyboard = __webpack_require__(24);
+var _Keyboard = __webpack_require__(22);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
@@ -1734,7 +1472,7 @@ var _Fire = __webpack_require__(2);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
-var _DroppedItem = __webpack_require__(25);
+var _DroppedItem = __webpack_require__(23);
 
 var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
 
@@ -1742,39 +1480,39 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _SpawnerBase = __webpack_require__(26);
+var _SpawnerBase = __webpack_require__(24);
 
 var _SpawnerBase2 = _interopRequireDefault(_SpawnerBase);
 
-var _Hero = __webpack_require__(28);
+var _Hero = __webpack_require__(26);
 
 var _Hero2 = _interopRequireDefault(_Hero);
 
-var _InventoryManager = __webpack_require__(29);
+var _InventoryManager = __webpack_require__(27);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(31);
+var _OtherPlayer = __webpack_require__(29);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(32);
+var _Loader = __webpack_require__(30);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState = __webpack_require__(33);
+var _GameState = __webpack_require__(31);
 
 var _GameState2 = _interopRequireDefault(_GameState);
 
-var _ProjectileBase = __webpack_require__(10);
+var _ProjectileBase = __webpack_require__(62);
 
 var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
 
-var _Arrow_ = __webpack_require__(9);
+var _Arrow_ = __webpack_require__(61);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
-var _DamageArea_ = __webpack_require__(12);
+var _DamageArea_ = __webpack_require__(64);
 
 var _DamageArea_2 = _interopRequireDefault(_DamageArea_);
 
@@ -1782,67 +1520,67 @@ var _Sword_ = __webpack_require__(5);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(34);
+var _Sword_3 = __webpack_require__(32);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(35);
+var _Sword_5 = __webpack_require__(33);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(36);
+var _Shield_ = __webpack_require__(34);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(37);
+var _Shield_3 = __webpack_require__(35);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(38);
+var _Shield_5 = __webpack_require__(36);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(39);
+var _Shield_7 = __webpack_require__(37);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(40);
+var _Axe_ = __webpack_require__(38);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(41);
+var _Axe_3 = __webpack_require__(39);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(42);
+var _Axe_5 = __webpack_require__(40);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(43);
+var _Bow_ = __webpack_require__(41);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(44);
+var _Bow_3 = __webpack_require__(42);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(45);
+var _Bow_5 = __webpack_require__(43);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(46);
+var _Mace = __webpack_require__(44);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(47);
+var _Spear = __webpack_require__(45);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(48);
+var _Armor_ = __webpack_require__(46);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(49);
+var _Armor_3 = __webpack_require__(47);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
@@ -1850,19 +1588,19 @@ var _Boots_ = __webpack_require__(6);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(50);
+var _Boots_3 = __webpack_require__(48);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(51);
+var _Boots_5 = __webpack_require__(49);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(52);
+var _Helmet_ = __webpack_require__(50);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(53);
+var _Helmet_3 = __webpack_require__(51);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
@@ -1870,35 +1608,35 @@ var _Coin = __webpack_require__(4);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(54);
+var _Health_bottle_ = __webpack_require__(52);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
-var _Health_bottle_3 = __webpack_require__(55);
+var _Health_bottle_3 = __webpack_require__(53);
 
 var _Health_bottle_4 = _interopRequireDefault(_Health_bottle_3);
 
-var _Health_bottle_5 = __webpack_require__(56);
+var _Health_bottle_5 = __webpack_require__(54);
 
 var _Health_bottle_6 = _interopRequireDefault(_Health_bottle_5);
 
-var _Health_bottle_7 = __webpack_require__(57);
+var _Health_bottle_7 = __webpack_require__(55);
 
 var _Health_bottle_8 = _interopRequireDefault(_Health_bottle_7);
 
-var _Empty_bottle_ = __webpack_require__(13);
+var _Empty_bottle_ = __webpack_require__(11);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
-var _Empty_bottle_3 = __webpack_require__(14);
+var _Empty_bottle_3 = __webpack_require__(12);
 
 var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
 
-var _Empty_bottle_5 = __webpack_require__(15);
+var _Empty_bottle_5 = __webpack_require__(13);
 
 var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
 
-var _Empty_bottle_7 = __webpack_require__(16);
+var _Empty_bottle_7 = __webpack_require__(14);
 
 var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
 
@@ -2543,7 +2281,7 @@ var MainGameState = function () {
 exports.default = MainGameState;
 
 /***/ }),
-/* 23 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2635,7 +2373,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 24 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2757,7 +2495,7 @@ var Keyboard = function () {
 exports.default = Keyboard;
 
 /***/ }),
-/* 25 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2845,7 +2583,7 @@ var DroppedItem = function (_NonCharacterObject) {
 exports.default = DroppedItem;
 
 /***/ }),
-/* 26 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2861,7 +2599,7 @@ var _Goblin = __webpack_require__(7);
 
 var _Goblin2 = _interopRequireDefault(_Goblin);
 
-var _Sheep = __webpack_require__(27);
+var _Sheep = __webpack_require__(25);
 
 var _Sheep2 = _interopRequireDefault(_Sheep);
 
@@ -3037,7 +2775,7 @@ var Spawner = function () {
 exports.default = Spawner;
 
 /***/ }),
-/* 27 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3077,7 +2815,7 @@ var Sheep = function (_NPCObject) {
 exports.default = Sheep;
 
 /***/ }),
-/* 28 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3430,7 +3168,7 @@ var Hero = function () {
 exports.default = Hero;
 
 /***/ }),
-/* 29 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3442,15 +3180,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _InventoryIcon = __webpack_require__(30);
+var _InventoryIcon = __webpack_require__(28);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
-var _Arrow_ = __webpack_require__(9);
+var _Arrow_ = __webpack_require__(61);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
 
-var _DamageArea_ = __webpack_require__(12);
+var _DamageArea_ = __webpack_require__(64);
 
 var _DamageArea_2 = _interopRequireDefault(_DamageArea_);
 
@@ -4125,7 +3863,7 @@ var InventoryManager = function () {
 exports.default = InventoryManager;
 
 /***/ }),
-/* 30 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4191,7 +3929,7 @@ var InventoryIcon = function () {
 exports.default = InventoryIcon;
 
 /***/ }),
-/* 31 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4372,7 +4110,7 @@ var OtherPlayer = function () {
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 32 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4425,7 +4163,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 33 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4470,7 +4208,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 34 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4512,7 +4250,7 @@ var Sword_2 = function (_InventoryObject) {
 exports.default = Sword_2;
 
 /***/ }),
-/* 35 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4554,7 +4292,7 @@ var Sword_3 = function (_InventoryObject) {
 exports.default = Sword_3;
 
 /***/ }),
-/* 36 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4595,7 +4333,7 @@ var Shield_1 = function (_InventoryObject) {
 exports.default = Shield_1;
 
 /***/ }),
-/* 37 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4636,7 +4374,7 @@ var Shield_2 = function (_InventoryObject) {
 exports.default = Shield_2;
 
 /***/ }),
-/* 38 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4677,7 +4415,7 @@ var Shield_3 = function (_InventoryObject) {
 exports.default = Shield_3;
 
 /***/ }),
-/* 39 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4718,7 +4456,7 @@ var Shield_4 = function (_InventoryObject) {
 exports.default = Shield_4;
 
 /***/ }),
-/* 40 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4759,7 +4497,7 @@ var Axe_1 = function (_InventoryObject) {
 exports.default = Axe_1;
 
 /***/ }),
-/* 41 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4800,7 +4538,7 @@ var Axe_2 = function (_InventoryObject) {
 exports.default = Axe_2;
 
 /***/ }),
-/* 42 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4841,7 +4579,7 @@ var Axe_3 = function (_InventoryObject) {
 exports.default = Axe_3;
 
 /***/ }),
-/* 43 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4882,7 +4620,7 @@ var Bow_1 = function (_InventoryObject) {
 exports.default = Bow_1;
 
 /***/ }),
-/* 44 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4923,7 +4661,7 @@ var Bow_2 = function (_InventoryObject) {
 exports.default = Bow_2;
 
 /***/ }),
-/* 45 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4964,7 +4702,7 @@ var Bow_3 = function (_InventoryObject) {
 exports.default = Bow_3;
 
 /***/ }),
-/* 46 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5005,7 +4743,7 @@ var Mace = function (_InventoryObject) {
 exports.default = Mace;
 
 /***/ }),
-/* 47 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5046,7 +4784,7 @@ var Spear = function (_InventoryObject) {
 exports.default = Spear;
 
 /***/ }),
-/* 48 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5087,7 +4825,7 @@ var Armor_1 = function (_InventoryObject) {
 exports.default = Armor_1;
 
 /***/ }),
-/* 49 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5128,7 +4866,7 @@ var Armor_2 = function (_InventoryObject) {
 exports.default = Armor_2;
 
 /***/ }),
-/* 50 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5169,7 +4907,7 @@ var Boots_2 = function (_InventoryObject) {
 exports.default = Boots_2;
 
 /***/ }),
-/* 51 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5210,7 +4948,7 @@ var Boots_3 = function (_InventoryObject) {
 exports.default = Boots_3;
 
 /***/ }),
-/* 52 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5251,7 +4989,7 @@ var Helmet_1 = function (_InventoryObject) {
 exports.default = Helmet_1;
 
 /***/ }),
-/* 53 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5292,7 +5030,7 @@ var Helmet_2 = function (_InventoryObject) {
 exports.default = Helmet_2;
 
 /***/ }),
-/* 54 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5306,7 +5044,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(13);
+var _Empty_bottle_ = __webpack_require__(11);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -5337,7 +5075,7 @@ var Health_bottle_1 = function (_InventoryObject) {
 exports.default = Health_bottle_1;
 
 /***/ }),
-/* 55 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5351,7 +5089,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(14);
+var _Empty_bottle_ = __webpack_require__(12);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -5382,7 +5120,7 @@ var Health_bottle_2 = function (_InventoryObject) {
 exports.default = Health_bottle_2;
 
 /***/ }),
-/* 56 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5396,7 +5134,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(15);
+var _Empty_bottle_ = __webpack_require__(13);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -5427,7 +5165,7 @@ var Health_bottle_3 = function (_InventoryObject) {
 exports.default = Health_bottle_3;
 
 /***/ }),
-/* 57 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5441,7 +5179,7 @@ var _InventoryObjectBase = __webpack_require__(0);
 
 var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
 
-var _Empty_bottle_ = __webpack_require__(16);
+var _Empty_bottle_ = __webpack_require__(14);
 
 var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
 
@@ -5472,7 +5210,7 @@ var Health_bottle_4 = function (_InventoryObject) {
 exports.default = Health_bottle_4;
 
 /***/ }),
-/* 58 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5669,10 +5407,278 @@ var Map = function () {
 exports.default = Map;
 
 /***/ }),
-/* 59 */
+/* 57 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _ProjectileBase = __webpack_require__(62);
+
+var _ProjectileBase2 = _interopRequireDefault(_ProjectileBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Arrow_1 = function (_Projectile) {
+    _inherits(Arrow_1, _Projectile);
+
+    function Arrow_1(id, Loader, x, y, angleInRadians, strength, map) {
+        _classCallCheck(this, Arrow_1);
+
+        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
+
+        _this.setImage(Loader.getImage('arrow_1'));
+        return _this;
+    }
+
+    return Arrow_1;
+}(_ProjectileBase2.default);
+
+exports.default = Arrow_1;
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _DamageAreaBase = __webpack_require__(63);
+
+var _DamageAreaBase2 = _interopRequireDefault(_DamageAreaBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Projectile = function (_DamageArea) {
+    _inherits(Projectile, _DamageArea);
+
+    function Projectile(id, name, x, y, angleInRadians, strength, width, height, map) {
+        _classCallCheck(this, Projectile);
+
+        var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this, id, name, x, y, strength, width, height, 3, map));
+
+        _this.angleInRadians = angleInRadians;
+        _this.speed = 512;
+        return _this;
+    }
+
+    _createClass(Projectile, [{
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = JSON.parse(_get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "getSmallObject", this).call(this));
+            smallObject.angleInRadians = this.angleInRadians;
+            return JSON.stringify(smallObject);
+        }
+    }, {
+        key: "doDamage",
+        value: function doDamage() {
+            this.destroyed = true;
+            return this.strength;
+        }
+    }, {
+        key: "update",
+        value: function update(delta) {
+            _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "update", this).call(this, delta);
+            this.x += Math.cos(this.angleInRadians) * this.speed * delta;
+            this.y += Math.sin(this.angleInRadians) * this.speed * delta;
+            if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
+                this.destroyed = true;
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, screenX, screenY) {
+            if (this.image !== null) {
+                this.drawRotatedImage(ctx, this.image, this.getImageX() * this.tileWidth, // Src x
+                this.getImageY() * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                screenX, screenY, this.width, this.height, this.angleInRadians + Math.PI / 4 * 5 // The image is rotated
+                );
+            } else {
+                _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "draw", this).call(this, ctx, screenX, screenY);
+            }
+        }
+    }]);
+
+    return Projectile;
+}(_DamageAreaBase2.default);
+
+exports.default = Projectile;
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _GameObjectBase = __webpack_require__(1);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DamageArea = function (_GameObject) {
+    _inherits(DamageArea, _GameObject);
+
+    function DamageArea(id, name, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
+        _classCallCheck(this, DamageArea);
+
+        var _this = _possibleConstructorReturn(this, (DamageArea.__proto__ || Object.getPrototypeOf(DamageArea)).call(this));
+
+        _this.id = id;
+        _this.name = name;
+        _this.x = x;
+        _this.y = y;
+        _this.angleInRadians = angleInRadians;
+        _this.strength = strength;
+        _this.width = width;
+        _this.height = height;
+        _this.map = map;
+        _this.lifeTime = 0;
+        _this.totalLifeTime = totalLifeTime;
+        _this.destroyed = false;
+        return _this;
+    }
+
+    _createClass(DamageArea, [{
+        key: "getSmallObject",
+        value: function getSmallObject() {
+            var smallObject = {};
+            smallObject.id = this.id;
+            smallObject.name = this.name;
+            smallObject.x = this.x;
+            smallObject.y = this.y;
+            smallObject.strength = this.strength;
+            smallObject.width = this.width;
+            smallObject.height = this.height;
+            smallObject.lifeTime = this.lifeTime;
+            smallObject.totalLifeTime = this.totalLifeTime;
+            return JSON.stringify(smallObject);
+        }
+    }, {
+        key: "doDamage",
+        value: function doDamage() {
+            this.destroyed = true;
+            return this.strength;
+        }
+    }, {
+        key: "update",
+        value: function update(delta) {
+            _get(DamageArea.prototype.__proto__ || Object.getPrototypeOf(DamageArea.prototype), "update", this).call(this, delta);
+            this.lifeTime += delta;
+            if (this.totalLifeTime <= this.lifeTime) {
+                this.destroyed = true;
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, screenX, screenY) {
+            if (this.image !== null) {
+                this.drawRotatedImage(ctx, this.image, this.getImageX() * this.tileWidth, // Src x
+                this.getImageY() * this.tileHeight, // Src y
+                this.tileWidth, // Src width
+                this.tileHeight, // Src height
+                screenX + this.width / 2 + this.width / 2 * Math.cos(this.angleInRadians), screenY + this.height / 2 + this.height / 2 * Math.sin(this.angleInRadians), this.width, this.height, this.angleInRadians // The image is rotated
+                );
+            } else {
+                _get(DamageArea.prototype.__proto__ || Object.getPrototypeOf(DamageArea.prototype), "draw", this).call(this, ctx, screenX, screenY);
+            }
+        }
+    }]);
+
+    return DamageArea;
+}(_GameObjectBase2.default);
+
+exports.default = DamageArea;
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _DamageAreaBase = __webpack_require__(63);
+
+var _DamageAreaBase2 = _interopRequireDefault(_DamageAreaBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DamageArea_1 = function (_DamageArea) {
+    _inherits(DamageArea_1, _DamageArea);
+
+    function DamageArea_1(id, Loader, x, y, angleInRadians, strength, map) {
+        _classCallCheck(this, DamageArea_1);
+
+        var _this = _possibleConstructorReturn(this, (DamageArea_1.__proto__ || Object.getPrototypeOf(DamageArea_1)).call(this, id, "DamageArea_1", x, y, angleInRadians, strength, map.drawSize * 1, map.drawSize * 1, 0.2, map));
+
+        _this.setImage(Loader.getImage('damageArea_1'));
+        return _this;
+    }
+
+    return DamageArea_1;
+}(_DamageAreaBase2.default);
+
+exports.default = DamageArea_1;
 
 /***/ })
 /******/ ]);

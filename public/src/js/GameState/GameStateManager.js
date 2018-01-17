@@ -14,7 +14,6 @@ export default class GameStateManager {
         this.currentState = state;
         this.start();
     }
-
     getState(state) {
         states.forEach((el) => {
             if(el === state) return el;
