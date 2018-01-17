@@ -3342,7 +3342,7 @@ var MainGameState = function () {
             this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
 
             //Sounds
-            this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'), this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'), this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'), this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'), this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'), this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'), this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3')];
+            this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'), this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'), this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'), this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'), this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'), this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'), this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'), this.Loader.loadSound('slime', '../../assets/sounds/slime.mp3'), this.Loader.loadSound('default', '../../assets/sounds/default.mp3')];
         }
     }, {
         key: "sendNewDamageArea",
@@ -4300,9 +4300,19 @@ var Spawner = function () {
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
+
+                            case "Slimes":
+                                sound = _this2.Loader.getSound("default");
+                                sound.loop = false;
+                                sound.volume = 1;
+                                sound.play().then();
+                                break;
                             default:
-                                //console.log('Cannot create unit of type ' + unit.type);
-                                return null;
+                                sound = _this2.Loader.getSound("default");
+                                sound.loop = false;
+                                sound.volume = 1;
+                                sound.play().then();
+                                break;
                         }
                         _this2.units.splice(_this2.units.indexOf(unit), 1);
                     }
