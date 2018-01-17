@@ -1,7 +1,7 @@
 import GameObject from "../_GameObject.base.class";
 
 export default class InventoryObject extends GameObject {
-    constructor(typeId, stackLimit, stackCount) {
+    constructor(typeId, stackLimit, stackCount, inventoryLocation, actionLocation) {
         super();
         this.AREAS = {
             NONE: 0,
@@ -29,24 +29,29 @@ export default class InventoryObject extends GameObject {
         this.createObjectName = "none";
         this.usedObject = null;
         this.isEquipable = false;
+        this.isEquiped = false;
         this.isUsable = false;
         this.strength = 0;
         this.interval = 0;
         this.stackLimit = stackLimit;
         this.stackCount = stackCount > stackLimit ? stackLimit : stackCount;
-        this.inventoryLocation = 0;
         this.shownLocation = 0;
         this.isHolding = false;
         this.isMouseInObject = false;
         this.mouseInObjectTime = 0;
-        this.actionLocation = -1;
+        this.inventoryLocation = (inventoryLocation === undefined) ? -1 : inventoryLocation;
+        this.actionLocation = (actionLocation === undefined) ? -1 : actionLocation;
     }
 
-    setEquipable(area, strength) {
+    setEquipable(area, strength, isEquiped) {
         this.isEquipable = true;
         this.area = area;
         this.strength = strength;
         this.isEquiped = false;
+        if (isEquiped) {
+            this.setEquiped(true, -1);
+            this.shownLocation = -1;
+        }
         this.isUsable = false;
     }
 
@@ -92,6 +97,16 @@ export default class InventoryObject extends GameObject {
 
     onMouseMove(mousePosition) {
         this.isMouseInObject = this.isInObject(mousePosition.x, mousePosition.y);
+    }
+
+    getSmallObject() {
+        let smallObject = {};
+        smallObject.name = this.typeId;
+        smallObject.count = this.stackCount;
+        smallObject.inventoryLocation = this.inventoryLocation;
+        smallObject.actionLocation = this.actionLocation;
+        smallObject.isEquipped = this.isEquiped;
+        return smallObject;
     }
 
     update(delta, emptyPosition) {
@@ -155,20 +170,26 @@ export default class InventoryObject extends GameObject {
             if (this.isEquipable) {
                 ctx.fillStyle = "#106010";
                 ctx.fillText("Equipable", drawX, drawY += dy);
+                ctx.fillText(this.typeId, drawX, drawY += dy);
                 ctx.fillStyle = "white";
                 ctx.fillText("Armor: " + this.strength, drawX, drawY += dy);
             } else if (this.isUsable) {
                 ctx.fillStyle = "#601010";
                 ctx.fillText("Usable", drawX, drawY += dy);
+                ctx.fillText(this.typeId, drawX, drawY += dy);
                 ctx.fillStyle = "white";
                 ctx.fillText("Effect: " + this.strength, drawX, drawY += dy);
             } else if (this.weapontype !== this.WEAPONTYPES.NONE) {
                 ctx.fillStyle = "#101060";
                 ctx.fillText("Weapon", drawX, drawY += dy);
+                ctx.fillText(this.typeId, drawX, drawY += dy);
                 ctx.fillStyle = "white";
                 ctx.fillText("Damage: " + this.strength, drawX, drawY += dy);
                 ctx.fillText("Reload time: " + this.intervalTime + "s", drawX, drawY += dy);
                 ctx.fillText("Dps: " + Math.round(this.strength / this.intervalTime * 100) / 100 + "/s", drawX, drawY += dy);
+            } else {
+                ctx.fillStyle = "#606060";
+                ctx.fillText(this.typeId, drawX, drawY += dy);
             }
             ctx.globalAlpha = 1;
         }

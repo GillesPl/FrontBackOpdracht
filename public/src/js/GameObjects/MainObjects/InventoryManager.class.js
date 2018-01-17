@@ -7,7 +7,7 @@ export default class InventoryManager {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
-            this.addObject(inventoryObject, i++);
+            this.addObject(inventoryObject);
         });
 
         //this.inventory = inventoryObjects;
@@ -139,9 +139,9 @@ export default class InventoryManager {
         });
     }
 
-    addObject(newObject, location) {
-        if (location === undefined || location === -1) {
-            location = this.getEmptyPosition();
+    addObject(newObject) {
+        if (newObject.inventoryLocation === undefined || (newObject.inventoryLocation === -1 && newObject.actionLocation === -1 && !newObject.isEquiped)) {
+            newObject.inventoryLocation = this.getEmptyPosition();
         }
 
         this.inventory.forEach(oldObject => {
@@ -161,8 +161,7 @@ export default class InventoryManager {
             }
         });
         if (newObject.stackCount > 0) {
-            newObject.shownLocation = location;
-            newObject.inventoryLocation = location;
+            newObject.shownLocation = newObject.inventoryLocation;
             this.inventory.push(newObject);
             return 0;
         }
@@ -490,6 +489,14 @@ export default class InventoryManager {
                 }
             }
         });
+    }
+
+    getSmallObject() {
+        let smallObject = [];
+        this.inventory.forEach(item => {
+            smallObject.push(item.getSmallObject());
+        });
+        return smallObject;
     }
 
     draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {

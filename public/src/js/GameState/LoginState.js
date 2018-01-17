@@ -44,10 +44,10 @@ export default class LoginState {
        `;
         document.querySelector(".background").innerHTML = template;
 
-        this.body.querySelector(".formLink").addEventListener("click" , function(e) {
+        this.body.querySelector(".formLink").addEventListener("click", function (e) {
             e.preventDefault();
             this.drawLogin();
-        }.bind(this))
+        }.bind(this));
 
         this.body.querySelector(".btnregister").addEventListener("click", function (e) {
             e.preventDefault();
@@ -57,7 +57,7 @@ export default class LoginState {
             let user = new User(username, password, email);
             this.registerCall(user);
 
-        }.bind(this))
+        }.bind(this));
     }
 
     drawLogin() {
@@ -76,10 +76,10 @@ export default class LoginState {
         `;
         document.querySelector(".background").innerHTML = template;
 
-        this.body.querySelector(".formLink").addEventListener("click" , function(e) {
+        this.body.querySelector(".formLink").addEventListener("click", function (e) {
             e.preventDefault();
             this.drawRegister();
-        }.bind(this))
+        }.bind(this));
 
         this.body.querySelector(".btnlogin").addEventListener("click", function (e) {
             e.preventDefault();
@@ -87,29 +87,33 @@ export default class LoginState {
             var email = this.body.querySelector("#loginEmail").value;
             let user = new User(null, password, email);
             this.loginCall(user);
-        }.bind(this))
+        }.bind(this));
     }
 
 
     registerCall(user) {
-        this.socket.emit("registerUser", { user: user });
+        this.socket.emit("registerUser", {
+            user: user
+        });
         this.socket.on("requestRegister", function (res) {
-            if(res.success == false) this.checkErrors(res.message);
-            console.log(res.user);
-        }.bind(this))
+            if (res.success == false) this.checkErrors(res.message);
+            //console.log(res.user);
+        }.bind(this));
     }
 
 
     loginCall(user) {
-        this.socket.emit("requestLogin", { user: user });
+        this.socket.emit("requestLogin", {
+            user: user
+        });
         this.socket.on("requestLogin", function (res) {
-            if(res.success == false) this.checkErrors(res.message);
-            console.log(res.message);
-        }.bind(this))
+            if (res.success == false) this.checkErrors(res.message);
+            //console.log(res.message);
+        }.bind(this));
     }
 
     clearBody() {
-        while (this.body.firstChild)  {
+        while (this.body.firstChild)  {
             this.body.removeChild(this.body.firstChild);
         }
     }

@@ -50,6 +50,7 @@ class Manager {
             token: player.token,
             tileLevel: player.tileLevel,
             health: player.health,
+            items: player.items,
             position: {
                 x: player.x,
                 y: player.y
@@ -57,6 +58,7 @@ class Manager {
         };
 
         delete player.token; // Remove the token, noone else should know this value!
+        delete player.items; // Remove the items, noone else should know this value!
         playerJsonString = JSON.stringify(player);
 
         this.players.forEach(player => {
@@ -66,7 +68,7 @@ class Manager {
         });
 
         UserController.updateUserFromToken(playerForDatabase, function (res) {
-            console.log(res);
+            //console.log(res);
         });
     }
 
