@@ -3,8 +3,8 @@ export default class Hero {
         this.map = map;
         this.x = x;
         this.y = y;
-        this.startX = x;
-        this.startY = y;
+        this.startX = 3200;
+        this.startY = 3200;
         this.Loader = Loader;
         this.debugging = false;
         this.topText = [];
