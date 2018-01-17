@@ -1073,7 +1073,6 @@ var Projectile = function (_DamageArea) {
             _get(Projectile.prototype.__proto__ || Object.getPrototypeOf(Projectile.prototype), "update", this).call(this, delta);
             this.x += Math.cos(this.angleInRadians) * this.speed * delta;
             this.y += Math.sin(this.angleInRadians) * this.speed * delta;
-            console.log(this.map);
             if (this.map.isSolidTileAtXY(this.x, this.y, 99)) {
                 this.destroyed = true;
             }
@@ -1142,7 +1141,6 @@ var DamageArea = function (_GameObject) {
         _this.strength = strength;
         _this.width = width;
         _this.height = height;
-        console.log(map);
         _this.map = map;
         _this.lifeTime = 0;
         _this.totalLifeTime = totalLifeTime;

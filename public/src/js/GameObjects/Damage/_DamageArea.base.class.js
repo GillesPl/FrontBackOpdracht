@@ -11,7 +11,6 @@ export default class DamageArea extends GameObject {
         this.strength = strength;
         this.width = width;
         this.height = height;
-        console.log(map);
         this.map = map;
         this.lifeTime = 0;
         this.totalLifeTime = totalLifeTime;
