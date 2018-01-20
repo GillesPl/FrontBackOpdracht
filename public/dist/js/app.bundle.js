@@ -3215,7 +3215,7 @@ var MainGameState = function () {
         key: "init",
         value: function init() {
             this.Keyboard = new _Keyboard2.default(this);
-            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.I, this.Keyboard.C]);
+            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.I, this.Keyboard.C, this.Keyboard.T]);
 
             this.tileAtlas = this.Loader.getImage('tiles');
             this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
@@ -3525,8 +3525,8 @@ var MainGameState = function () {
             this._drawLayer(totalLayers - 1);
 
             this.ctx.globalAlpha = 1;
-            this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0, this.ctx.width * 0.3, this.ctx.width * 0.36, this.ctx.width * 0.3, 0);
-            this._drawUI(delta);
+            this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0, this.ctx.width * 0.3, this.ctx.width * 0.36, this.ctx.width * 0.3, 0, delta, this.otherPlayers);
+            this._drawUI();
         }
     }, {
         key: "onMouseDown",
@@ -3608,7 +3608,7 @@ var MainGameState = function () {
         }
     }, {
         key: "_drawUI",
-        value: function _drawUI(delta) {
+        value: function _drawUI() {
             var tx = 10,
                 ty = 0,
                 dy = 40;
@@ -3617,20 +3617,6 @@ var MainGameState = function () {
             this.ctx.fillRect(tx, ty += dy, 102, 20);
             this.ctx.fillStyle = "red";
             this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
-
-            ty += dy;
-            dy /= 2;
-
-            this.ctx.font = "22px Arial";
-            this.ctx.fillStyle = "white";
-            this.ctx.fillText("Player:", tx, ty += dy);
-            this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
-            this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
-            this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
-            this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
-            this.ctx.fillText("armor: " + this.hero.armor, tx, ty += dy);
-            this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
-            this.ctx.fillText("fps: " + delta === 0 ? 0 : Math.round(1 / delta * 10) / 10, tx, ty += dy);
         }
     }, {
         key: "_drawLayer",
@@ -3796,6 +3782,7 @@ var Keyboard = function () {
         //this.X = 88;
         this.C = 67;
         this.I = 73;
+        this.T = 84;
         this._nums = [];
         for (var i = 0; i <= 9; i++) {
             this._nums.push({
@@ -4989,7 +4976,7 @@ var InventoryManager = function () {
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.imageIconBar = Loader.getImage("iconbar");
         this.Loader = Loader;
-        this.iconBarCols = 3;
+        this.iconBarCols = 4;
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
@@ -5003,11 +4990,12 @@ var InventoryManager = function () {
             HIDDEN: 0,
             INVENTORY: 1,
             CHARACTER: 2,
-            COMBAT: 3
+            STATS: 3
         };
         this.iconBar = [];
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.STATS, this.imageIconBar, 3, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (var _i = 1; _i <= 10; _i++) {
@@ -5045,6 +5033,8 @@ var InventoryManager = function () {
                 checkState = this.STATES.INVENTORY;
             } else if (keyCode === keyboard.C) {
                 checkState = this.STATES.CHARACTER;
+            } else if (keyCode === keyboard.T) {
+                checkState = this.STATES.STATS;
             }
             this.iconBar.forEach(function (icon) {
                 if (icon.state === checkState) {
@@ -5469,6 +5459,24 @@ var InventoryManager = function () {
             });
         }
     }, {
+        key: "objectsInInventory",
+        value: function objectsInInventory() {
+            var inventoryObjectsCount = 0;
+            var distinctItems = [];
+            this.inventory.forEach(function (item) {
+                if (item.typeId !== "coin") {
+                    inventoryObjectsCount += item.stackCount;
+                }
+                if (distinctItems.indexOf(item.typeId) === -1) {
+                    distinctItems.push(item.typeId);
+                }
+            });
+            return {
+                count: inventoryObjectsCount,
+                distinctCount: distinctItems.length
+            };
+        }
+    }, {
         key: "getSmallObject",
         value: function getSmallObject() {
             var smallObject = [];
@@ -5479,7 +5487,7 @@ var InventoryManager = function () {
         }
     }, {
         key: "draw",
-        value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
+        value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction, delta, otherPlayers) {
             var drawWidth = Math.round(width / this.iterations * 5) / 5;
             var drawHeight = Math.round(height / (this.iterations + 1));
             this.yTop = yIcon + drawHeight;
@@ -5505,6 +5513,8 @@ var InventoryManager = function () {
                     this.drawCharacter(ctx, xIcon, this.yTop, drawWidth, drawHeight);
                 } else if (this.state === this.STATES.INVENTORY) {
                     this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
+                } else if (this.state === this.STATES.STATS) {
+                    this.drawStats(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, delta, otherPlayers);
                 }
             }
 
@@ -5580,6 +5590,23 @@ var InventoryManager = function () {
                     _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
+        }
+    }, {
+        key: "drawStats",
+        value: function drawStats(ctx, x, y, delta, otherPlayers) {
+            var tempX = x;
+            var tempY = y;
+            var deltaY = 22;
+            var objectsData = this.objectsInInventory();
+
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText("Player location: (" + Math.round(this.hero.x) + ", " + Math.round(this.hero.y) + ", " + this.hero.tileLevel + ")", tempX, tempY += deltaY);
+            ctx.fillText("Health: " + this.hero.health, tempX, tempY += deltaY);
+            ctx.fillText("Armor: " + this.hero.armor, tempX, tempY += deltaY);
+            ctx.fillText("Players connected: " + (otherPlayers.length + 1), tempX, tempY += deltaY);
+            ctx.fillText("Objects in inventory: " + objectsData.count + " (without money)", tempX, tempY += deltaY);
+            ctx.fillText("Different objects in inventory: " + objectsData.distinctCount + " / 31", tempX, tempY += deltaY);
         }
     }, {
         key: "drawItem",

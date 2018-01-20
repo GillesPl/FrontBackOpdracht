@@ -29,7 +29,7 @@ export default class InventoryManager {
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.imageIconBar = Loader.getImage("iconbar");
         this.Loader = Loader;
-        this.iconBarCols = 3;
+        this.iconBarCols = 4;
         this.iconBarRows = 4;
         this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
@@ -43,11 +43,12 @@ export default class InventoryManager {
             HIDDEN: 0,
             INVENTORY: 1,
             CHARACTER: 2,
-            COMBAT: 3
+            STATS: 3
         };
         this.iconBar = [];
         this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
         this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.STATS, this.imageIconBar, 3, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (let i = 1; i <= 10; i++) {
@@ -79,6 +80,8 @@ export default class InventoryManager {
             checkState = this.STATES.INVENTORY;
         } else if (keyCode === keyboard.C) {
             checkState = this.STATES.CHARACTER;
+        } else if (keyCode === keyboard.T) {
+            checkState = this.STATES.STATS;
         }
         this.iconBar.forEach(icon => {
             if (icon.state === checkState) {
@@ -491,6 +494,23 @@ export default class InventoryManager {
         });
     }
 
+    objectsInInventory() {
+        let inventoryObjectsCount = 0;
+        let distinctItems = [];
+        this.inventory.forEach(item => {
+            if (item.typeId !== "coin") {
+                inventoryObjectsCount += item.stackCount;
+            }
+            if (distinctItems.indexOf(item.typeId) === -1) {
+                distinctItems.push(item.typeId);
+            }
+        });
+        return {
+            count: inventoryObjectsCount,
+            distinctCount: distinctItems.length
+        };
+    }
+
     getSmallObject() {
         let smallObject = [];
         this.inventory.forEach(item => {
@@ -499,7 +519,7 @@ export default class InventoryManager {
         return smallObject;
     }
 
-    draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
+    draw(ctx, xIcon, yIcon, width, height, xAction, yAction, delta, otherPlayers) {
         let drawWidth = Math.round(width / this.iterations * 5) / 5;
         let drawHeight = Math.round(height / (this.iterations + 1));
         this.yTop = yIcon + drawHeight;
@@ -525,6 +545,8 @@ export default class InventoryManager {
                 this.drawCharacter(ctx, xIcon, this.yTop, drawWidth, drawHeight);
             } else if (this.state === this.STATES.INVENTORY) {
                 this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
+            } else if (this.state === this.STATES.STATS) {
+                this.drawStats(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, delta, otherPlayers);
             }
         }
 
@@ -603,6 +625,22 @@ export default class InventoryManager {
                 this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
             }
         });
+    }
+
+    drawStats(ctx, x, y, delta, otherPlayers) {
+        let tempX = x;
+        let tempY = y;
+        let deltaY = 22;
+        let objectsData = this.objectsInInventory();
+
+        ctx.font = "22px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("Player location: (" + Math.round(this.hero.x) + ", " + Math.round(this.hero.y) + ", " + this.hero.tileLevel + ")", tempX, tempY += deltaY);
+        ctx.fillText("Health: " + this.hero.health, tempX, tempY += deltaY);
+        ctx.fillText("Armor: " + this.hero.armor, tempX, tempY += deltaY);
+        ctx.fillText("Players connected: " + (otherPlayers.length + 1), tempX, tempY += deltaY);
+        ctx.fillText("Objects in inventory: " + objectsData.count + " (without money)", tempX, tempY += deltaY);
+        ctx.fillText("Different objects in inventory: " + objectsData.distinctCount + " / 31", tempX, tempY += deltaY);
     }
 
     drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight) {

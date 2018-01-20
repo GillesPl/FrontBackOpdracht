@@ -83,7 +83,9 @@ export default class MainGameState {
             this.setSound(sound);
 
             let check = false;
-            (function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true; })(navigator.userAgent || navigator.vendor || window.opera);
+            (function (a) {
+                if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
+            })(navigator.userAgent || navigator.vendor || window.opera);
 
 
             if (check) {
@@ -96,8 +98,7 @@ export default class MainGameState {
                 document.ontouchend = function (event) {
                     this.onMouseUp(event);
                 }.bind(this);
-            }
-            else {
+            } else {
                 document.onmousemove = function (event) {
                     this.onMouseMove(event);
                 }.bind(this);
@@ -140,8 +141,7 @@ export default class MainGameState {
     setSound(sound) {
         sound.loop = true;
         sound.volume = 0.1;
-        sound.play().then(() => {
-        });
+        sound.play().then(() => {});
     }
 
 
@@ -313,16 +313,17 @@ export default class MainGameState {
     init() {
         this.Keyboard = new Keyboard(this);
         this.Keyboard.listenForEvents([this.Keyboard.LEFT,
-        this.Keyboard.RIGHT,
-        this.Keyboard.UP,
-        this.Keyboard.DOWN,
-        this.Keyboard.A,
-        this.Keyboard.D,
-        this.Keyboard.W,
-        this.Keyboard.S
+            this.Keyboard.RIGHT,
+            this.Keyboard.UP,
+            this.Keyboard.DOWN,
+            this.Keyboard.A,
+            this.Keyboard.D,
+            this.Keyboard.W,
+            this.Keyboard.S
         ], [this.Keyboard.I,
-        this.Keyboard.C
-            ]);
+            this.Keyboard.C,
+            this.Keyboard.T
+        ]);
 
         this.tileAtlas = this.Loader.getImage('tiles');
         this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
@@ -453,63 +454,63 @@ export default class MainGameState {
 
     load() {
         return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
-        this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
-        this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
-        this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
-        this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
-        this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
-        this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
-        this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
-        this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
-        this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
-        this.Loader.loadImage('slime', '../../assets/sprites/slime.png'),
-        this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
-        this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
+            this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
+            this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
+            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
+            this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
+            this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
+            this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
+            this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
+            this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
+            this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
+            this.Loader.loadImage('slime', '../../assets/sprites/slime.png'),
+            this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
+            this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
 
-        // InventoryItems
-        this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
-        this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
-        this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
-        this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
-        this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
-        this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
-        this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
-        this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
-        this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
-        this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
-        this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
-        this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
-        this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
-        this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
-        this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
-        this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
-        this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
-        this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
-        this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
-        this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
-        this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
-        this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
-        this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
-        this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
-        this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
-        this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
-        this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
-        this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
-        this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
-        this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
-        this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
+            // InventoryItems
+            this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
+            this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
+            this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
+            this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
+            this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
+            this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
+            this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
+            this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
+            this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
+            this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
+            this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
+            this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
+            this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
+            this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
+            this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
+            this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
+            this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
+            this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
+            this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
+            this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
+            this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
+            this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
+            this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
+            this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
+            this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
+            this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
+            this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
+            this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
+            this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
+            this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
+            this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
 
 
-        //Sounds
-        this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'),
-        this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'),
-        this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'),
-        this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'),
-        this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'),
-        this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'),
-        this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'),
-        this.Loader.loadSound('slime', '../../assets/sounds/slime.mp3'),
-        this.Loader.loadSound('default', '../../assets/sounds/default.mp3'),
+            //Sounds
+            this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'),
+            this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'),
+            this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'),
+            this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'),
+            this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'),
+            this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'),
+            this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'),
+            this.Loader.loadSound('slime', '../../assets/sounds/slime.mp3'),
+            this.Loader.loadSound('default', '../../assets/sounds/default.mp3'),
         ];
     }
 
@@ -668,41 +669,36 @@ export default class MainGameState {
         this.ctx.globalAlpha = 1;
         this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0,
             this.ctx.width * 0.3, this.ctx.width * 0.36,
-            this.ctx.width * 0.3, 0);
-        this._drawUI(delta);
+            this.ctx.width * 0.3, 0,
+            delta, this.otherPlayers);
+        this._drawUI();
     }
 
     onMouseDown(event) {
         let mousePosition = {
-            x: (event.type.toLowerCase() === 'mousedown')
-                ? event.pageX
-                : event.touches[0].pageX,
-            y: (event.type.toLowerCase() === 'mousedown')
-                ? event.pageY
-                : event.touches[0].pageY
+            x: (event.type.toLowerCase() === 'mousedown') ?
+                event.pageX : event.touches[0].pageX,
+            y: (event.type.toLowerCase() === 'mousedown') ?
+                event.pageY : event.touches[0].pageY
         };
         this.InventoryManager.onMouseDown(mousePosition);
     }
     onMouseUp(event) {
         let mousePosition = {
-            x: (event.type.toLowerCase() === 'mouseup')
-                ? event.pageX
-                : event.changedTouches[0].pageX,
-            y: (event.type.toLowerCase() === 'mouseup')
-                ? event.pageY
-                : event.changedTouches[0].pageY
+            x: (event.type.toLowerCase() === 'mouseup') ?
+                event.pageX : event.changedTouches[0].pageX,
+            y: (event.type.toLowerCase() === 'mouseup') ?
+                event.pageY : event.changedTouches[0].pageY
         };
         this.InventoryManager.onMouseUp(mousePosition, this);
     }
 
     onMouseMove(event) {
         let mousePosition = {
-            x: (event.type.toLowerCase() === 'mousemove')
-                ? event.pageX
-                : event.targetTouches[0].pageX,
-            y: (event.type.toLowerCase() === 'mousemove')
-                ? event.pageY
-                : event.targetTouches[0].pageY
+            x: (event.type.toLowerCase() === 'mousemove') ?
+                event.pageX : event.targetTouches[0].pageX,
+            y: (event.type.toLowerCase() === 'mousemove') ?
+                event.pageY : event.targetTouches[0].pageY
         };
         this.InventoryManager.onMouseMove(mousePosition);
     }
@@ -757,7 +753,7 @@ export default class MainGameState {
         }
     }
 
-    _drawUI(delta) {
+    _drawUI() {
         var tx = 10,
             ty = 0,
             dy = 40;
@@ -766,20 +762,6 @@ export default class MainGameState {
         this.ctx.fillRect(tx, ty += dy, 102, 20);
         this.ctx.fillStyle = "red";
         this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
-
-        ty += dy;
-        dy /= 2;
-
-        this.ctx.font = "22px Arial";
-        this.ctx.fillStyle = "white";
-        this.ctx.fillText("Player:", tx, ty += dy);
-        this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
-        this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
-        this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
-        this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
-        this.ctx.fillText("armor: " + this.hero.armor, tx, ty += dy);
-        this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
-        this.ctx.fillText("fps: " + delta === 0 ? 0 : Math.round(1 / delta * 10) / 10, tx, ty += dy);
     }
 
 

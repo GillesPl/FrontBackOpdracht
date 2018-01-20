@@ -6,7 +6,7 @@ var mongoose = require("mongoose"),
     bcrypt = require("bcrypt"),
     config = require("./../config");
 
-exports.authenticate = function (req, callback) {    
+exports.authenticate = function (req, callback) {
     User.findOne({
         mail: req.user.mail
     }, function (err, user) {

@@ -15,6 +15,7 @@ export default class Keyboard {
         //this.X = 88;
         this.C = 67;
         this.I = 73;
+        this.T = 84;
         this._nums = [];
         for (let i = 0; i <= 9; i++) {
             this._nums.push({
