@@ -27,7 +27,7 @@ export default class InventoryObject extends GameObject {
         this.usage = this.USES.NONE;
         this.weapontype = this.WEAPONTYPES.NONE;
         this.createObjectName = "none";
-        this.usedObject = null;
+        this.usedObject = "";
         this.isEquipable = false;
         this.isEquiped = false;
         this.isUsable = false;
@@ -39,6 +39,7 @@ export default class InventoryObject extends GameObject {
         this.isHolding = false;
         this.isMouseInObject = false;
         this.mouseInObjectTime = 0;
+        this.levelRequired = 0;
         this.inventoryLocation = (inventoryLocation === undefined) ? -1 : inventoryLocation;
         this.actionLocation = (actionLocation === undefined) ? -1 : actionLocation;
     }
@@ -63,10 +64,11 @@ export default class InventoryObject extends GameObject {
         this.isEquipable = false;
     }
 
-    setWeapon(type, strength, intervalTime, createObjectName) {
+    setWeapon(type, strength, intervalTime, createObjectName, levelRequired) {
         this.weapontype = type;
         this.strength = strength;
         this.createObjectName = createObjectName;
+        this.levelRequired = levelRequired;
         this.isUsable = false;
         this.isEquipable = false;
         this.interval = 0;
@@ -159,9 +161,9 @@ export default class InventoryObject extends GameObject {
             ctx.globalAlpha = (this.mouseInObjectTime > 1.5) ? 0.8 : (this.mouseInObjectTime - 0.5) * 0.8;
             let borderWidth = 3;
             ctx.fillStyle = "#a7815a";
-            ctx.fillRect(screenX - width * 2.5 - borderWidth, screenY - borderWidth, width * 2.5 + 2 * borderWidth, height * 2 + 2 * borderWidth);
+            ctx.fillRect(screenX - width * 2.5 - borderWidth, screenY - borderWidth, width * 2.5 + 2 * borderWidth, height * 3 + 2 * borderWidth);
             ctx.fillStyle = "#97714a";
-            ctx.fillRect(screenX - width * 2.5, screenY, width * 2.5, height * 2);
+            ctx.fillRect(screenX - width * 2.5, screenY, width * 2.5, height * 3);
 
             let drawX = screenX - width * 2.5 + 8;
             let drawY = screenY;
@@ -187,10 +189,15 @@ export default class InventoryObject extends GameObject {
                 ctx.fillText("Damage: " + this.strength, drawX, drawY += dy);
                 ctx.fillText("Reload time: " + this.intervalTime + "s", drawX, drawY += dy);
                 ctx.fillText("Dps: " + Math.round(this.strength / this.intervalTime * 100) / 100 + "/s", drawX, drawY += dy);
+                if (this.levelRequired > 1) {
+                    ctx.fillText("Level required: " + this.levelRequired, drawX, drawY += dy);
+                }
             } else {
                 ctx.fillStyle = "#606060";
                 ctx.fillText(this.typeId, drawX, drawY += dy);
             }
+            ctx.fillText("Stack: " + this.stackCount + "/" + this.stackLimit, drawX, drawY += dy);
+
             ctx.globalAlpha = 1;
         }
     }

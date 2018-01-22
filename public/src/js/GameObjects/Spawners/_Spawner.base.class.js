@@ -3,12 +3,12 @@ import Sheep from "../NPCObjects/Sheep.class";
 import Slime from "../NPCObjects/Slime.class";
 
 export default class Spawner {
-    constructor(bounds, type, Loader, count, map, id, units) {
+    constructor(bounds, type, loader, count, map, id, units) {
         this.tileLevel = 0;
         this.id = id;
         this.bounds = bounds;
         this.type = type;
-        this.Loader = Loader;
+        this.loader = loader;
         this.count = count;
         this.map = map;
         this.units = [];
@@ -44,61 +44,64 @@ export default class Spawner {
                 if (unit.health > 0) {
                     switch (unit.type) {
                         case "Goblins":
-                            sound = this.Loader.getSound("goblin-death");
+                            sound = this.loader.getSound("goblin-death");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                         case "Sheep":
-                            if (random <= 3) sound = this.Loader.getSound("sheep");
-                            else sound = this.Loader.getSound("sheep-2");
+                            if (random <= 3) sound = this.loader.getSound("sheep");
+                            else sound = this.loader.getSound("sheep-2");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
 
                         case "Slimes":
-                            sound = this.Loader.getSound("slime");
+                            sound = this.loader.getSound("slime");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                         default:
-                            sound = this.Loader.getSound("default");
+                            sound = this.loader.getSound("default");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                     }
-                }
-                else {
+                } else {
                     switch (unit.type) {
                         case "Goblins":
-                            sound = this.Loader.getSound("goblin-death-2");
+                            parent.hero.stats.goblinKills++;
+                            sound = this.loader.getSound("goblin-death-2");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                         case "Sheep":
-                            sound = this.Loader.getSound("sheep-3");
+                            parent.hero.stats.sheepKills++;
+                            sound = this.loader.getSound("sheep-3");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
 
                         case "Slimes":
-                            sound = this.Loader.getSound("slime");
+                            parent.hero.stats.slimeKills++;
+                            sound = this.loader.getSound("slime");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                         default:
-                            sound = this.Loader.getSound("default");
+                            sound = this.loader.getSound("default");
                             sound.loop = false;
                             sound.volume = 1;
                             sound.play().then();
                             break;
                     }
+                    parent.hero.xp += unit.xp;
                     this.units.splice(this.units.indexOf(unit), 1);
                 }
             }
@@ -154,15 +157,15 @@ export default class Spawner {
             y = (Math.random() * this.bounds.height + this.bounds.y);
             switch (type) {
                 case "Goblins":
-                    unit = new Goblin(this.Loader, x, y, this.map, this.bounds);
+                    unit = new Goblin(this.loader, x, y, this.map, this.bounds);
                     break;
 
                 case "Sheep":
-                    unit = new Sheep(this.Loader, x, y, this.map, this.bounds);
+                    unit = new Sheep(this.loader, x, y, this.map, this.bounds);
                     break;
 
                 case "Slimes":
-                    unit = new Slime(this.Loader, x, y, this.map, this.bounds);
+                    unit = new Slime(this.loader, x, y, this.map, this.bounds);
                     break;
 
                 default:
@@ -188,15 +191,15 @@ export default class Spawner {
         let newUnit;
         switch (unit.type) {
             case "Goblins":
-                newUnit = new Goblin(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                newUnit = new Goblin(this.loader, unit.x, unit.y, this.map, this.bounds);
                 break;
 
             case "Sheep":
-                newUnit = new Sheep(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                newUnit = new Sheep(this.loader, unit.x, unit.y, this.map, this.bounds);
                 break;
 
             case "Slimes":
-                newUnit = new Slime(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                newUnit = new Slime(this.loader, unit.x, unit.y, this.map, this.bounds);
                 break;
 
             default:

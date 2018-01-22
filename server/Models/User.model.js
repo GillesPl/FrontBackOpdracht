@@ -44,6 +44,17 @@ var userSchema = new Schema({
     },
     token: {
         type: String
+    },
+    level: {
+        type: Number,
+        default: 0
+    },
+    xp: {
+        type: Number,
+        default: 0
+    },
+    stats: {
+        type: String
     }
 });
 

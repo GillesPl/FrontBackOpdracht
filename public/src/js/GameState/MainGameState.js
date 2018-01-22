@@ -53,7 +53,7 @@ export default class MainGameState {
         this.camera;
         this.socket = socket;
         this.fullscreenState = false;
-        this.Loader = new Loader();
+        this.loader = new Loader();
         this.otherPlayers = [];
         this.connected = false;
 
@@ -79,14 +79,13 @@ export default class MainGameState {
 
         Promise.all(this.loadassets).then(function (loaded) {
             this.init();
-            var sound = this.Loader.getSound("ambience");
+            var sound = this.loader.getSound("ambience");
             this.setSound(sound);
 
             let check = false;
             (function (a) {
                 if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
             })(navigator.userAgent || navigator.vendor || window.opera);
-
 
             if (check) {
                 document.ontouchmove = function (event) {
@@ -144,8 +143,6 @@ export default class MainGameState {
         sound.play().then(() => {});
     }
 
-
-
     setUser(user) {
         // Use data from server
         this.overwriteHero = {};
@@ -155,6 +152,9 @@ export default class MainGameState {
         this.overwriteHero.health = user.health;
         this.overwriteHero.tileLevel = user.tileLevel;
         this.overwriteHero.token = user.token;
+        this.overwriteHero.level = user.level;
+        this.overwriteHero.xp = user.xp;
+        this.overwriteHero.stats = user.stats;
         this.overwriteInventory = user.items;
     }
 
@@ -168,16 +168,16 @@ export default class MainGameState {
     createNonCharacterObject(object) {
         switch (object.name) {
             case "Fire":
-                this.nonCharacterObjects.push(new Fire(this.Loader, object.id, object.x, object.y));
+                this.nonCharacterObjects.push(new Fire(this.loader, object.id, object.x, object.y));
                 break;
 
             case "Coin":
-                this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x, object.y,
+                this.nonCharacterObjects.push(new DroppedItem(this.loader, object.id, object.x, object.y,
                     16, 16, "coin", object.properties.Count));
                 break;
 
             default:
-                this.nonCharacterObjects.push(new DroppedItem(this.Loader, object.id, object.x, object.y,
+                this.nonCharacterObjects.push(new DroppedItem(this.loader, object.id, object.x, object.y,
                     32, 32, object.name, object.properties.Count));
                 break;
         }
@@ -192,14 +192,14 @@ export default class MainGameState {
                 width: npc.width,
                 height: npc.height
             };
-            this.spawners.push(new Spawner(bounds, npc.name, this.Loader, npc.properties.Count, this.map));
+            this.spawners.push(new Spawner(bounds, npc.name, this.loader, npc.properties.Count, this.map));
         });
     }
 
     loadSpawners(spawners) {
         this.spawners = [];
         spawners.forEach(spawner => {
-            this.spawners.push(new Spawner(spawner.bounds, spawner.type, this.Loader, spawner.count, this.map, spawner.id, spawner.units));
+            this.spawners.push(new Spawner(spawner.bounds, spawner.type, this.loader, spawner.count, this.map, spawner.id, spawner.units));
         });
     }
 
@@ -208,131 +208,135 @@ export default class MainGameState {
         this.overwriteInventory.forEach(item => {
             this.createInventoryObject(inventoryObjects, item);
         });
-        this.InventoryManager = new InventoryManager(inventoryObjects, this.Loader, this.hero, this.projectiles, this.map);
+        this.inventoryManager = new InventoryManager(inventoryObjects, this.loader, this.hero, this.projectiles, this.map);
     }
 
     createInventoryObject(inventoryObjects, object) {
         switch (object.name) {
             case "sword_1":
-                inventoryObjects.push(new Sword_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Sword_1(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "sword_2":
-                inventoryObjects.push(new Sword_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Sword_2(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "sword_3":
-                inventoryObjects.push(new Sword_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Sword_3(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "shield_1":
-                inventoryObjects.push(new Shield_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Shield_1(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "shield_2":
-                inventoryObjects.push(new Shield_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Shield_2(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "shield_3":
-                inventoryObjects.push(new Shield_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Shield_3(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "shield_4":
-                inventoryObjects.push(new Shield_4(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Shield_4(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "axe_1":
-                inventoryObjects.push(new Axe_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Axe_1(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "axe_2":
-                inventoryObjects.push(new Axe_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Axe_2(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "axe_3":
-                inventoryObjects.push(new Axe_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Axe_3(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "bow_1":
-                inventoryObjects.push(new Bow_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Bow_1(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "bow_2":
-                inventoryObjects.push(new Bow_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Bow_2(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "bow_3":
-                inventoryObjects.push(new Bow_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Bow_3(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "mace":
-                inventoryObjects.push(new Mace(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Mace(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "spear":
-                inventoryObjects.push(new Spear(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Spear(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "armor_1":
-                inventoryObjects.push(new Armor_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Armor_1(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "armor_2":
-                inventoryObjects.push(new Armor_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Armor_2(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "boots_1":
-                inventoryObjects.push(new Boots_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Boots_1(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "boots_2":
-                inventoryObjects.push(new Boots_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Boots_2(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "boots_3":
-                inventoryObjects.push(new Boots_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Boots_3(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "helmet_1":
-                inventoryObjects.push(new Helmet_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Helmet_1(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "helmet_2":
-                inventoryObjects.push(new Helmet_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                inventoryObjects.push(new Helmet_2(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                 break;
             case "coin":
-                inventoryObjects.push(new Coin(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Coin(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "health_bottle_1":
-                inventoryObjects.push(new Health_bottle_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Health_bottle_1(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "health_bottle_2":
-                inventoryObjects.push(new Health_bottle_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Health_bottle_2(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "health_bottle_3":
-                inventoryObjects.push(new Health_bottle_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Health_bottle_3(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "health_bottle_4":
-                inventoryObjects.push(new Health_bottle_4(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Health_bottle_4(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "empty_bottle_1":
-                inventoryObjects.push(new Empty_bottle_1(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Empty_bottle_1(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "empty_bottle_2":
-                inventoryObjects.push(new Empty_bottle_2(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Empty_bottle_2(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "empty_bottle_3":
-                inventoryObjects.push(new Empty_bottle_3(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Empty_bottle_3(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
             case "empty_bottle_4":
-                inventoryObjects.push(new Empty_bottle_4(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                inventoryObjects.push(new Empty_bottle_4(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                 break;
         }
     }
 
     // send map in this
     init() {
-        this.Keyboard = new Keyboard(this);
-        this.Keyboard.listenForEvents([this.Keyboard.LEFT,
-            this.Keyboard.RIGHT,
-            this.Keyboard.UP,
-            this.Keyboard.DOWN,
-            this.Keyboard.A,
-            this.Keyboard.D,
-            this.Keyboard.W,
-            this.Keyboard.S
-        ], [this.Keyboard.I,
-            this.Keyboard.C,
-            this.Keyboard.T
+        this.keyboard = new Keyboard(this);
+        this.keyboard.listenForEvents([this.keyboard.LEFT,
+            this.keyboard.RIGHT,
+            this.keyboard.UP,
+            this.keyboard.DOWN,
+            this.keyboard.A,
+            this.keyboard.D,
+            this.keyboard.W,
+            this.keyboard.S
+        ], [this.keyboard.I,
+            this.keyboard.C,
+            this.keyboard.T
         ]);
 
-        this.tileAtlas = this.Loader.getImage('tiles');
-        this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
+        this.imageBarEmpty = this.loader.getImage("bar_empty");
+        this.imageBarBlueFill = this.loader.getImage("bar_blue_fill");
+        this.imageBarRedFill = this.loader.getImage("bar_red_fill");
+
+        this.tileAtlas = this.loader.getImage('tiles');
+        this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
 
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
         this.loadInventoryObjects();
 
         this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
-            this.socket.emit("new_user", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+            this.socket.emit("new_user", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             this.loadSocket(this.socket);
             //this.loadNonCharacterObjects(objects);
             //this.loadNPCs(npcs);
@@ -341,11 +345,11 @@ export default class MainGameState {
     }
 
     numPressed(num) {
-        this.InventoryManager.numPressed(num);
+        this.inventoryManager.numPressed(num);
     }
 
     keyPressed(keyCode) {
-        this.InventoryManager.keyPressed(keyCode, this.Keyboard);
+        this.inventoryManager.keyPressed(keyCode, this.keyboard);
     }
 
     retryConnectOnFailure(retryInMilliseconds, socket, self) {
@@ -375,13 +379,13 @@ export default class MainGameState {
             others.forEach((playerJsonString) => {
                 const player = JSON.parse(playerJsonString);
                 if (player.id != this.hero.id) {
-                    this.otherPlayers.push(new OtherPlayer(player, this.Loader, this.map));
+                    this.otherPlayers.push(new OtherPlayer(player, this.loader, this.map));
                 }
             });
         });
         client.on("New_connection", (playerString) => {
             const player = JSON.parse(playerString);
-            this.otherPlayers.push(new OtherPlayer(player, this.Loader, this.map));
+            this.otherPlayers.push(new OtherPlayer(player, this.loader, this.map));
         });
         client.on("user_leave", (playerString) => {
             const player = JSON.parse(playerString);
@@ -392,7 +396,7 @@ export default class MainGameState {
                     toDeleteIndex = i;
             }
             this.otherPlayers.splice(i, 1);
-            //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
+            //this.otherPlayers.push(new OtherPlayer(hero, this.loader, this.map));
         });
         client.on("updatingPlayer", (heroString) => {
             let found = false; // is player in cache
@@ -408,7 +412,7 @@ export default class MainGameState {
                 }
             });
             if (!found) {
-                this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
+                this.otherPlayers.push(new OtherPlayer(hero, this.loader, this.map));
             }
         });
         client.on("allObjects", (objectsString) => {
@@ -420,14 +424,14 @@ export default class MainGameState {
             let newProjectile = null;
             switch (projectile.name) {
                 case "Arrow_1":
-                    newProjectile = new Arrow_1(projectile.id, this.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
+                    newProjectile = new Arrow_1(projectile.id, this.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
                 case "DamageArea_1":
-                    newProjectile = new DamageArea_1(projectile.id, this.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
+                    newProjectile = new DamageArea_1(projectile.id, this.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
             }
 
-            this.InventoryManager.damageAreas.push(newProjectile);
+            this.inventoryManager.damageAreas.push(newProjectile);
         });
         client.on("allSpawners", (spawnersString) => {
             const spawners = JSON.parse(spawnersString);
@@ -453,64 +457,68 @@ export default class MainGameState {
     }
 
     load() {
-        return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'),
-            this.Loader.loadImage('hero', '../../assets/sprites/george.png'),
-            this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
-            this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
-            this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
-            this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
-            this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
-            this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
-            this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
-            this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
-            this.Loader.loadImage('slime', '../../assets/sprites/slime.png'),
-            this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
-            this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
+        return [this.loader.loadImage('tiles', '../../assets/map/tileset.png'),
+            this.loader.loadImage('hero', '../../assets/sprites/george.png'),
+            this.loader.loadImage('death', '../../assets/sprites/deathAnimation.png'),
+            this.loader.loadImage('otherPlayer', '../../assets/sprites/other.png'),
+            this.loader.loadImage('fire', '../../assets/sprites/CampFire.png'),
+            this.loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'),
+            this.loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'),
+            this.loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'),
+            this.loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
+            this.loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
+            this.loader.loadImage('slime', '../../assets/sprites/slime.png'),
+            this.loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
+            this.loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
+            this.loader.loadImage('bar_empty', '../../assets/sprites/bar_empty.png'),
+            this.loader.loadImage('bar_red_fill', '../../assets/sprites/bar_red_fill.png'),
+            this.loader.loadImage('bar_blue_fill', '../../assets/sprites/bar_blue_fill.png'),
+            this.loader.loadImage('levelToLow', '../../assets/sprites/inventory/LevelToLow.png'),
 
             // InventoryItems
-            this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
-            this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
-            this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
-            this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
-            this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
-            this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
-            this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
-            this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
-            this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
-            this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
-            this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
-            this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
-            this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
-            this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
-            this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
-            this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
-            this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
-            this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
-            this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
-            this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
-            this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
-            this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
-            this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
-            this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
-            this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
-            this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
-            this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
-            this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
-            this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
-            this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
-            this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
+            this.loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
+            this.loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'),
+            this.loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'),
+            this.loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'),
+            this.loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'),
+            this.loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'),
+            this.loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'),
+            this.loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'),
+            this.loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'),
+            this.loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'),
+            this.loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'),
+            this.loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'),
+            this.loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'),
+            this.loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'),
+            this.loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'),
+            this.loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'),
+            this.loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'),
+            this.loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'),
+            this.loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'),
+            this.loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'),
+            this.loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'),
+            this.loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'),
+            this.loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'),
+            this.loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'),
+            this.loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'),
+            this.loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'),
+            this.loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'),
+            this.loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'),
+            this.loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'),
+            this.loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'),
+            this.loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
 
 
             //Sounds
-            this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'),
-            this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'),
-            this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'),
-            this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'),
-            this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'),
-            this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'),
-            this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'),
-            this.Loader.loadSound('slime', '../../assets/sounds/slime.mp3'),
-            this.Loader.loadSound('default', '../../assets/sounds/default.mp3'),
+            this.loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'),
+            this.loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'),
+            this.loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'),
+            this.loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'),
+            this.loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'),
+            this.loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'),
+            this.loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'),
+            this.loader.loadSound('slime', '../../assets/sounds/slime.mp3'),
+            this.loader.loadSound('default', '../../assets/sounds/default.mp3'),
         ];
     }
 
@@ -521,38 +529,38 @@ export default class MainGameState {
     update(delta) {
         let dirx = 0;
         let diry = 0;
-        if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A)) {
+        if (this.keyboard.isDown(this.keyboard.LEFT) || this.keyboard.isDown(this.keyboard.A)) {
             if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                 this.hero.action = this.hero.STATE.RUNNINGWEST;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             dirx = -1;
-        } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D)) {
+        } else if (this.keyboard.isDown(this.keyboard.RIGHT) || this.keyboard.isDown(this.keyboard.D)) {
             if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                 this.hero.action = this.hero.STATE.RUNNINGEAST;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             dirx = 1;
-        } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W)) {
+        } else if (this.keyboard.isDown(this.keyboard.UP) || this.keyboard.isDown(this.keyboard.W)) {
             if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                 this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             diry = -1;
-        } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S)) {
+        } else if (this.keyboard.isDown(this.keyboard.DOWN) || this.keyboard.isDown(this.keyboard.S)) {
             if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                 this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             diry = 1;
         } else {
             if (this.hero.action != this.hero.STATE.STOP) {
                 this.hero.action = this.hero.STATE.STOP;
-                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
         }
         if (this.hero.resurected) {
-            this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+            this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
         }
 
         this.hero.move(delta, dirx, diry);
@@ -576,7 +584,7 @@ export default class MainGameState {
             if (thisObject.canBePickedUp) {
                 let playerBounds = this.hero.getPlayerBounds();
                 if (thisObject.isNear(playerBounds.xMin, playerBounds.yMin, playerBounds.xMax, playerBounds.yMax)) {
-                    let countLeft = this.InventoryManager.addObject(thisObject.value);
+                    let countLeft = this.inventoryManager.addObject(thisObject.value);
                     if (countLeft === 0) {
                         this.nonCharacterObjects.splice(this.nonCharacterObjects.indexOf(thisObject), 1);
                     } else {
@@ -592,7 +600,7 @@ export default class MainGameState {
         this.spawners.forEach(spawner => {
             spawner.update(delta, this.projectiles, this);
         });
-        this.InventoryManager.update(delta);
+        this.inventoryManager.update(delta);
         this.hero.update(delta);
         this.camera.update();
     }
@@ -667,7 +675,7 @@ export default class MainGameState {
         this._drawLayer(totalLayers - 1);
 
         this.ctx.globalAlpha = 1;
-        this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0,
+        this.inventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0,
             this.ctx.width * 0.3, this.ctx.width * 0.36,
             this.ctx.width * 0.3, 0,
             delta, this.otherPlayers);
@@ -681,7 +689,7 @@ export default class MainGameState {
             y: (event.type.toLowerCase() === 'mousedown') ?
                 event.pageY : event.touches[0].pageY
         };
-        this.InventoryManager.onMouseDown(mousePosition);
+        this.inventoryManager.onMouseDown(mousePosition);
     }
     onMouseUp(event) {
         let mousePosition = {
@@ -690,7 +698,7 @@ export default class MainGameState {
             y: (event.type.toLowerCase() === 'mouseup') ?
                 event.pageY : event.changedTouches[0].pageY
         };
-        this.InventoryManager.onMouseUp(mousePosition, this);
+        this.inventoryManager.onMouseUp(mousePosition, this);
     }
 
     onMouseMove(event) {
@@ -700,7 +708,7 @@ export default class MainGameState {
             y: (event.type.toLowerCase() === 'mousemove') ?
                 event.pageY : event.targetTouches[0].pageY
         };
-        this.InventoryManager.onMouseMove(mousePosition);
+        this.inventoryManager.onMouseMove(mousePosition);
     }
 
     events() {
@@ -755,13 +763,69 @@ export default class MainGameState {
 
     _drawUI() {
         var tx = 10,
-            ty = 0,
+            ty = 20,
             dy = 40;
 
-        this.ctx.fillStyle = "black";
-        this.ctx.fillRect(tx, ty += dy, 102, 20);
-        this.ctx.fillStyle = "red";
-        this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
+        //this.ctx.fillStyle = "black";
+        //this.ctx.fillRect(tx, ty += dy, 102, 20);
+        //this.ctx.fillStyle = "red";
+        //this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
+
+        this.ctx.drawImage(
+            this.imageBarEmpty,
+            0,
+            0,
+            this.imageBarEmpty.width,
+            this.imageBarEmpty.height,
+            tx,
+            ty,
+            this.imageBarEmpty.width,
+            this.imageBarEmpty.height
+        );
+
+        this.ctx.drawImage(
+            this.imageBarRedFill,
+            0,
+            0,
+            this.hero.health / 100 * this.imageBarRedFill.width,
+            this.imageBarRedFill.height,
+            tx,
+            ty,
+            this.hero.health / 100 * this.imageBarRedFill.width,
+            this.imageBarRedFill.height
+        );
+
+        ty += (dy + this.imageBarEmpty.height);
+
+        this.ctx.drawImage(
+            this.imageBarEmpty,
+            0,
+            0,
+            this.imageBarEmpty.width,
+            this.imageBarEmpty.height,
+            tx,
+            ty,
+            this.imageBarEmpty.width,
+            this.imageBarEmpty.height
+        );
+
+        if (this.hero.xp > 0) {
+            this.ctx.drawImage(
+                this.imageBarBlueFill,
+                0,
+                0,
+                this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width,
+                this.imageBarBlueFill.height,
+                tx,
+                ty,
+                this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width,
+                this.imageBarBlueFill.height
+            );
+        }
+
+        this.ctx.font = "22px Arial";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(this.hero.level, (tx + dy / 2), (ty + dy / 3 * 2));
     }
 
 
