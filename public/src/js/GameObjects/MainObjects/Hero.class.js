@@ -1,11 +1,11 @@
 export default class Hero {
-    constructor(map, x, y, id, health, tileLevel, token, Loader) {
+    constructor(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, token, loader) {
         this.map = map;
         this.x = x;
         this.y = y;
         this.startX = 3200;
         this.startY = 3200;
-        this.Loader = Loader;
+        this.loader = loader;
         this.debugging = false;
         this.topText = [];
         this.token = token;
@@ -32,8 +32,8 @@ export default class Hero {
         };
 
         this.action = this.STATE.STOP;
-        this.image = this.Loader.getImage('hero');
-        this.deathAnimation = this.Loader.getImage('death');
+        this.image = this.loader.getImage('hero');
+        this.deathAnimation = this.loader.getImage('death');
         this.deathAnimationCols = 5;
         this.deathAnimationRows = 3;
         this.deadTime = 0;
@@ -42,10 +42,22 @@ export default class Hero {
         this.dead = false;
         this.resurected = false;
 
-        this.deathSound = this.Loader.getSound("explosion");
+        this.deathSound = this.loader.getSound("explosion");
 
         this.speed = 256;
         this.id = id;
+        this.level = level === undefined || level <= 0 ? 1 : level;
+        this.xp = xp === undefined ? 0 : xp;
+        this.questsCompleted = questsCompleted === undefined ? 0 : questsCompleted;
+
+        try {
+            this.stats = JSON.parse(stats);
+        } catch (error) {
+            this.stats = {};
+            this.stats.goblinKills = 0;
+            this.stats.sheepKills = 0;
+            this.stats.slimeKills = 0;
+        }
 
         if (this.debugging) {
             this.speed = 512;
@@ -62,6 +74,10 @@ export default class Hero {
         smallObject.tileLevel = this.tileLevel;
         smallObject.health = this.health;
         smallObject.speed = this.speed;
+        smallObject.xp = this.xp;
+        smallObject.level = this.level;
+        smallObject.questsCompleted = this.questsCompleted;
+        smallObject.stats = JSON.stringify(this.stats);
         smallObject.width = this.width;
         smallObject.height = this.height;
         smallObject.resurected = this.resurected;
@@ -78,21 +94,21 @@ export default class Hero {
         };
     }
 
-   /* generateId() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
+    /* generateId() {
+         function s4() {
+             return Math.floor((1 + Math.random()) * 0x10000)
+                 .toString(16)
+                 .substring(1);
+         }
 
-        function time() {
-            return Math.floor((1 + (new Date()).getTime()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return time() + '-' + s4() + '-' + s4() + '-' +
-            s4() + '-' + s4() + s4() + s4();
-    }*/
+         function time() {
+             return Math.floor((1 + (new Date()).getTime()) * 0x10000)
+                 .toString(16)
+                 .substring(1);
+         }
+         return time() + '-' + s4() + '-' + s4() + '-' +
+             s4() + '-' + s4() + s4() + s4();
+     }*/
 
 
     move(delta, dirx, diry) {
@@ -163,8 +179,7 @@ export default class Hero {
     die() {
         this.deathSound.loop = false;
         this.deathSound.volume = 1;
-        this.deathSound.play().then(() => {                
-        });
+        this.deathSound.play().then(() => {});
         this.deadTime = 0;
         this.dead = true;
     }
@@ -213,6 +228,10 @@ export default class Hero {
                         this.topText.splice(this.topText.indexOf(text), 1);
                     }
                 });
+            }
+            if (this.xp >= this.level * 100) {
+                this.xp -= this.level * 100;
+                this.level += 1;
             }
         }
     }

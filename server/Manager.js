@@ -50,7 +50,11 @@ class Manager {
             token: player.token,
             tileLevel: player.tileLevel,
             health: player.health,
+            xp: player.xp,
+            level: player.level,
+            questsCompleted: player.questsCompleted,
             items: player.items,
+            stats: player.stats,
             position: {
                 x: player.x,
                 y: player.y

@@ -1,7 +1,7 @@
 import GameObject from "../_GameObject.base.class";
 
 export default class NPCObject extends GameObject {
-    constructor(type,x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
+    constructor(type, x, y, width, height, health, damage, attackSpeed, speed, xp, passive, map, bounds) {
         super();
         this.type = type;
         this.x = x;
@@ -16,6 +16,7 @@ export default class NPCObject extends GameObject {
         this.damageDone = 0;
         this.attackSpeed = attackSpeed;
         this.speed = speed;
+        this.xp = xp;
         this.passive = passive;
         //this.canBePickedUp = false;
         this.STATE = {

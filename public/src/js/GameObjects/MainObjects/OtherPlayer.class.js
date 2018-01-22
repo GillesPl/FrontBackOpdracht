@@ -1,8 +1,8 @@
 export default class OtherPlayer {
-    constructor(hero, Loader, map) {
+    constructor(hero, loader, map) {
         this.x = hero.x;
         this.y = hero.y;
-        this.Loader = Loader;
+        this.loader = loader;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -22,7 +22,7 @@ export default class OtherPlayer {
         };
 
         this.action = hero.action;
-        this.image = this.Loader.getImage('otherPlayer');
+        this.image = this.loader.getImage('otherPlayer');
         this.speed = hero.speed;
         this.id = hero.id;
         this.map = map;

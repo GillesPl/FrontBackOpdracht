@@ -1,9 +1,14 @@
 import InventoryIcon from "./InventoryIcon.class";
+import QuestManager from "../Quests/QuestManager";
 import Arrow_1 from "../Damage/Arrow_1.class";
 import DamageArea_1 from "../Damage/DamageArea_1.class";
+import Empty_bottle_1 from "../InventoryObjects/Empty_bottle_1.class";
+import Empty_bottle_2 from "../InventoryObjects/Empty_bottle_2.class";
+import Empty_bottle_3 from "../InventoryObjects/Empty_bottle_3.class";
+import Empty_bottle_4 from "../InventoryObjects/Empty_bottle_4.class";
 
 export default class InventoryManager {
-    constructor(inventoryObjects, Loader, hero, damageAreas, map) {
+    constructor(inventoryObjects, loader, hero, damageAreas, map) {
         this.inventory = [];
         let i = 0;
         inventoryObjects.forEach(inventoryObject => {
@@ -17,21 +22,21 @@ export default class InventoryManager {
         //    inventoryObject.inventoryLocation = i++;
         //});
 
+        this.imageCharacter = loader.getImage("characterModel");
+        this.imageBack = loader.getImage("inventoryTileSet");
+        this.imageIconBar = loader.getImage("iconbar");
+        this.imageLevelToLow = loader.getImage("levelToLow");
         this.hero = hero;
         this.iterations = 8;
-        this.imageCharacter = Loader.getImage("characterModel");
-        this.imageBack = Loader.getImage("inventoryTileSet");
+        this.loader = loader;
         this.damageAreas = damageAreas;
         this.map = map;
         this.backCols = 4;
         this.backRows = 4;
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
-        this.imageIconBar = Loader.getImage("iconbar");
-        this.Loader = Loader;
-        this.iconBarCols = 3;
+        this.loader = loader;
         this.iconBarRows = 4;
-        this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
         this.selectedAction = 1;
         this.mousePosition = {
@@ -43,11 +48,14 @@ export default class InventoryManager {
             HIDDEN: 0,
             INVENTORY: 1,
             CHARACTER: 2,
-            COMBAT: 3
+            STATS: 3,
+            QUESTS: 4
         };
         this.iconBar = [];
         this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
         this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.STATS, this.imageIconBar, 3, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.QUESTS, this.imageIconBar, 4, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (let i = 1; i <= 10; i++) {
@@ -55,6 +63,8 @@ export default class InventoryManager {
             if (this.selectedAction === (i === 10 ? 0 : i))
                 this.actionBarIcons[i === 10 ? 0 : i].isSelected = true;
         }
+
+        this.questManager = new QuestManager(this.hero, this, loader);
 
         this.state = this.STATES.HIDDEN;
     }
@@ -79,6 +89,10 @@ export default class InventoryManager {
             checkState = this.STATES.INVENTORY;
         } else if (keyCode === keyboard.C) {
             checkState = this.STATES.CHARACTER;
+        } else if (keyCode === keyboard.T) {
+            checkState = this.STATES.STATS;
+        }else if (keyCode === keyboard.Q) {
+            checkState = this.STATES.QUESTS;
         }
         this.iconBar.forEach(icon => {
             if (icon.state === checkState) {
@@ -137,6 +151,7 @@ export default class InventoryManager {
                 this.hero.armor += inventoryObject.strength;
             }
         });
+        this.questManager.update();
     }
 
     addObject(newObject) {
@@ -243,69 +258,69 @@ export default class InventoryManager {
             }
             if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) &&
                 !this.isInActionBar(mousePosition.x, mousePosition.y) && !this.isInIconBar(mousePosition.x, mousePosition.y)) {
-                this.inventory.forEach(inventoryObject => {
-                    let location = this.selectedAction - 1;
-                    if (location < 0) location = 9;
-                    if (inventoryObject.actionLocation === location) {
-                        if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.RANGED) {
-                            if (inventoryObject.interval === 0) {
-                                inventoryObject.interval = inventoryObject.intervalTime;
-                                //console.log('bow used, creating ' + inventoryObject.createObjectName);
-                                switch (inventoryObject.createObjectName) {
-                                    case 'Arrow_1':
-                                        let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
-                                        let projectile = new Arrow_1(Math.random(), this.Loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
-                                        sendNewDamageAreaListener.sendNewDamageArea(projectile);
-                                        this.damageAreas.push(projectile);
-                                        //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
-                                        if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
-                                        } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGNORTH);
-                                        } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGSOUTH);
-                                        } else {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGWEST);
-                                        }
-                                        break;
-                                }
-                            }
-                        } else if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.MELEE) {
-                            if (inventoryObject.interval === 0) {
-                                inventoryObject.interval = inventoryObject.intervalTime;
-                                //console.log('melee used, creating ' + inventoryObject.createObjectName);
-                                switch (inventoryObject.createObjectName) {
-                                    case 'DamageArea_1':
-                                        let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                        let damageArea = new DamageArea_1(
-                                            Math.random(),
-                                            this.Loader,
-                                            this.hero.x - this.hero.width / 2 + this.hero.width / 3 * (Math.cos(angleInRadians)),
-                                            this.hero.y - this.hero.height / 2 + this.hero.height / 3 * (Math.sin(angleInRadians)),
-                                            angleInRadians,
-                                            inventoryObject.strength,
-                                            this.map);
-                                        sendNewDamageAreaListener.sendNewDamageArea(damageArea);
-                                        this.damageAreas.push(damageArea);
-                                        if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
-                                        } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGNORTH);
-                                        } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGSOUTH);
-                                        } else {
-                                            this.hero.setDirection(this.hero.STATE.RUNNINGWEST);
-                                        }
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                });
+                this.fireObject(mousePosition, sendNewDamageAreaListener);
             }
         }
         this.inventory.forEach(inventoryObject => {
             inventoryObject.onMouseUp(mousePosition);
+        });
+    }
+
+    fireObject(mousePosition, sendNewDamageAreaListener) {
+        this.inventory.forEach(inventoryObject => {
+            let location = this.selectedAction - 1;
+            if (location < 0) location = 9;
+            if (inventoryObject.actionLocation === location && inventoryObject.interval === 0 && inventoryObject.levelRequired <= this.hero.level) {
+                if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.RANGED) {
+                    inventoryObject.interval = inventoryObject.intervalTime;
+                    //console.log('bow used, creating ' + inventoryObject.createObjectName);
+                    switch (inventoryObject.createObjectName) {
+                        case 'Arrow_1':
+                            let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
+                            let projectile = new Arrow_1(Math.random(), this.loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
+                            sendNewDamageAreaListener.sendNewDamageArea(projectile);
+                            this.damageAreas.push(projectile);
+                            //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                            if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
+                            } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGNORTH);
+                            } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGSOUTH);
+                            } else {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGWEST);
+                            }
+                            break;
+                    }
+                } else if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.MELEE) {
+                    inventoryObject.interval = inventoryObject.intervalTime;
+                    //console.log('melee used, creating ' + inventoryObject.createObjectName);
+                    switch (inventoryObject.createObjectName) {
+                        case 'DamageArea_1':
+                            let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166
+                            let damageArea = new DamageArea_1(
+                                Math.random(),
+                                this.loader,
+                                this.hero.x - this.hero.width / 2 + this.hero.width / 3 * (Math.cos(angleInRadians)),
+                                this.hero.y - this.hero.height / 2 + this.hero.height / 3 * (Math.sin(angleInRadians)),
+                                angleInRadians,
+                                inventoryObject.strength,
+                                this.map);
+                            sendNewDamageAreaListener.sendNewDamageArea(damageArea);
+                            this.damageAreas.push(damageArea);
+                            if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGEAST);
+                            } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGNORTH);
+                            } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGSOUTH);
+                            } else {
+                                this.hero.setDirection(this.hero.STATE.RUNNINGWEST);
+                            }
+                            break;
+                    }
+                }
+            }
         });
     }
 
@@ -472,13 +487,24 @@ export default class InventoryManager {
     useObject() {
         this.inventory.forEach(inventoryObject => {
             if (inventoryObject.isHolding && inventoryObject.isUsable) {
-                //console.log(inventoryObject);
                 if (inventoryObject.usage === inventoryObject.USES.HEALTH) {
                     let worked = this.hero.heal(inventoryObject.strength);
                     if (worked) {
                         if (inventoryObject.usedObject !== null) {
-                            let copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));
-                            this.addObject(copyOfObject);
+                            switch (inventoryObject.usedObject) {
+                                case "empty_bottle_1":
+                                    this.addObject(new Empty_bottle_1(this.loader, 1, -2, -1));
+                                    break;
+                                case "empty_bottle_2":
+                                    this.addObject(new Empty_bottle_2(this.loader, 1, -2, -1));
+                                    break;
+                                case "empty_bottle_3":
+                                    this.addObject(new Empty_bottle_3(this.loader, 1, -2, -1));
+                                    break;
+                                case "empty_bottle_4":
+                                    this.addObject(new Empty_bottle_4(this.loader, 1, -2, -1));
+                                    break;
+                            }
                         }
                         if (inventoryObject.stackCount > 1) {
                             inventoryObject.stackCount--;
@@ -491,6 +517,33 @@ export default class InventoryManager {
         });
     }
 
+    objectsInInventory() {
+        let inventoryObjectsCount = 0;
+        let distinctItems = [];
+        this.inventory.forEach(item => {
+            if (item.typeId !== "coin") {
+                inventoryObjectsCount += item.stackCount;
+            }
+            if (distinctItems.indexOf(item.typeId) === -1) {
+                distinctItems.push(item.typeId);
+            }
+        });
+        return {
+            count: inventoryObjectsCount,
+            distinctCount: distinctItems.length
+        };
+    }
+
+    countObjectsOfType(typeId) {
+        let inventoryObjectsCount = 0;
+        this.inventory.forEach(item => {
+            if (item.typeId === typeId) {
+                inventoryObjectsCount += item.stackCount;
+            }
+        });
+        return inventoryObjectsCount;
+    }
+
     getSmallObject() {
         let smallObject = [];
         this.inventory.forEach(item => {
@@ -499,7 +552,7 @@ export default class InventoryManager {
         return smallObject;
     }
 
-    draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
+    draw(ctx, xIcon, yIcon, width, height, xAction, yAction, delta, otherPlayers) {
         let drawWidth = Math.round(width / this.iterations * 5) / 5;
         let drawHeight = Math.round(height / (this.iterations + 1));
         this.yTop = yIcon + drawHeight;
@@ -525,6 +578,10 @@ export default class InventoryManager {
                 this.drawCharacter(ctx, xIcon, this.yTop, drawWidth, drawHeight);
             } else if (this.state === this.STATES.INVENTORY) {
                 this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
+            } else if (this.state === this.STATES.STATS) {
+                this.drawStats(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, delta, otherPlayers);
+            } else if (this.state === this.STATES.QUESTS) {
+                this.drawQuest(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2);
             }
         }
 
@@ -605,8 +662,50 @@ export default class InventoryManager {
         });
     }
 
+    drawStats(ctx, x, y, delta, otherPlayers) {
+        let tempX = x + 1;
+        let tempY = y + 1;
+        let deltaY = 22;
+        let objectsData = this.objectsInInventory();
+
+        ctx.font = "22px Arial";
+        ctx.fillStyle = "black";
+        this.drawStatsText(ctx, delta, otherPlayers, tempX, tempY, deltaY, objectsData);
+        tempX = x;
+        tempY = y;
+        ctx.fillStyle = "white";
+        this.drawStatsText(ctx, delta, otherPlayers, tempX, tempY, deltaY, objectsData);
+    }
+
+    drawStatsText(ctx, delta, otherPlayers, tempX, tempY, deltaY, objectsData) {
+        ctx.fillText("Player location: (" + Math.round(this.hero.x) + ", " + Math.round(this.hero.y) + ", " + this.hero.tileLevel + ")", tempX, tempY += deltaY);
+        ctx.fillText("Health: " + this.hero.health, tempX, tempY += deltaY);
+        ctx.fillText("Armor: " + this.hero.armor, tempX, tempY += deltaY);
+        ctx.fillText("Level: " + this.hero.level, tempX, tempY += deltaY);
+        ctx.fillText("Xp: " + this.hero.xp + "/" + this.hero.level * 100, tempX, tempY += deltaY);
+        ctx.fillText("Quests completed: " + this.hero.questsCompleted + "/6", tempX, tempY += deltaY);
+        ctx.fillText("Players connected: " + (otherPlayers.length + 1), tempX, tempY += deltaY);
+        ctx.fillText("Objects in inventory: " + objectsData.count + " (without money)", tempX, tempY += deltaY);
+        ctx.fillText("Different objects in inventory: " + objectsData.distinctCount + " / 31", tempX, tempY += deltaY);
+        ctx.fillText("Sheep killed: " + this.hero.stats.sheepKills, tempX, tempY += deltaY);
+        ctx.fillText("Goblins killed: " + this.hero.stats.goblinKills, tempX, tempY += deltaY);
+        ctx.fillText("Slimes killed: " + this.hero.stats.slimeKills, tempX, tempY += deltaY);
+    }
+
+    drawQuest(ctx, x, y) {
+        this.questManager.draw(ctx, x, y);
+    }
+
     drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight) {
         inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
+        if (inventoryObject.levelRequired > this.hero.level) {
+            ctx.drawImage(
+                this.imageLevelToLow, // Image
+                drawX, // Target x
+                drawY, // Target y
+                drawWidth, // Target width
+                drawHeight); // Target height
+        }
         if (inventoryObject.stackCount != 1) {
             ctx.font = "22px Arial";
             ctx.fillStyle = "white";
@@ -616,7 +715,14 @@ export default class InventoryManager {
 
     drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
         this.inventory.forEach(inventoryObject => {
-            if (!(inventoryObject.isHolding && this.movingObject) && inventoryObject.actionLocation >= 0) {
+            if (!(inventoryObject.isHolding && this.movingObject) && !inventoryObject.isMouseInObject && inventoryObject.actionLocation >= 0) {
+                let drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
+                let drawY = y;
+                this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+            }
+        });
+        this.inventory.forEach(inventoryObject => {
+            if (!(inventoryObject.isHolding && this.movingObject) && inventoryObject.isMouseInObject && inventoryObject.actionLocation >= 0) {
                 let drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                 let drawY = y;
                 this.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);

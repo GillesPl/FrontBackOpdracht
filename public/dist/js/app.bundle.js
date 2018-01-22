@@ -122,7 +122,7 @@ var InventoryObject = function (_GameObject) {
         _this.usage = _this.USES.NONE;
         _this.weapontype = _this.WEAPONTYPES.NONE;
         _this.createObjectName = "none";
-        _this.usedObject = null;
+        _this.usedObject = "";
         _this.isEquipable = false;
         _this.isEquiped = false;
         _this.isUsable = false;
@@ -134,6 +134,7 @@ var InventoryObject = function (_GameObject) {
         _this.isHolding = false;
         _this.isMouseInObject = false;
         _this.mouseInObjectTime = 0;
+        _this.levelRequired = 0;
         _this.inventoryLocation = inventoryLocation === undefined ? -1 : inventoryLocation;
         _this.actionLocation = actionLocation === undefined ? -1 : actionLocation;
         return _this;
@@ -163,10 +164,11 @@ var InventoryObject = function (_GameObject) {
         }
     }, {
         key: "setWeapon",
-        value: function setWeapon(type, strength, intervalTime, createObjectName) {
+        value: function setWeapon(type, strength, intervalTime, createObjectName, levelRequired) {
             this.weapontype = type;
             this.strength = strength;
             this.createObjectName = createObjectName;
+            this.levelRequired = levelRequired;
             this.isUsable = false;
             this.isEquipable = false;
             this.interval = 0;
@@ -266,9 +268,9 @@ var InventoryObject = function (_GameObject) {
                 ctx.globalAlpha = this.mouseInObjectTime > 1.5 ? 0.8 : (this.mouseInObjectTime - 0.5) * 0.8;
                 var borderWidth = 3;
                 ctx.fillStyle = "#a7815a";
-                ctx.fillRect(screenX - width * 2.5 - borderWidth, screenY - borderWidth, width * 2.5 + 2 * borderWidth, height * 2 + 2 * borderWidth);
+                ctx.fillRect(screenX - width * 2.5 - borderWidth, screenY - borderWidth, width * 2.5 + 2 * borderWidth, height * 3 + 2 * borderWidth);
                 ctx.fillStyle = "#97714a";
-                ctx.fillRect(screenX - width * 2.5, screenY, width * 2.5, height * 2);
+                ctx.fillRect(screenX - width * 2.5, screenY, width * 2.5, height * 3);
 
                 var drawX = screenX - width * 2.5 + 8;
                 var drawY = screenY;
@@ -294,10 +296,15 @@ var InventoryObject = function (_GameObject) {
                     ctx.fillText("Damage: " + this.strength, drawX, drawY += dy);
                     ctx.fillText("Reload time: " + this.intervalTime + "s", drawX, drawY += dy);
                     ctx.fillText("Dps: " + Math.round(this.strength / this.intervalTime * 100) / 100 + "/s", drawX, drawY += dy);
+                    if (this.levelRequired > 1) {
+                        ctx.fillText("Level required: " + this.levelRequired, drawX, drawY += dy);
+                    }
                 } else {
                     ctx.fillStyle = "#606060";
                     ctx.fillText(this.typeId, drawX, drawY += dy);
                 }
+                ctx.fillText("Stack: " + this.stackCount + "/" + this.stackLimit, drawX, drawY += dy);
+
                 ctx.globalAlpha = 1;
             }
         }
@@ -480,12 +487,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Empty_bottle_1 = function (_InventoryObject) {
     _inherits(Empty_bottle_1, _InventoryObject);
 
-    function Empty_bottle_1(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Empty_bottle_1(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Empty_bottle_1);
 
         var _this = _possibleConstructorReturn(this, (Empty_bottle_1.__proto__ || Object.getPrototypeOf(Empty_bottle_1)).call(this, "empty_bottle_1", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('empty_bottle_1'));
+        _this.setImage(loader.getImage('empty_bottle_1'));
         return _this;
     }
 
@@ -520,12 +527,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Empty_bottle_2 = function (_InventoryObject) {
     _inherits(Empty_bottle_2, _InventoryObject);
 
-    function Empty_bottle_2(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Empty_bottle_2(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Empty_bottle_2);
 
         var _this = _possibleConstructorReturn(this, (Empty_bottle_2.__proto__ || Object.getPrototypeOf(Empty_bottle_2)).call(this, "empty_bottle_2", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('empty_bottle_2'));
+        _this.setImage(loader.getImage('empty_bottle_2'));
         return _this;
     }
 
@@ -560,12 +567,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Empty_bottle_3 = function (_InventoryObject) {
     _inherits(Empty_bottle_3, _InventoryObject);
 
-    function Empty_bottle_3(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Empty_bottle_3(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Empty_bottle_3);
 
         var _this = _possibleConstructorReturn(this, (Empty_bottle_3.__proto__ || Object.getPrototypeOf(Empty_bottle_3)).call(this, "empty_bottle_3", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('empty_bottle_3'));
+        _this.setImage(loader.getImage('empty_bottle_3'));
         return _this;
     }
 
@@ -600,12 +607,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Empty_bottle_4 = function (_InventoryObject) {
     _inherits(Empty_bottle_4, _InventoryObject);
 
-    function Empty_bottle_4(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Empty_bottle_4(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Empty_bottle_4);
 
         var _this = _possibleConstructorReturn(this, (Empty_bottle_4.__proto__ || Object.getPrototypeOf(Empty_bottle_4)).call(this, "empty_bottle_4", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('empty_bottle_4'));
+        _this.setImage(loader.getImage('empty_bottle_4'));
         return _this;
     }
 
@@ -644,7 +651,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NPCObject = function (_GameObject) {
     _inherits(NPCObject, _GameObject);
 
-    function NPCObject(type, x, y, width, height, health, damage, attackSpeed, speed, passive, map, bounds) {
+    function NPCObject(type, x, y, width, height, health, damage, attackSpeed, speed, xp, passive, map, bounds) {
         _classCallCheck(this, NPCObject);
 
         var _this = _possibleConstructorReturn(this, (NPCObject.__proto__ || Object.getPrototypeOf(NPCObject)).call(this));
@@ -662,6 +669,7 @@ var NPCObject = function (_GameObject) {
         _this.damageDone = 0;
         _this.attackSpeed = attackSpeed;
         _this.speed = speed;
+        _this.xp = xp;
         _this.passive = passive;
         //this.canBePickedUp = false;
         _this.STATE = {
@@ -899,12 +907,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Fire = function (_NonCharacterObject) {
     _inherits(Fire, _NonCharacterObject);
 
-    function Fire(Loader, id, x, y) {
+    function Fire(loader, id, x, y) {
         _classCallCheck(this, Fire);
 
         var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, id, x, y, 96, 96, 45, false));
 
-        _this.setTilesImage(Loader.getImage('fire'), 1, 5, 12);
+        _this.setTilesImage(loader.getImage('fire'), 1, 5, 12);
         return _this;
     }
 
@@ -1027,14 +1035,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Sword_1 = function (_InventoryObject) {
     _inherits(Sword_1, _InventoryObject);
 
-    function Sword_1(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Sword_1(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Sword_1);
 
         //this.setEquipable(this.AREAS.ONE_HANDED, 10);
         var _this = _possibleConstructorReturn(this, (Sword_1.__proto__ || Object.getPrototypeOf(Sword_1)).call(this, "sword_1", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('sword_1'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 10, 1, "DamageArea_1");
+        _this.setImage(loader.getImage('sword_1'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 10, 1, "DamageArea_1", 0);
         return _this;
     }
 
@@ -1069,14 +1077,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Sword_2 = function (_InventoryObject) {
     _inherits(Sword_2, _InventoryObject);
 
-    function Sword_2(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Sword_2(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Sword_2);
 
         //this.setEquipable(this.AREAS.ONE_HANDED, 10);
         var _this = _possibleConstructorReturn(this, (Sword_2.__proto__ || Object.getPrototypeOf(Sword_2)).call(this, "sword_2", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('sword_2'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 1, "DamageArea_1");
+        _this.setImage(loader.getImage('sword_2'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.66, "DamageArea_1", 2);
         return _this;
     }
 
@@ -1111,14 +1119,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Sword_3 = function (_InventoryObject) {
     _inherits(Sword_3, _InventoryObject);
 
-    function Sword_3(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Sword_3(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Sword_3);
 
         //this.setEquipable(this.AREAS.ONE_HANDED, 10);
         var _this = _possibleConstructorReturn(this, (Sword_3.__proto__ || Object.getPrototypeOf(Sword_3)).call(this, "sword_3", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('sword_3'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.5, "DamageArea_1");
+        _this.setImage(loader.getImage('sword_3'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.25, "DamageArea_1", 3);
         return _this;
     }
 
@@ -1153,13 +1161,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Shield_1 = function (_InventoryObject) {
     _inherits(Shield_1, _InventoryObject);
 
-    function Shield_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Shield_1(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Shield_1);
 
         var _this = _possibleConstructorReturn(this, (Shield_1.__proto__ || Object.getPrototypeOf(Shield_1)).call(this, "shield_1", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.OFF_HAND, 10, isEquipped);
-        _this.setImage(Loader.getImage('shield_1'));
+        _this.setImage(loader.getImage('shield_1'));
         return _this;
     }
 
@@ -1194,13 +1202,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Shield_2 = function (_InventoryObject) {
     _inherits(Shield_2, _InventoryObject);
 
-    function Shield_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Shield_2(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Shield_2);
 
         var _this = _possibleConstructorReturn(this, (Shield_2.__proto__ || Object.getPrototypeOf(Shield_2)).call(this, "shield_2", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.OFF_HAND, 15, isEquipped);
-        _this.setImage(Loader.getImage('shield_2'));
+        _this.setImage(loader.getImage('shield_2'));
         return _this;
     }
 
@@ -1235,13 +1243,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Shield_3 = function (_InventoryObject) {
     _inherits(Shield_3, _InventoryObject);
 
-    function Shield_3(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Shield_3(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Shield_3);
 
         var _this = _possibleConstructorReturn(this, (Shield_3.__proto__ || Object.getPrototypeOf(Shield_3)).call(this, "shield_3", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.OFF_HAND, 25, isEquipped);
-        _this.setImage(Loader.getImage('shield_3'));
+        _this.setImage(loader.getImage('shield_3'));
         return _this;
     }
 
@@ -1276,13 +1284,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Shield_4 = function (_InventoryObject) {
     _inherits(Shield_4, _InventoryObject);
 
-    function Shield_4(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Shield_4(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Shield_4);
 
         var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.OFF_HAND, 50, isEquipped);
-        _this.setTilesImage(Loader.getImage('shield_4'), 4, 4, 16);
+        _this.setTilesImage(loader.getImage('shield_4'), 4, 4, 16);
         return _this;
     }
 
@@ -1317,13 +1325,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Axe_1 = function (_InventoryObject) {
     _inherits(Axe_1, _InventoryObject);
 
-    function Axe_1(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Axe_1(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Axe_1);
 
         var _this = _possibleConstructorReturn(this, (Axe_1.__proto__ || Object.getPrototypeOf(Axe_1)).call(this, "axe_1", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('axe_1'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 15, 4, "DamageArea_1");
+        _this.setImage(loader.getImage('axe_1'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 15, 4, "DamageArea_1", 0);
         return _this;
     }
 
@@ -1358,13 +1366,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Axe_2 = function (_InventoryObject) {
     _inherits(Axe_2, _InventoryObject);
 
-    function Axe_2(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Axe_2(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Axe_2);
 
         var _this = _possibleConstructorReturn(this, (Axe_2.__proto__ || Object.getPrototypeOf(Axe_2)).call(this, "axe_2", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('axe_2'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 30, 4, "DamageArea_1");
+        _this.setImage(loader.getImage('axe_2'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 30, 4, "DamageArea_1", 2);
         return _this;
     }
 
@@ -1399,13 +1407,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Axe_3 = function (_InventoryObject) {
     _inherits(Axe_3, _InventoryObject);
 
-    function Axe_3(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Axe_3(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Axe_3);
 
         var _this = _possibleConstructorReturn(this, (Axe_3.__proto__ || Object.getPrototypeOf(Axe_3)).call(this, "axe_3", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('axe_3'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 100, 4, "DamageArea_1");
+        _this.setImage(loader.getImage('axe_3'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 100, 1, "DamageArea_1", 4);
         return _this;
     }
 
@@ -1440,13 +1448,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Bow_1 = function (_InventoryObject) {
     _inherits(Bow_1, _InventoryObject);
 
-    function Bow_1(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Bow_1(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Bow_1);
 
         var _this = _possibleConstructorReturn(this, (Bow_1.__proto__ || Object.getPrototypeOf(Bow_1)).call(this, "bow_1", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('bow_1'));
-        _this.setWeapon(_this.WEAPONTYPES.RANGED, 10, 3, "Arrow_1");
+        _this.setImage(loader.getImage('bow_1'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 10, 3, "Arrow_1", 0);
         return _this;
     }
 
@@ -1481,13 +1489,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Bow_2 = function (_InventoryObject) {
     _inherits(Bow_2, _InventoryObject);
 
-    function Bow_2(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Bow_2(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Bow_2);
 
         var _this = _possibleConstructorReturn(this, (Bow_2.__proto__ || Object.getPrototypeOf(Bow_2)).call(this, "bow_2", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('bow_2'));
-        _this.setWeapon(_this.WEAPONTYPES.RANGED, 20, 1, "Arrow_1");
+        _this.setImage(loader.getImage('bow_2'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 20, 1, "Arrow_1", 2);
         return _this;
     }
 
@@ -1522,13 +1530,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Bow_3 = function (_InventoryObject) {
     _inherits(Bow_3, _InventoryObject);
 
-    function Bow_3(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Bow_3(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Bow_3);
 
         var _this = _possibleConstructorReturn(this, (Bow_3.__proto__ || Object.getPrototypeOf(Bow_3)).call(this, "bow_3", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('bow_3'));
-        _this.setWeapon(_this.WEAPONTYPES.RANGED, 40, 0.5, "Arrow_1");
+        _this.setImage(loader.getImage('bow_3'));
+        _this.setWeapon(_this.WEAPONTYPES.RANGED, 50, 0.5, "Arrow_1", 5);
         return _this;
     }
 
@@ -1563,13 +1571,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Mace = function (_InventoryObject) {
     _inherits(Mace, _InventoryObject);
 
-    function Mace(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Mace(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Mace);
 
         var _this = _possibleConstructorReturn(this, (Mace.__proto__ || Object.getPrototypeOf(Mace)).call(this, "mace", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('mace'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 250, 10, "DamageArea_1");
+        _this.setImage(loader.getImage('mace'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 250, 2, "DamageArea_1", 5);
         return _this;
     }
 
@@ -1604,13 +1612,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Spear = function (_InventoryObject) {
     _inherits(Spear, _InventoryObject);
 
-    function Spear(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Spear(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Spear);
 
         var _this = _possibleConstructorReturn(this, (Spear.__proto__ || Object.getPrototypeOf(Spear)).call(this, "spear", 10, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('spear'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 75, 4, "DamageArea_1");
+        _this.setImage(loader.getImage('spear'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 75, 4, "DamageArea_1", 0);
         return _this;
     }
 
@@ -1645,13 +1653,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Armor_1 = function (_InventoryObject) {
     _inherits(Armor_1, _InventoryObject);
 
-    function Armor_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Armor_1(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Armor_1);
 
         var _this = _possibleConstructorReturn(this, (Armor_1.__proto__ || Object.getPrototypeOf(Armor_1)).call(this, "armor_1", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.BODY, 20, isEquipped);
-        _this.setImage(Loader.getImage('armor_1'));
+        _this.setImage(loader.getImage('armor_1'));
         return _this;
     }
 
@@ -1686,13 +1694,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Armor_2 = function (_InventoryObject) {
     _inherits(Armor_2, _InventoryObject);
 
-    function Armor_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Armor_2(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Armor_2);
 
         var _this = _possibleConstructorReturn(this, (Armor_2.__proto__ || Object.getPrototypeOf(Armor_2)).call(this, "armor_2", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.BODY, 40, isEquipped);
-        _this.setImage(Loader.getImage('armor_2'));
+        _this.setImage(loader.getImage('armor_2'));
         return _this;
     }
 
@@ -1727,13 +1735,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Boots_1 = function (_InventoryObject) {
     _inherits(Boots_1, _InventoryObject);
 
-    function Boots_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Boots_1(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Boots_1);
 
         var _this = _possibleConstructorReturn(this, (Boots_1.__proto__ || Object.getPrototypeOf(Boots_1)).call(this, "boots_1", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.BOOTS, 4, isEquipped);
-        _this.setImage(Loader.getImage('boots_1'));
+        _this.setImage(loader.getImage('boots_1'));
         return _this;
     }
 
@@ -1768,13 +1776,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Boots_2 = function (_InventoryObject) {
     _inherits(Boots_2, _InventoryObject);
 
-    function Boots_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Boots_2(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Boots_2);
 
         var _this = _possibleConstructorReturn(this, (Boots_2.__proto__ || Object.getPrototypeOf(Boots_2)).call(this, "boots_2", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.BOOTS, 8, isEquipped);
-        _this.setImage(Loader.getImage('boots_2'));
+        _this.setImage(loader.getImage('boots_2'));
         return _this;
     }
 
@@ -1809,13 +1817,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Boots_3 = function (_InventoryObject) {
     _inherits(Boots_3, _InventoryObject);
 
-    function Boots_3(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Boots_3(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Boots_3);
 
         var _this = _possibleConstructorReturn(this, (Boots_3.__proto__ || Object.getPrototypeOf(Boots_3)).call(this, "boots_3", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.BOOTS, 20, isEquipped);
-        _this.setImage(Loader.getImage('boots_3'));
+        _this.setImage(loader.getImage('boots_3'));
         return _this;
     }
 
@@ -1850,13 +1858,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Helmet_1 = function (_InventoryObject) {
     _inherits(Helmet_1, _InventoryObject);
 
-    function Helmet_1(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Helmet_1(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Helmet_1);
 
         var _this = _possibleConstructorReturn(this, (Helmet_1.__proto__ || Object.getPrototypeOf(Helmet_1)).call(this, "helmet_1", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.HEAD, 10, isEquipped);
-        _this.setImage(Loader.getImage('helmet_1'));
+        _this.setImage(loader.getImage('helmet_1'));
         return _this;
     }
 
@@ -1891,13 +1899,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Helmet_2 = function (_InventoryObject) {
     _inherits(Helmet_2, _InventoryObject);
 
-    function Helmet_2(Loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+    function Helmet_2(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
         _classCallCheck(this, Helmet_2);
 
         var _this = _possibleConstructorReturn(this, (Helmet_2.__proto__ || Object.getPrototypeOf(Helmet_2)).call(this, "helmet_2", 50, stackCount, inventoryLocation, actionLocation));
 
         _this.setEquipable(_this.AREAS.HEAD, 25, isEquipped);
-        _this.setImage(Loader.getImage('helmet_2'));
+        _this.setImage(loader.getImage('helmet_2'));
         return _this;
     }
 
@@ -1932,13 +1940,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Coin = function (_InventoryObject) {
     _inherits(Coin, _InventoryObject);
 
-    function Coin(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Coin(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Coin);
 
         var _this = _possibleConstructorReturn(this, (Coin.__proto__ || Object.getPrototypeOf(Coin)).call(this, "coin", 999999, stackCount, inventoryLocation, actionLocation));
 
-        _this.setImage(Loader.getImage('coin'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 1, 1, "DamageArea_1");
+        _this.setImage(loader.getImage('coin'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 1, 1, "DamageArea_1", 0);
         return _this;
     }
 
@@ -1977,13 +1985,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Health_bottle_1 = function (_InventoryObject) {
     _inherits(Health_bottle_1, _InventoryObject);
 
-    function Health_bottle_1(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Health_bottle_1(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Health_bottle_1);
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_1.__proto__ || Object.getPrototypeOf(Health_bottle_1)).call(this, "health_bottle_1", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setUsable(_this.USES.HEALTH, 10, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_1'));
+        _this.setUsable(_this.USES.HEALTH, 10, "empty_bottle_1");
+        _this.setImage(loader.getImage('health_bottle_1'));
         return _this;
     }
 
@@ -2022,13 +2030,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Health_bottle_2 = function (_InventoryObject) {
     _inherits(Health_bottle_2, _InventoryObject);
 
-    function Health_bottle_2(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Health_bottle_2(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Health_bottle_2);
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_2.__proto__ || Object.getPrototypeOf(Health_bottle_2)).call(this, "health_bottle_2", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setUsable(_this.USES.HEALTH, 25, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_2'));
+        _this.setUsable(_this.USES.HEALTH, 25, "empty_bottle_2");
+        _this.setImage(loader.getImage('health_bottle_2'));
         return _this;
     }
 
@@ -2067,13 +2075,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Health_bottle_3 = function (_InventoryObject) {
     _inherits(Health_bottle_3, _InventoryObject);
 
-    function Health_bottle_3(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Health_bottle_3(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Health_bottle_3);
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_3.__proto__ || Object.getPrototypeOf(Health_bottle_3)).call(this, "health_bottle_3", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setUsable(_this.USES.HEALTH, 50, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_3'));
+        _this.setUsable(_this.USES.HEALTH, 50, "empty_bottle_3");
+        _this.setImage(loader.getImage('health_bottle_3'));
         return _this;
     }
 
@@ -2112,13 +2120,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Health_bottle_4 = function (_InventoryObject) {
     _inherits(Health_bottle_4, _InventoryObject);
 
-    function Health_bottle_4(Loader, stackCount, inventoryLocation, actionLocation) {
+    function Health_bottle_4(loader, stackCount, inventoryLocation, actionLocation) {
         _classCallCheck(this, Health_bottle_4);
 
         var _this = _possibleConstructorReturn(this, (Health_bottle_4.__proto__ || Object.getPrototypeOf(Health_bottle_4)).call(this, "health_bottle_4", 50, stackCount, inventoryLocation, actionLocation));
 
-        _this.setUsable(_this.USES.HEALTH, 100, new _Empty_bottle_2.default(Loader, 1));
-        _this.setImage(Loader.getImage('health_bottle_4'));
+        _this.setUsable(_this.USES.HEALTH, 100, "empty_bottle_4");
+        _this.setImage(loader.getImage('health_bottle_4'));
         return _this;
     }
 
@@ -2153,12 +2161,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Goblin = function (_NPCObject) {
     _inherits(Goblin, _NPCObject);
 
-    function Goblin(Loader, x, y, map, bounds) {
+    function Goblin(loader, x, y, map, bounds) {
         _classCallCheck(this, Goblin);
 
-        var _this = _possibleConstructorReturn(this, (Goblin.__proto__ || Object.getPrototypeOf(Goblin)).call(this, "Goblins", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, false, map, bounds));
+        var _this = _possibleConstructorReturn(this, (Goblin.__proto__ || Object.getPrototypeOf(Goblin)).call(this, "Goblins", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 50, 10, 3, 196, 20, false, map, bounds));
 
-        _this.setTilesImage(Loader.getImage('goblin'), 4, 4, 4);
+        _this.setTilesImage(loader.getImage('goblin'), 4, 4, 4);
         return _this;
     }
 
@@ -2193,12 +2201,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Arrow_1 = function (_Projectile) {
     _inherits(Arrow_1, _Projectile);
 
-    function Arrow_1(id, Loader, x, y, angleInRadians, strength, map) {
+    function Arrow_1(id, loader, x, y, angleInRadians, strength, map) {
         _classCallCheck(this, Arrow_1);
 
         var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
 
-        _this.setImage(Loader.getImage('arrow_1'));
+        _this.setImage(loader.getImage('arrow_1'));
         return _this;
     }
 
@@ -2412,12 +2420,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DamageArea_1 = function (_DamageArea) {
     _inherits(DamageArea_1, _DamageArea);
 
-    function DamageArea_1(id, Loader, x, y, angleInRadians, strength, map) {
+    function DamageArea_1(id, loader, x, y, angleInRadians, strength, map) {
         _classCallCheck(this, DamageArea_1);
 
         var _this = _possibleConstructorReturn(this, (DamageArea_1.__proto__ || Object.getPrototypeOf(DamageArea_1)).call(this, id, "DamageArea_1", x, y, angleInRadians, strength, map.drawSize * 1, map.drawSize * 1, 0.2, map));
 
-        _this.setImage(Loader.getImage('damageArea_1'));
+        _this.setImage(loader.getImage('damageArea_1'));
         return _this;
     }
 
@@ -2939,7 +2947,7 @@ var MainGameState = function () {
         this.camera;
         this.socket = socket;
         this.fullscreenState = false;
-        this.Loader = new _Loader2.default();
+        this.loader = new _Loader2.default();
         this.otherPlayers = [];
         this.connected = false;
         this.nonCharacterObjects = [];
@@ -2966,7 +2974,7 @@ var MainGameState = function () {
 
             Promise.all(this.loadassets).then(function (loaded) {
                 this.init();
-                var sound = this.Loader.getSound("ambience");
+                var sound = this.loader.getSound("ambience");
                 this.setSound(sound);
 
                 var check = false;
@@ -3020,7 +3028,7 @@ var MainGameState = function () {
             //delta = Math.min(delta, 0.25); // maximum delta of 250 ms
             this._previousElapsed = elapsed;
 
-            //var in update == delta, see commented code above
+            //let in update == delta, see commented code above
             this.update(delta);
             this.render(delta);
         }
@@ -3042,6 +3050,10 @@ var MainGameState = function () {
             this.overwriteHero.health = user.health;
             this.overwriteHero.tileLevel = user.tileLevel;
             this.overwriteHero.token = user.token;
+            this.overwriteHero.level = user.level;
+            this.overwriteHero.xp = user.xp;
+            this.overwriteHero.questsCompleted = user.questsCompleted;
+            this.overwriteHero.stats = user.stats;
             this.overwriteInventory = user.items;
         }
     }, {
@@ -3059,15 +3071,15 @@ var MainGameState = function () {
         value: function createNonCharacterObject(object) {
             switch (object.name) {
                 case "Fire":
-                    this.nonCharacterObjects.push(new _Fire2.default(this.Loader, object.id, object.x, object.y));
+                    this.nonCharacterObjects.push(new _Fire2.default(this.loader, object.id, object.x, object.y));
                     break;
 
                 case "Coin":
-                    this.nonCharacterObjects.push(new _DroppedItem2.default(this.Loader, object.id, object.x, object.y, 16, 16, "coin", object.properties.Count));
+                    this.nonCharacterObjects.push(new _DroppedItem2.default(this.loader, object.id, object.x, object.y, 16, 16, "coin", object.properties.Count));
                     break;
 
                 default:
-                    this.nonCharacterObjects.push(new _DroppedItem2.default(this.Loader, object.id, object.x, object.y, 32, 32, object.name, object.properties.Count));
+                    this.nonCharacterObjects.push(new _DroppedItem2.default(this.loader, object.id, object.x, object.y, 32, 32, object.name, object.properties.Count));
                     break;
             }
         }
@@ -3084,7 +3096,7 @@ var MainGameState = function () {
                     width: npc.width,
                     height: npc.height
                 };
-                _this2.spawners.push(new _SpawnerBase2.default(bounds, npc.name, _this2.Loader, npc.properties.Count, _this2.map));
+                _this2.spawners.push(new _SpawnerBase2.default(bounds, npc.name, _this2.loader, npc.properties.Count, _this2.map));
             });
         }
     }, {
@@ -3094,7 +3106,7 @@ var MainGameState = function () {
 
             this.spawners = [];
             spawners.forEach(function (spawner) {
-                _this3.spawners.push(new _SpawnerBase2.default(spawner.bounds, spawner.type, _this3.Loader, spawner.count, _this3.map, spawner.id, spawner.units));
+                _this3.spawners.push(new _SpawnerBase2.default(spawner.bounds, spawner.type, _this3.loader, spawner.count, _this3.map, spawner.id, spawner.units));
             });
         }
     }, {
@@ -3106,104 +3118,104 @@ var MainGameState = function () {
             this.overwriteInventory.forEach(function (item) {
                 _this4.createInventoryObject(inventoryObjects, item);
             });
-            this.InventoryManager = new _InventoryManager2.default(inventoryObjects, this.Loader, this.hero, this.projectiles, this.map);
+            this.inventoryManager = new _InventoryManager2.default(inventoryObjects, this.loader, this.hero, this.projectiles, this.map);
         }
     }, {
         key: "createInventoryObject",
         value: function createInventoryObject(inventoryObjects, object) {
             switch (object.name) {
                 case "sword_1":
-                    inventoryObjects.push(new _Sword_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Sword_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "sword_2":
-                    inventoryObjects.push(new _Sword_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Sword_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "sword_3":
-                    inventoryObjects.push(new _Sword_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Sword_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "shield_1":
-                    inventoryObjects.push(new _Shield_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Shield_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "shield_2":
-                    inventoryObjects.push(new _Shield_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Shield_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "shield_3":
-                    inventoryObjects.push(new _Shield_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Shield_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "shield_4":
-                    inventoryObjects.push(new _Shield_8.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Shield_8.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "axe_1":
-                    inventoryObjects.push(new _Axe_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Axe_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "axe_2":
-                    inventoryObjects.push(new _Axe_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Axe_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "axe_3":
-                    inventoryObjects.push(new _Axe_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Axe_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "bow_1":
-                    inventoryObjects.push(new _Bow_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Bow_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "bow_2":
-                    inventoryObjects.push(new _Bow_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Bow_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "bow_3":
-                    inventoryObjects.push(new _Bow_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Bow_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "mace":
-                    inventoryObjects.push(new _Mace2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Mace2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "spear":
-                    inventoryObjects.push(new _Spear2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Spear2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "armor_1":
-                    inventoryObjects.push(new _Armor_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Armor_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "armor_2":
-                    inventoryObjects.push(new _Armor_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Armor_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "boots_1":
-                    inventoryObjects.push(new _Boots_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Boots_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "boots_2":
-                    inventoryObjects.push(new _Boots_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Boots_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "boots_3":
-                    inventoryObjects.push(new _Boots_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Boots_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "helmet_1":
-                    inventoryObjects.push(new _Helmet_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Helmet_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "helmet_2":
-                    inventoryObjects.push(new _Helmet_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
+                    inventoryObjects.push(new _Helmet_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation, object.isEquipped));
                     break;
                 case "coin":
-                    inventoryObjects.push(new _Coin2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Coin2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "health_bottle_1":
-                    inventoryObjects.push(new _Health_bottle_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Health_bottle_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "health_bottle_2":
-                    inventoryObjects.push(new _Health_bottle_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Health_bottle_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "health_bottle_3":
-                    inventoryObjects.push(new _Health_bottle_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Health_bottle_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "health_bottle_4":
-                    inventoryObjects.push(new _Health_bottle_8.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Health_bottle_8.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "empty_bottle_1":
-                    inventoryObjects.push(new _Empty_bottle_2.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Empty_bottle_2.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "empty_bottle_2":
-                    inventoryObjects.push(new _Empty_bottle_4.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Empty_bottle_4.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "empty_bottle_3":
-                    inventoryObjects.push(new _Empty_bottle_6.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Empty_bottle_6.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
                 case "empty_bottle_4":
-                    inventoryObjects.push(new _Empty_bottle_8.default(this.Loader, object.count, object.inventoryLocation, object.actionLocation));
+                    inventoryObjects.push(new _Empty_bottle_8.default(this.loader, object.count, object.inventoryLocation, object.actionLocation));
                     break;
             }
         }
@@ -3213,17 +3225,21 @@ var MainGameState = function () {
     }, {
         key: "init",
         value: function init() {
-            this.Keyboard = new _Keyboard2.default(this);
-            this.Keyboard.listenForEvents([this.Keyboard.LEFT, this.Keyboard.RIGHT, this.Keyboard.UP, this.Keyboard.DOWN, this.Keyboard.A, this.Keyboard.D, this.Keyboard.W, this.Keyboard.S], [this.Keyboard.I, this.Keyboard.C]);
+            this.keyboard = new _Keyboard2.default(this);
+            this.keyboard.listenForEvents([this.keyboard.LEFT, this.keyboard.RIGHT, this.keyboard.UP, this.keyboard.DOWN, this.keyboard.A, this.keyboard.D, this.keyboard.W, this.keyboard.S], [this.keyboard.I, this.keyboard.C, this.keyboard.T, this.keyboard.Q]);
 
-            this.tileAtlas = this.Loader.getImage('tiles');
-            this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.token, this.Loader);
+            this.imageBarEmpty = this.loader.getImage("bar_empty");
+            this.imageBarBlueFill = this.loader.getImage("bar_blue_fill");
+            this.imageBarRedFill = this.loader.getImage("bar_red_fill");
+
+            this.tileAtlas = this.loader.getImage('tiles');
+            this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.questsCompleted, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
 
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
             this.loadInventoryObjects();
 
             this.map.loadMap('../../assets/map/map.json', this.camera, this.hero, function (objects, npcs) {
-                this.socket.emit("new_user", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("new_user", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
                 this.loadSocket(this.socket);
                 //this.loadNonCharacterObjects(objects);
                 //this.loadNPCs(npcs);
@@ -3233,12 +3249,12 @@ var MainGameState = function () {
     }, {
         key: "numPressed",
         value: function numPressed(num) {
-            this.InventoryManager.numPressed(num);
+            this.inventoryManager.numPressed(num);
         }
     }, {
         key: "keyPressed",
         value: function keyPressed(keyCode) {
-            this.InventoryManager.keyPressed(keyCode, this.Keyboard);
+            this.inventoryManager.keyPressed(keyCode, this.keyboard);
         }
     }, {
         key: "retryConnectOnFailure",
@@ -3272,13 +3288,13 @@ var MainGameState = function () {
                 others.forEach(function (playerJsonString) {
                     var player = JSON.parse(playerJsonString);
                     if (player.id != _this5.hero.id) {
-                        _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.Loader, _this5.map));
+                        _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.loader, _this5.map));
                     }
                 });
             });
             client.on("New_connection", function (playerString) {
                 var player = JSON.parse(playerString);
-                _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.Loader, _this5.map));
+                _this5.otherPlayers.push(new _OtherPlayer2.default(player, _this5.loader, _this5.map));
             });
             client.on("user_leave", function (playerString) {
                 var player = JSON.parse(playerString);
@@ -3288,7 +3304,7 @@ var MainGameState = function () {
                     if (_this5.otherPlayers[_i].id === player.id) toDeleteIndex = _i;
                 }
                 _this5.otherPlayers.splice(i, 1);
-                //this.otherPlayers.push(new OtherPlayer(hero, this.Loader, this.map));
+                //this.otherPlayers.push(new OtherPlayer(hero, this.loader, this.map));
             });
             client.on("updatingPlayer", function (heroString) {
                 var found = false; // is player in cache
@@ -3304,7 +3320,7 @@ var MainGameState = function () {
                     }
                 });
                 if (!found) {
-                    _this5.otherPlayers.push(new _OtherPlayer2.default(hero, _this5.Loader, _this5.map));
+                    _this5.otherPlayers.push(new _OtherPlayer2.default(hero, _this5.loader, _this5.map));
                 }
             });
             client.on("allObjects", function (objectsString) {
@@ -3316,14 +3332,14 @@ var MainGameState = function () {
                 var newProjectile = null;
                 switch (projectile.name) {
                     case "Arrow_1":
-                        newProjectile = new _Arrow_2.default(projectile.id, _this5.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
+                        newProjectile = new _Arrow_2.default(projectile.id, _this5.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                     case "DamageArea_1":
-                        newProjectile = new _DamageArea_2.default(projectile.id, _this5.Loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
+                        newProjectile = new _DamageArea_2.default(projectile.id, _this5.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                 }
 
-                _this5.InventoryManager.damageAreas.push(newProjectile);
+                _this5.inventoryManager.damageAreas.push(newProjectile);
             });
             client.on("allSpawners", function (spawnersString) {
                 var spawners = JSON.parse(spawnersString);
@@ -3351,13 +3367,13 @@ var MainGameState = function () {
     }, {
         key: "load",
         value: function load() {
-            return [this.Loader.loadImage('tiles', '../../assets/map/tileset.png'), this.Loader.loadImage('hero', '../../assets/sprites/george.png'), this.Loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.Loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.Loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.Loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.Loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.Loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.Loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.Loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.Loader.loadImage('slime', '../../assets/sprites/slime.png'), this.Loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'), this.Loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
+            return [this.loader.loadImage('tiles', '../../assets/map/tileset.png'), this.loader.loadImage('hero', '../../assets/sprites/george.png'), this.loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.loader.loadImage('slime', '../../assets/sprites/slime.png'), this.loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'), this.loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'), this.loader.loadImage('bar_empty', '../../assets/sprites/bar_empty.png'), this.loader.loadImage('bar_red_fill', '../../assets/sprites/bar_red_fill.png'), this.loader.loadImage('bar_blue_fill', '../../assets/sprites/bar_blue_fill.png'), this.loader.loadImage('levelToLow', '../../assets/sprites/inventory/LevelToLow.png'),
 
             // InventoryItems
-            this.Loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.Loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.Loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.Loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.Loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.Loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.Loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.Loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.Loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.Loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.Loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.Loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.Loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.Loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.Loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.Loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.Loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.Loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.Loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.Loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.Loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.Loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.Loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.Loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.Loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.Loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.Loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.Loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.Loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.Loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.Loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
+            this.loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
 
             //Sounds
-            this.Loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'), this.Loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'), this.Loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'), this.Loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'), this.Loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'), this.Loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'), this.Loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'), this.Loader.loadSound('slime', '../../assets/sounds/slime.mp3'), this.Loader.loadSound('default', '../../assets/sounds/default.mp3')];
+            this.loader.loadSound('ambience', '../../assets/sounds/ambiance.mp3'), this.loader.loadSound('goblin-death', '../../assets/sounds/goblin-death.mp3'), this.loader.loadSound('goblin-death-2', '../../assets/sounds/goblin-death-2.mp3'), this.loader.loadSound('explosion', '../../assets/sounds/explosion.mp3'), this.loader.loadSound('sheep', '../../assets/sounds/sheep.mp3'), this.loader.loadSound('sheep-2', '../../assets/sounds/sheep-2.mp3'), this.loader.loadSound('sheep-3', '../../assets/sounds/sheep-3.mp3'), this.loader.loadSound('slime', '../../assets/sounds/slime.mp3'), this.loader.loadSound('default', '../../assets/sounds/default.mp3')];
         }
     }, {
         key: "sendNewDamageArea",
@@ -3371,38 +3387,38 @@ var MainGameState = function () {
 
             var dirx = 0;
             var diry = 0;
-            if (this.Keyboard.isDown(this.Keyboard.LEFT) || this.Keyboard.isDown(this.Keyboard.A) || this.mobileKeyPressed === this.Keyboard.LEFT) {
+            if (this.keyboard.isDown(this.keyboard.LEFT) || this.keyboard.isDown(this.keyboard.A) || this.mobileKeyPressed === this.keyboard.LEFT) {
                 if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                     this.hero.action = this.hero.STATE.RUNNINGWEST;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
                 }
                 dirx = -1;
-            } else if (this.Keyboard.isDown(this.Keyboard.RIGHT) || this.Keyboard.isDown(this.Keyboard.D) || this.mobileKeyPressed === this.Keyboard.RIGHT) {
+            } else if (this.keyboard.isDown(this.keyboard.RIGHT) || this.keyboard.isDown(this.keyboard.D) || this.mobileKeyPressed === this.keyboard.RIGHT) {
                 if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                     this.hero.action = this.hero.STATE.RUNNINGEAST;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
                 }
                 dirx = 1;
-            } else if (this.Keyboard.isDown(this.Keyboard.UP) || this.Keyboard.isDown(this.Keyboard.W) || this.mobileKeyPressed === this.Keyboard.UP) {
+            } else if (this.keyboard.isDown(this.keyboard.UP) || this.keyboard.isDown(this.keyboard.W) || this.mobileKeyPressed === this.keyboard.UP) {
                 if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                     this.hero.action = this.hero.STATE.RUNNINGNORTH;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
                 }
                 diry = -1;
-            } else if (this.Keyboard.isDown(this.Keyboard.DOWN) || this.Keyboard.isDown(this.Keyboard.S) || this.mobileKeyPressed === this.Keyboard.DOWN) {
+            } else if (this.keyboard.isDown(this.keyboard.DOWN) || this.keyboard.isDown(this.keyboard.S) || this.mobileKeyPressed === this.keyboard.DOWN) {
                 if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                     this.hero.action = this.hero.STATE.RUNNINGSOUTH;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
                 }
                 diry = 1;
             } else {
                 if (this.hero.action != this.hero.STATE.STOP) {
                     this.hero.action = this.hero.STATE.STOP;
-                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                    this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
                 }
             }
             if (this.hero.resurected) {
-                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.InventoryManager.getSmallObject()));
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
 
             this.hero.move(delta, dirx, diry);
@@ -3426,7 +3442,7 @@ var MainGameState = function () {
                 if (thisObject.canBePickedUp) {
                     var _playerBounds = _this6.hero.getPlayerBounds();
                     if (thisObject.isNear(_playerBounds.xMin, _playerBounds.yMin, _playerBounds.xMax, _playerBounds.yMax)) {
-                        var countLeft = _this6.InventoryManager.addObject(thisObject.value);
+                        var countLeft = _this6.inventoryManager.addObject(thisObject.value);
                         if (countLeft === 0) {
                             _this6.nonCharacterObjects.splice(_this6.nonCharacterObjects.indexOf(thisObject), 1);
                         } else {
@@ -3442,7 +3458,7 @@ var MainGameState = function () {
             this.spawners.forEach(function (spawner) {
                 spawner.update(delta, _this6.projectiles, _this6);
             });
-            this.InventoryManager.update(delta);
+            this.inventoryManager.update(delta);
             this.hero.update(delta);
             this.camera.update();
         }
@@ -3524,8 +3540,8 @@ var MainGameState = function () {
             this._drawLayer(totalLayers - 1);
 
             this.ctx.globalAlpha = 1;
-            this.InventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0, this.ctx.width * 0.3, this.ctx.width * 0.36, this.ctx.width * 0.3, 0);
-            this._drawUI(delta);
+            this.inventoryManager.draw(this.ctx, this.ctx.width * 0.7, 0, this.ctx.width * 0.3, this.ctx.width * 0.36, this.ctx.width * 0.3, 0, delta, this.otherPlayers);
+            this._drawUI();
         }
     }, {
         key: "onMouseDown",
@@ -3551,15 +3567,15 @@ var MainGameState = function () {
                 y: event.type.toLowerCase() === 'mousedown' ? event.pageY : event.touches[0].pageY
             };
             if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.UP;
+                this.mobileKeyPressed = this.keyboard.UP;
             } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.RIGHT;
+                this.mobileKeyPressed = this.keyboard.RIGHT;
             } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.LEFT;
+                this.mobileKeyPressed = this.keyboard.LEFT;
             } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.DOWN;
+                this.mobileKeyPressed = this.keyboard.DOWN;
             } else {
-                this.InventoryManager.onMouseDown(mousePosition);
+                this.inventoryManager.onMouseDown(mousePosition);
             }
         }
     }, {
@@ -3579,7 +3595,7 @@ var MainGameState = function () {
             } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                 this.mobileKeyPressed = 0;
             } else {
-                this.InventoryManager.onMouseUp(mousePosition, this);
+                this.inventoryManager.onMouseUp(mousePosition, this);
             };
         }
     }, {
@@ -3590,16 +3606,16 @@ var MainGameState = function () {
                 y: event.type.toLowerCase() === 'mousemove' ? event.pageY : event.targetTouches[0].pageY
             };
             if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.UP;
+                this.mobileKeyPressed = this.keyboard.UP;
             } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.RIGHT;
+                this.mobileKeyPressed = this.keyboard.RIGHT;
             } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.LEFT;
+                this.mobileKeyPressed = this.keyboard.LEFT;
             } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
-                this.mobileKeyPressed = this.Keyboard.DOWN;
+                this.mobileKeyPressed = this.keyboard.DOWN;
             } else {
                 this.mobileKeyPressed = 0;
-                this.InventoryManager.onMouseMove(mousePosition);
+                this.inventoryManager.onMouseMove(mousePosition);
             }
         }
     }, {
@@ -3683,7 +3699,6 @@ var MainGameState = function () {
 
                 //opacity
                 this.ctx.globalAlpha = 0.7;
-
                 this.ctx.fillStyle = "white";
                 //left
                 this.ctx.fillRect(20, height - 70, buttonedge, buttonedge);
@@ -3696,19 +3711,26 @@ var MainGameState = function () {
                 this.ctx.globalAlpha = 1;
             }
 
-            ty += dy;
-            dy /= 2;
+            tx = 10;
+            ty = 20;
+            dx = 20;
+            dy = 20;
+
+            this.ctx.drawImage(this.imageBarEmpty, 0, 0, this.imageBarEmpty.width, this.imageBarEmpty.height, tx, ty, this.imageBarEmpty.width, this.imageBarEmpty.height);
+
+            this.ctx.drawImage(this.imageBarRedFill, 0, 0, this.hero.health / 100 * this.imageBarRedFill.width, this.imageBarRedFill.height, tx, ty, this.hero.health / 100 * this.imageBarRedFill.width, this.imageBarRedFill.height);
+
+            ty += dy + this.imageBarEmpty.height;
+
+            this.ctx.drawImage(this.imageBarEmpty, 0, 0, this.imageBarEmpty.width, this.imageBarEmpty.height, tx, ty, this.imageBarEmpty.width, this.imageBarEmpty.height);
+
+            if (this.hero.xp > 0) {
+                this.ctx.drawImage(this.imageBarBlueFill, 0, 0, this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width, this.imageBarBlueFill.height, tx, ty, this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width, this.imageBarBlueFill.height);
+            }
 
             this.ctx.font = "22px Arial";
             this.ctx.fillStyle = "white";
-            this.ctx.fillText("Player:", tx, ty += dy);
-            this.ctx.fillText("x: " + this.hero.x, tx, ty += dy);
-            this.ctx.fillText("y: " + this.hero.y, tx, ty += dy);
-            this.ctx.fillText("tileLevel: " + this.hero.tileLevel, tx, ty += dy);
-            this.ctx.fillText("health: " + this.hero.health, tx, ty += dy);
-            this.ctx.fillText("armor: " + this.hero.armor, tx, ty += dy);
-            this.ctx.fillText("players connected: " + (this.otherPlayers.length + 1), tx, ty += dy);
-            this.ctx.fillText("fps: " + delta === 0 ? 0 : Math.round(1 / delta * 10) / 10, tx, ty += dy);
+            this.ctx.fillText(this.hero.level, tx + dx, ty + dy * 1.5);
         }
     }, {
         key: "_drawLayer",
@@ -3874,6 +3896,8 @@ var Keyboard = function () {
         //this.X = 88;
         this.C = 67;
         this.I = 73;
+        this.T = 84;
+        this.Q = 81;
         this._nums = [];
         for (var i = 0; i <= 9; i++) {
             this._nums.push({
@@ -4119,7 +4143,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DroppedItem = function (_NonCharacterObject) {
     _inherits(DroppedItem, _NonCharacterObject);
 
-    function DroppedItem(Loader, id, x, y, width, height, type, count) {
+    function DroppedItem(loader, id, x, y, width, height, type, count) {
         _classCallCheck(this, DroppedItem);
 
         var _this = _possibleConstructorReturn(this, (DroppedItem.__proto__ || Object.getPrototypeOf(DroppedItem)).call(this, id, x, y, width, height, 0, false));
@@ -4128,158 +4152,158 @@ var DroppedItem = function (_NonCharacterObject) {
 
         switch (type) {
             case "coin":
-                _this.setImage(Loader.getImage('coin'));
-                _this.value = new _Coin2.default(Loader, count);
+                _this.setImage(loader.getImage('coin'));
+                _this.value = new _Coin2.default(loader, count);
                 break;
 
             case "Armor_1":
-                _this.setImage(Loader.getImage('armor_1'));
-                _this.value = new _Armor_2.default(Loader, count);
+                _this.setImage(loader.getImage('armor_1'));
+                _this.value = new _Armor_2.default(loader, count);
                 break;
 
             case "Armor_2":
-                _this.setImage(Loader.getImage('armor_2'));
-                _this.value = new _Armor_4.default(Loader, count);
+                _this.setImage(loader.getImage('armor_2'));
+                _this.value = new _Armor_4.default(loader, count);
                 break;
 
             case "Axe_1":
-                _this.setImage(Loader.getImage('axe_1'));
-                _this.value = new _Axe_2.default(Loader, count);
+                _this.setImage(loader.getImage('axe_1'));
+                _this.value = new _Axe_2.default(loader, count);
                 break;
 
             case "Axe_2":
-                _this.setImage(Loader.getImage('axe_2'));
-                _this.value = new _Axe_4.default(Loader, count);
+                _this.setImage(loader.getImage('axe_2'));
+                _this.value = new _Axe_4.default(loader, count);
                 break;
 
             case "Axe_3":
-                _this.setImage(Loader.getImage('axe_3'));
-                _this.value = new _Axe_6.default(Loader, count);
+                _this.setImage(loader.getImage('axe_3'));
+                _this.value = new _Axe_6.default(loader, count);
                 break;
 
             case "Boots_1":
-                _this.setImage(Loader.getImage('boots_1'));
-                _this.value = new _Boots_2.default(Loader, count);
+                _this.setImage(loader.getImage('boots_1'));
+                _this.value = new _Boots_2.default(loader, count);
                 break;
 
             case "Boots_2":
-                _this.setImage(Loader.getImage('boots_2'));
-                _this.value = new _Boots_4.default(Loader, count);
+                _this.setImage(loader.getImage('boots_2'));
+                _this.value = new _Boots_4.default(loader, count);
                 break;
 
             case "Boots_3":
-                _this.setImage(Loader.getImage('boots_3'));
-                _this.value = new _Boots_6.default(Loader, count);
+                _this.setImage(loader.getImage('boots_3'));
+                _this.value = new _Boots_6.default(loader, count);
                 break;
 
             case "Bow_1":
-                _this.setImage(Loader.getImage('bow_1'));
-                _this.value = new _Bow_2.default(Loader, count);
+                _this.setImage(loader.getImage('bow_1'));
+                _this.value = new _Bow_2.default(loader, count);
                 break;
 
             case "Bow_2":
-                _this.setImage(Loader.getImage('bow_2'));
-                _this.value = new _Bow_4.default(Loader, count);
+                _this.setImage(loader.getImage('bow_2'));
+                _this.value = new _Bow_4.default(loader, count);
                 break;
 
             case "Bow_3":
-                _this.setImage(Loader.getImage('bow_3'));
-                _this.value = new _Bow_6.default(Loader, count);
+                _this.setImage(loader.getImage('bow_3'));
+                _this.value = new _Bow_6.default(loader, count);
                 break;
 
             case "Empty_bottle_1":
-                _this.setImage(Loader.getImage('empty_bottle_1'));
-                _this.value = new _Empty_bottle_2.default(Loader, count);
+                _this.setImage(loader.getImage('empty_bottle_1'));
+                _this.value = new _Empty_bottle_2.default(loader, count);
                 break;
 
             case "Empty_bottle_2":
-                _this.setImage(Loader.getImage('empty_bottle_2'));
-                _this.value = new _Empty_bottle_4.default(Loader, count);
+                _this.setImage(loader.getImage('empty_bottle_2'));
+                _this.value = new _Empty_bottle_4.default(loader, count);
                 break;
 
             case "Empty_bottle_3":
-                _this.setImage(Loader.getImage('empty_bottle_3'));
-                _this.value = new _Empty_bottle_6.default(Loader, count);
+                _this.setImage(loader.getImage('empty_bottle_3'));
+                _this.value = new _Empty_bottle_6.default(loader, count);
                 break;
 
             case "Empty_bottle_4":
-                _this.setImage(Loader.getImage('empty_bottle_4'));
-                _this.value = new _Empty_bottle_8.default(Loader, count);
+                _this.setImage(loader.getImage('empty_bottle_4'));
+                _this.value = new _Empty_bottle_8.default(loader, count);
                 break;
 
             case "Health_bottle_1":
-                _this.setImage(Loader.getImage('health_bottle_1'));
-                _this.value = new _Health_bottle_2.default(Loader, count);
+                _this.setImage(loader.getImage('health_bottle_1'));
+                _this.value = new _Health_bottle_2.default(loader, count);
                 break;
 
             case "Health_bottle_2":
-                _this.setImage(Loader.getImage('health_bottle_2'));
-                _this.value = new _Health_bottle_4.default(Loader, count);
+                _this.setImage(loader.getImage('health_bottle_2'));
+                _this.value = new _Health_bottle_4.default(loader, count);
                 break;
 
             case "Health_bottle_3":
-                _this.setImage(Loader.getImage('health_bottle_3'));
-                _this.value = new _Health_bottle_6.default(Loader, count);
+                _this.setImage(loader.getImage('health_bottle_3'));
+                _this.value = new _Health_bottle_6.default(loader, count);
                 break;
 
             case "Health_bottle_4":
-                _this.setImage(Loader.getImage('health_bottle_4'));
-                _this.value = new _Health_bottle_8.default(Loader, count);
+                _this.setImage(loader.getImage('health_bottle_4'));
+                _this.value = new _Health_bottle_8.default(loader, count);
                 break;
 
             case "Helmet_1":
-                _this.setImage(Loader.getImage('helmet_1'));
-                _this.value = new _Helmet_2.default(Loader, count);
+                _this.setImage(loader.getImage('helmet_1'));
+                _this.value = new _Helmet_2.default(loader, count);
                 break;
 
             case "Helmet_2":
-                _this.setImage(Loader.getImage('helmet_2'));
-                _this.value = new _Helmet_4.default(Loader, count);
+                _this.setImage(loader.getImage('helmet_2'));
+                _this.value = new _Helmet_4.default(loader, count);
                 break;
 
             case "Mace":
-                _this.setImage(Loader.getImage('mace'));
-                _this.value = new _Mace2.default(Loader, count);
+                _this.setImage(loader.getImage('mace'));
+                _this.value = new _Mace2.default(loader, count);
                 break;
 
             case "Shield_1":
-                _this.setImage(Loader.getImage('shield_1'));
-                _this.value = new _Shield_2.default(Loader, count);
+                _this.setImage(loader.getImage('shield_1'));
+                _this.value = new _Shield_2.default(loader, count);
                 break;
 
             case "Shield_2":
-                _this.setImage(Loader.getImage('shield_2'));
-                _this.value = new _Shield_4.default(Loader, count);
+                _this.setImage(loader.getImage('shield_2'));
+                _this.value = new _Shield_4.default(loader, count);
                 break;
 
             case "Shield_3":
-                _this.setImage(Loader.getImage('shield_3'));
-                _this.value = new _Shield_6.default(Loader, count);
+                _this.setImage(loader.getImage('shield_3'));
+                _this.value = new _Shield_6.default(loader, count);
                 break;
 
             case "Shield_4":
-                _this.setImage(Loader.getImage('shield_4'));
-                _this.value = new _Shield_8.default(Loader, count);
+                _this.setImage(loader.getImage('shield_4'));
+                _this.value = new _Shield_8.default(loader, count);
                 break;
 
             case "Spear":
-                _this.setImage(Loader.getImage('spear'));
-                _this.value = new _Spear2.default(Loader, count);
+                _this.setImage(loader.getImage('spear'));
+                _this.value = new _Spear2.default(loader, count);
                 break;
 
             case "Sword_1":
-                _this.setImage(Loader.getImage('sword_1'));
-                _this.value = new _Sword_2.default(Loader, count);
+                _this.setImage(loader.getImage('sword_1'));
+                _this.value = new _Sword_2.default(loader, count);
                 break;
 
             case "Sword_2":
-                _this.setImage(Loader.getImage('sword_2'));
-                _this.value = new _Sword_4.default(Loader, count);
+                _this.setImage(loader.getImage('sword_2'));
+                _this.value = new _Sword_4.default(loader, count);
                 break;
 
             case "Sword_3":
-                _this.setImage(Loader.getImage('sword_3'));
-                _this.value = new _Sword_6.default(Loader, count);
+                _this.setImage(loader.getImage('sword_3'));
+                _this.value = new _Sword_6.default(loader, count);
                 break;
 
             default:
@@ -4335,7 +4359,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Spawner = function () {
-    function Spawner(bounds, type, Loader, count, map, id, units) {
+    function Spawner(bounds, type, loader, count, map, id, units) {
         var _this = this;
 
         _classCallCheck(this, Spawner);
@@ -4344,7 +4368,7 @@ var Spawner = function () {
         this.id = id;
         this.bounds = bounds;
         this.type = type;
-        this.Loader = Loader;
+        this.loader = loader;
         this.count = count;
         this.map = map;
         this.units = [];
@@ -4383,26 +4407,26 @@ var Spawner = function () {
                     if (unit.health > 0) {
                         switch (unit.type) {
                             case "Goblins":
-                                sound = _this2.Loader.getSound("goblin-death");
+                                sound = _this2.loader.getSound("goblin-death");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
                             case "Sheep":
-                                if (random <= 3) sound = _this2.Loader.getSound("sheep");else sound = _this2.Loader.getSound("sheep-2");
+                                if (random <= 3) sound = _this2.loader.getSound("sheep");else sound = _this2.loader.getSound("sheep-2");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
 
                             case "Slimes":
-                                sound = _this2.Loader.getSound("slime");
+                                sound = _this2.loader.getSound("slime");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
                             default:
-                                sound = _this2.Loader.getSound("default");
+                                sound = _this2.loader.getSound("default");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
@@ -4411,31 +4435,35 @@ var Spawner = function () {
                     } else {
                         switch (unit.type) {
                             case "Goblins":
-                                sound = _this2.Loader.getSound("goblin-death-2");
+                                parent.hero.stats.goblinKills++;
+                                sound = _this2.loader.getSound("goblin-death-2");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
                             case "Sheep":
-                                sound = _this2.Loader.getSound("sheep-3");
+                                parent.hero.stats.sheepKills++;
+                                sound = _this2.loader.getSound("sheep-3");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
 
                             case "Slimes":
-                                sound = _this2.Loader.getSound("slime");
+                                parent.hero.stats.slimeKills++;
+                                sound = _this2.loader.getSound("slime");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
                             default:
-                                sound = _this2.Loader.getSound("default");
+                                sound = _this2.loader.getSound("default");
                                 sound.loop = false;
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
                         }
+                        parent.hero.xp += unit.xp;
                         _this2.units.splice(_this2.units.indexOf(unit), 1);
                     }
                 }
@@ -4496,15 +4524,15 @@ var Spawner = function () {
                 y = Math.random() * this.bounds.height + this.bounds.y;
                 switch (type) {
                     case "Goblins":
-                        unit = new _Goblin2.default(this.Loader, x, y, this.map, this.bounds);
+                        unit = new _Goblin2.default(this.loader, x, y, this.map, this.bounds);
                         break;
 
                     case "Sheep":
-                        unit = new _Sheep2.default(this.Loader, x, y, this.map, this.bounds);
+                        unit = new _Sheep2.default(this.loader, x, y, this.map, this.bounds);
                         break;
 
                     case "Slimes":
-                        unit = new _Slime2.default(this.Loader, x, y, this.map, this.bounds);
+                        unit = new _Slime2.default(this.loader, x, y, this.map, this.bounds);
                         break;
 
                     default:
@@ -4526,15 +4554,15 @@ var Spawner = function () {
             var newUnit = void 0;
             switch (unit.type) {
                 case "Goblins":
-                    newUnit = new _Goblin2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    newUnit = new _Goblin2.default(this.loader, unit.x, unit.y, this.map, this.bounds);
                     break;
 
                 case "Sheep":
-                    newUnit = new _Sheep2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    newUnit = new _Sheep2.default(this.loader, unit.x, unit.y, this.map, this.bounds);
                     break;
 
                 case "Slimes":
-                    newUnit = new _Slime2.default(this.Loader, unit.x, unit.y, this.map, this.bounds);
+                    newUnit = new _Slime2.default(this.loader, unit.x, unit.y, this.map, this.bounds);
                     break;
 
                 default:
@@ -4594,12 +4622,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Sheep = function (_NPCObject) {
     _inherits(Sheep, _NPCObject);
 
-    function Sheep(Loader, x, y, map, bounds) {
+    function Sheep(loader, x, y, map, bounds) {
         _classCallCheck(this, Sheep);
 
-        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, "Sheep", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 160, true, map, bounds));
+        var _this = _possibleConstructorReturn(this, (Sheep.__proto__ || Object.getPrototypeOf(Sheep)).call(this, "Sheep", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 10, 10, 3, 160, 5, true, map, bounds));
 
-        _this.setTilesImage(Loader.getImage('sheep'), 4, 4, 4);
+        _this.setTilesImage(loader.getImage('sheep'), 4, 4, 4);
         return _this;
     }
 
@@ -4634,12 +4662,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Slime = function (_NPCObject) {
     _inherits(Slime, _NPCObject);
 
-    function Slime(Loader, x, y, map, bounds) {
+    function Slime(loader, x, y, map, bounds) {
         _classCallCheck(this, Slime);
 
-        var _this = _possibleConstructorReturn(this, (Slime.__proto__ || Object.getPrototypeOf(Slime)).call(this, "Slimes", x, y, map.drawSize * 2, map.drawSize * 2, 500, 10, 3, 80, false, map, bounds));
+        var _this = _possibleConstructorReturn(this, (Slime.__proto__ || Object.getPrototypeOf(Slime)).call(this, "Slimes", x, y, map.drawSize * 2, map.drawSize * 2, 500, 10, 3, 80, 100, false, map, bounds));
 
-        _this.setTilesImage(Loader.getImage('slime'), 4, 4, 4);
+        _this.setTilesImage(loader.getImage('slime'), 4, 4, 4);
         return _this;
     }
 
@@ -4664,7 +4692,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Hero = function () {
-    function Hero(map, x, y, id, health, tileLevel, token, Loader) {
+    function Hero(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, token, loader) {
         _classCallCheck(this, Hero);
 
         this.map = map;
@@ -4672,7 +4700,7 @@ var Hero = function () {
         this.y = y;
         this.startX = 3200;
         this.startY = 3200;
-        this.Loader = Loader;
+        this.loader = loader;
         this.debugging = false;
         this.topText = [];
         this.token = token;
@@ -4699,8 +4727,8 @@ var Hero = function () {
         };
 
         this.action = this.STATE.STOP;
-        this.image = this.Loader.getImage('hero');
-        this.deathAnimation = this.Loader.getImage('death');
+        this.image = this.loader.getImage('hero');
+        this.deathAnimation = this.loader.getImage('death');
         this.deathAnimationCols = 5;
         this.deathAnimationRows = 3;
         this.deadTime = 0;
@@ -4709,10 +4737,22 @@ var Hero = function () {
         this.dead = false;
         this.resurected = false;
 
-        this.deathSound = this.Loader.getSound("explosion");
+        this.deathSound = this.loader.getSound("explosion");
 
         this.speed = 256;
         this.id = id;
+        this.level = level === undefined || level <= 0 ? 1 : level;
+        this.xp = xp === undefined ? 0 : xp;
+        this.questsCompleted = questsCompleted === undefined ? 0 : questsCompleted;
+
+        try {
+            this.stats = JSON.parse(stats);
+        } catch (error) {
+            this.stats = {};
+            this.stats.goblinKills = 0;
+            this.stats.sheepKills = 0;
+            this.stats.slimeKills = 0;
+        }
 
         if (this.debugging) {
             this.speed = 512;
@@ -4731,6 +4771,10 @@ var Hero = function () {
             smallObject.tileLevel = this.tileLevel;
             smallObject.health = this.health;
             smallObject.speed = this.speed;
+            smallObject.xp = this.xp;
+            smallObject.level = this.level;
+            smallObject.questsCompleted = this.questsCompleted;
+            smallObject.stats = JSON.stringify(this.stats);
             smallObject.width = this.width;
             smallObject.height = this.height;
             smallObject.resurected = this.resurected;
@@ -4892,6 +4936,10 @@ var Hero = function () {
                         }
                     });
                 }
+                if (this.xp >= this.level * 100) {
+                    this.xp -= this.level * 100;
+                    this.level += 1;
+                }
             }
         }
     }, {
@@ -5024,6 +5072,10 @@ var _InventoryIcon = __webpack_require__(55);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
+var _QuestManager = __webpack_require__(63);
+
+var _QuestManager2 = _interopRequireDefault(_QuestManager);
+
 var _Arrow_ = __webpack_require__(37);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
@@ -5032,12 +5084,28 @@ var _DamageArea_ = __webpack_require__(40);
 
 var _DamageArea_2 = _interopRequireDefault(_DamageArea_);
 
+var _Empty_bottle_ = __webpack_require__(2);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+var _Empty_bottle_3 = __webpack_require__(3);
+
+var _Empty_bottle_4 = _interopRequireDefault(_Empty_bottle_3);
+
+var _Empty_bottle_5 = __webpack_require__(4);
+
+var _Empty_bottle_6 = _interopRequireDefault(_Empty_bottle_5);
+
+var _Empty_bottle_7 = __webpack_require__(5);
+
+var _Empty_bottle_8 = _interopRequireDefault(_Empty_bottle_7);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var InventoryManager = function () {
-    function InventoryManager(inventoryObjects, Loader, hero, damageAreas, map) {
+    function InventoryManager(inventoryObjects, loader, hero, damageAreas, map) {
         var _this = this;
 
         _classCallCheck(this, InventoryManager);
@@ -5055,21 +5123,21 @@ var InventoryManager = function () {
         //    inventoryObject.inventoryLocation = i++;
         //});
 
+        this.imageCharacter = loader.getImage("characterModel");
+        this.imageBack = loader.getImage("inventoryTileSet");
+        this.imageIconBar = loader.getImage("iconbar");
+        this.imageLevelToLow = loader.getImage("levelToLow");
         this.hero = hero;
         this.iterations = 8;
-        this.imageCharacter = Loader.getImage("characterModel");
-        this.imageBack = Loader.getImage("inventoryTileSet");
+        this.loader = loader;
         this.damageAreas = damageAreas;
         this.map = map;
         this.backCols = 4;
         this.backRows = 4;
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
-        this.imageIconBar = Loader.getImage("iconbar");
-        this.Loader = Loader;
-        this.iconBarCols = 3;
+        this.loader = loader;
         this.iconBarRows = 4;
-        this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
         this.selectedAction = 1;
         this.mousePosition = {
@@ -5081,17 +5149,22 @@ var InventoryManager = function () {
             HIDDEN: 0,
             INVENTORY: 1,
             CHARACTER: 2,
-            COMBAT: 3
+            STATS: 3,
+            QUESTS: 4
         };
         this.iconBar = [];
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.STATS, this.imageIconBar, 3, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.QUESTS, this.imageIconBar, 4, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (var _i = 1; _i <= 10; _i++) {
             this.actionBarIcons[_i === 10 ? 0 : _i] = new _InventoryIcon2.default(_i === 10 ? 0 : _i, this.imageIconBar, 0, this.tileIconBarHeight);
             if (this.selectedAction === (_i === 10 ? 0 : _i)) this.actionBarIcons[_i === 10 ? 0 : _i].isSelected = true;
         }
+
+        this.questManager = new _QuestManager2.default(this.hero, this, loader);
 
         this.state = this.STATES.HIDDEN;
     }
@@ -5123,6 +5196,10 @@ var InventoryManager = function () {
                 checkState = this.STATES.INVENTORY;
             } else if (keyCode === keyboard.C) {
                 checkState = this.STATES.CHARACTER;
+            } else if (keyCode === keyboard.T) {
+                checkState = this.STATES.STATS;
+            } else if (keyCode === keyboard.Q) {
+                checkState = this.STATES.QUESTS;
             }
             this.iconBar.forEach(function (icon) {
                 if (icon.state === checkState) {
@@ -5185,6 +5262,7 @@ var InventoryManager = function () {
                     _this4.hero.armor += inventoryObject.strength;
                 }
             });
+            this.questManager.update();
         }
     }, {
         key: "addObject",
@@ -5296,58 +5374,7 @@ var InventoryManager = function () {
                     });
                 }
                 if ((!this.isInInventory(mousePosition.x, mousePosition.y) || this.state === this.STATES.HIDDEN) && !this.isInActionBar(mousePosition.x, mousePosition.y) && !this.isInIconBar(mousePosition.x, mousePosition.y)) {
-                    this.inventory.forEach(function (inventoryObject) {
-                        var location = _this6.selectedAction - 1;
-                        if (location < 0) location = 9;
-                        if (inventoryObject.actionLocation === location) {
-                            if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.RANGED) {
-                                if (inventoryObject.interval === 0) {
-                                    inventoryObject.interval = inventoryObject.intervalTime;
-                                    //console.log('bow used, creating ' + inventoryObject.createObjectName);
-                                    switch (inventoryObject.createObjectName) {
-                                        case 'Arrow_1':
-                                            var angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
-                                            var projectile = new _Arrow_2.default(Math.random(), _this6.Loader, _this6.hero.x, _this6.hero.y, angleInRadians, inventoryObject.strength, _this6.map);
-                                            sendNewDamageAreaListener.sendNewDamageArea(projectile);
-                                            _this6.damageAreas.push(projectile);
-                                            //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
-                                            if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
-                                            } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGNORTH);
-                                            } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGSOUTH);
-                                            } else {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGWEST);
-                                            }
-                                            break;
-                                    }
-                                }
-                            } else if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.MELEE) {
-                                if (inventoryObject.interval === 0) {
-                                    inventoryObject.interval = inventoryObject.intervalTime;
-                                    //console.log('melee used, creating ' + inventoryObject.createObjectName);
-                                    switch (inventoryObject.createObjectName) {
-                                        case 'DamageArea_1':
-                                            var _angleInRadians = Math.atan2(mousePosition.y - _this6.hero.screenY, mousePosition.x - _this6.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                            var damageArea = new _DamageArea_2.default(Math.random(), _this6.Loader, _this6.hero.x - _this6.hero.width / 2 + _this6.hero.width / 3 * Math.cos(_angleInRadians), _this6.hero.y - _this6.hero.height / 2 + _this6.hero.height / 3 * Math.sin(_angleInRadians), _angleInRadians, inventoryObject.strength, _this6.map);
-                                            sendNewDamageAreaListener.sendNewDamageArea(damageArea);
-                                            _this6.damageAreas.push(damageArea);
-                                            if (_angleInRadians >= -Math.PI / 4 && _angleInRadians <= Math.PI / 4) {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGEAST);
-                                            } else if (_angleInRadians <= -Math.PI / 4 && _angleInRadians >= -Math.PI / 4 * 3) {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGNORTH);
-                                            } else if (_angleInRadians >= Math.PI / 4 && _angleInRadians <= Math.PI / 4 * 3) {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGSOUTH);
-                                            } else {
-                                                _this6.hero.setDirection(_this6.hero.STATE.RUNNINGWEST);
-                                            }
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                    });
+                    this.fireObject(mousePosition, sendNewDamageAreaListener);
                 }
             }
             this.inventory.forEach(function (inventoryObject) {
@@ -5355,9 +5382,63 @@ var InventoryManager = function () {
             });
         }
     }, {
+        key: "fireObject",
+        value: function fireObject(mousePosition, sendNewDamageAreaListener) {
+            var _this7 = this;
+
+            this.inventory.forEach(function (inventoryObject) {
+                var location = _this7.selectedAction - 1;
+                if (location < 0) location = 9;
+                if (inventoryObject.actionLocation === location && inventoryObject.interval === 0 && inventoryObject.levelRequired <= _this7.hero.level) {
+                    if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.RANGED) {
+                        inventoryObject.interval = inventoryObject.intervalTime;
+                        //console.log('bow used, creating ' + inventoryObject.createObjectName);
+                        switch (inventoryObject.createObjectName) {
+                            case 'Arrow_1':
+                                var angleInRadians = Math.atan2(mousePosition.y - _this7.hero.screenY, mousePosition.x - _this7.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
+                                var projectile = new _Arrow_2.default(Math.random(), _this7.loader, _this7.hero.x, _this7.hero.y, angleInRadians, inventoryObject.strength, _this7.map);
+                                sendNewDamageAreaListener.sendNewDamageArea(projectile);
+                                _this7.damageAreas.push(projectile);
+                                //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
+                                if (angleInRadians >= -Math.PI / 4 && angleInRadians <= Math.PI / 4) {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGEAST);
+                                } else if (angleInRadians <= -Math.PI / 4 && angleInRadians >= -Math.PI / 4 * 3) {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGNORTH);
+                                } else if (angleInRadians >= Math.PI / 4 && angleInRadians <= Math.PI / 4 * 3) {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGSOUTH);
+                                } else {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGWEST);
+                                }
+                                break;
+                        }
+                    } else if (inventoryObject.weapontype === inventoryObject.WEAPONTYPES.MELEE) {
+                        inventoryObject.interval = inventoryObject.intervalTime;
+                        //console.log('melee used, creating ' + inventoryObject.createObjectName);
+                        switch (inventoryObject.createObjectName) {
+                            case 'DamageArea_1':
+                                var _angleInRadians = Math.atan2(mousePosition.y - _this7.hero.screenY, mousePosition.x - _this7.hero.screenX); // https://gist.github.com/conorbuck/2606166
+                                var damageArea = new _DamageArea_2.default(Math.random(), _this7.loader, _this7.hero.x - _this7.hero.width / 2 + _this7.hero.width / 3 * Math.cos(_angleInRadians), _this7.hero.y - _this7.hero.height / 2 + _this7.hero.height / 3 * Math.sin(_angleInRadians), _angleInRadians, inventoryObject.strength, _this7.map);
+                                sendNewDamageAreaListener.sendNewDamageArea(damageArea);
+                                _this7.damageAreas.push(damageArea);
+                                if (_angleInRadians >= -Math.PI / 4 && _angleInRadians <= Math.PI / 4) {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGEAST);
+                                } else if (_angleInRadians <= -Math.PI / 4 && _angleInRadians >= -Math.PI / 4 * 3) {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGNORTH);
+                                } else if (_angleInRadians >= Math.PI / 4 && _angleInRadians <= Math.PI / 4 * 3) {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGSOUTH);
+                                } else {
+                                    _this7.hero.setDirection(_this7.hero.STATE.RUNNINGWEST);
+                                }
+                                break;
+                        }
+                    }
+                }
+            });
+        }
+    }, {
         key: "onMouseMove",
         value: function onMouseMove(mousePosition, mousePressed) {
-            var _this7 = this;
+            var _this8 = this;
 
             var isHolding = false;
             this.iconBar.forEach(function (icon) {
@@ -5370,7 +5451,7 @@ var InventoryManager = function () {
                 if (inventoryObject.isHolding) {
                     isHolding = true;
                     if (!inventoryObject.isInObject(mousePosition.x, mousePosition.y)) {
-                        _this7.movingObject = true;
+                        _this8.movingObject = true;
                     }
                 }
                 inventoryObject.onMouseMove(mousePosition);
@@ -5524,27 +5605,67 @@ var InventoryManager = function () {
     }, {
         key: "useObject",
         value: function useObject() {
-            var _this8 = this;
+            var _this9 = this;
 
             this.inventory.forEach(function (inventoryObject) {
                 if (inventoryObject.isHolding && inventoryObject.isUsable) {
-                    //console.log(inventoryObject);
                     if (inventoryObject.usage === inventoryObject.USES.HEALTH) {
-                        var worked = _this8.hero.heal(inventoryObject.strength);
+                        var worked = _this9.hero.heal(inventoryObject.strength);
                         if (worked) {
                             if (inventoryObject.usedObject !== null) {
-                                var copyOfObject = JSON.parse(JSON.stringify(inventoryObject.usedObject));
-                                _this8.addObject(copyOfObject);
+                                switch (inventoryObject.usedObject) {
+                                    case "empty_bottle_1":
+                                        _this9.addObject(new _Empty_bottle_2.default(_this9.loader, 1, -2, -1));
+                                        break;
+                                    case "empty_bottle_2":
+                                        _this9.addObject(new _Empty_bottle_4.default(_this9.loader, 1, -2, -1));
+                                        break;
+                                    case "empty_bottle_3":
+                                        _this9.addObject(new _Empty_bottle_6.default(_this9.loader, 1, -2, -1));
+                                        break;
+                                    case "empty_bottle_4":
+                                        _this9.addObject(new _Empty_bottle_8.default(_this9.loader, 1, -2, -1));
+                                        break;
+                                }
                             }
                             if (inventoryObject.stackCount > 1) {
                                 inventoryObject.stackCount--;
                             } else {
-                                _this8.inventory.splice(_this8.inventory.indexOf(inventoryObject), 1);
+                                _this9.inventory.splice(_this9.inventory.indexOf(inventoryObject), 1);
                             }
                         }
                     }
                 }
             });
+        }
+    }, {
+        key: "objectsInInventory",
+        value: function objectsInInventory() {
+            var inventoryObjectsCount = 0;
+            var distinctItems = [];
+            this.inventory.forEach(function (item) {
+                if (item.typeId !== "coin") {
+                    inventoryObjectsCount += item.stackCount;
+                }
+                if (distinctItems.indexOf(item.typeId) === -1) {
+                    distinctItems.push(item.typeId);
+                }
+            });
+            return {
+                count: inventoryObjectsCount,
+                distinctCount: distinctItems.length
+            };
+        }
+    }, {
+        key: "countObjectsOfType",
+        value: function countObjectsOfType(typeId) {
+            var inventoryObjectsCount = 0;
+            this.inventory.forEach(function (item) {
+                if (item.typeId === typeId) {
+                    inventoryObjectsCount += item.stackCount;
+                }
+            });
+            return inventoryObjectsCount;
         }
     }, {
         key: "getSmallObject",
@@ -5557,7 +5678,7 @@ var InventoryManager = function () {
         }
     }, {
         key: "draw",
-        value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction) {
+        value: function draw(ctx, xIcon, yIcon, width, height, xAction, yAction, delta, otherPlayers) {
             var drawWidth = Math.round(width / this.iterations * 5) / 5;
             var drawHeight = Math.round(height / (this.iterations + 1));
             this.yTop = yIcon + drawHeight;
@@ -5583,6 +5704,10 @@ var InventoryManager = function () {
                     this.drawCharacter(ctx, xIcon, this.yTop, drawWidth, drawHeight);
                 } else if (this.state === this.STATES.INVENTORY) {
                     this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
+                } else if (this.state === this.STATES.STATS) {
+                    this.drawStats(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, delta, otherPlayers);
+                } else if (this.state === this.STATES.QUESTS) {
+                    this.drawQuest(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2);
                 }
             }
 
@@ -5634,35 +5759,79 @@ var InventoryManager = function () {
     }, {
         key: "drawInventory",
         value: function drawInventory(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this9 = this;
+            var _this10 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.shownLocation >= 0 && !inventoryObject.isMouseInObject) {
+                if (!(inventoryObject.isHolding && _this10.movingObject) && inventoryObject.shownLocation >= 0 && !inventoryObject.isMouseInObject) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
-                    _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+                    _this10.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this9.movingObject) && inventoryObject.shownLocation >= 0 && inventoryObject.isMouseInObject) {
+                if (!(inventoryObject.isHolding && _this10.movingObject) && inventoryObject.shownLocation >= 0 && inventoryObject.isMouseInObject) {
                     var drawX = x + Math.floor(inventoryObject.shownLocation % iterations) * drawWidth;
                     var drawY = y + Math.floor(inventoryObject.shownLocation / iterations) * drawHeight;
-                    _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+                    _this10.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
             this.inventory.forEach(function (inventoryObject) {
                 // Draw the held object on top of the others
-                if (inventoryObject.isHolding && _this9.movingObject) {
-                    var drawX = _this9.mousePosition.x;
-                    var drawY = _this9.mousePosition.y;
-                    _this9.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+                if (inventoryObject.isHolding && _this10.movingObject) {
+                    var drawX = _this10.mousePosition.x;
+                    var drawY = _this10.mousePosition.y;
+                    _this10.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
+        }
+    }, {
+        key: "drawStats",
+        value: function drawStats(ctx, x, y, delta, otherPlayers) {
+            var tempX = x + 1;
+            var tempY = y + 1;
+            var deltaY = 22;
+            var objectsData = this.objectsInInventory();
+
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "black";
+            this.drawStatsText(ctx, delta, otherPlayers, tempX, tempY, deltaY, objectsData);
+            tempX = x;
+            tempY = y;
+            ctx.fillStyle = "white";
+            this.drawStatsText(ctx, delta, otherPlayers, tempX, tempY, deltaY, objectsData);
+        }
+    }, {
+        key: "drawStatsText",
+        value: function drawStatsText(ctx, delta, otherPlayers, tempX, tempY, deltaY, objectsData) {
+            ctx.fillText("Player location: (" + Math.round(this.hero.x) + ", " + Math.round(this.hero.y) + ", " + this.hero.tileLevel + ")", tempX, tempY += deltaY);
+            ctx.fillText("Health: " + this.hero.health, tempX, tempY += deltaY);
+            ctx.fillText("Armor: " + this.hero.armor, tempX, tempY += deltaY);
+            ctx.fillText("Level: " + this.hero.level, tempX, tempY += deltaY);
+            ctx.fillText("Xp: " + this.hero.xp + "/" + this.hero.level * 100, tempX, tempY += deltaY);
+            ctx.fillText("Quests completed: " + this.hero.questsCompleted + "/6", tempX, tempY += deltaY);
+            ctx.fillText("Players connected: " + (otherPlayers.length + 1), tempX, tempY += deltaY);
+            ctx.fillText("Objects in inventory: " + objectsData.count + " (without money)", tempX, tempY += deltaY);
+            ctx.fillText("Different objects in inventory: " + objectsData.distinctCount + " / 31", tempX, tempY += deltaY);
+            ctx.fillText("Sheep killed: " + this.hero.stats.sheepKills, tempX, tempY += deltaY);
+            ctx.fillText("Goblins killed: " + this.hero.stats.goblinKills, tempX, tempY += deltaY);
+            ctx.fillText("Slimes killed: " + this.hero.stats.slimeKills, tempX, tempY += deltaY);
+        }
+    }, {
+        key: "drawQuest",
+        value: function drawQuest(ctx, x, y) {
+            this.questManager.draw(ctx, x, y);
         }
     }, {
         key: "drawItem",
         value: function drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight) {
             inventoryObject.draw(ctx, drawX, drawY, drawWidth, drawHeight);
+            if (inventoryObject.levelRequired > this.hero.level) {
+                ctx.drawImage(this.imageLevelToLow, // Image
+                drawX, // Target x
+                drawY, // Target y
+                drawWidth, // Target width
+                drawHeight); // Target height
+            }
             if (inventoryObject.stackCount != 1) {
                 ctx.font = "22px Arial";
                 ctx.fillStyle = "white";
@@ -5672,13 +5841,20 @@ var InventoryManager = function () {
     }, {
         key: "drawActionBarItems",
         value: function drawActionBarItems(ctx, x, y, drawWidth, drawHeight, iterations) {
-            var _this10 = this;
+            var _this11 = this;
 
             this.inventory.forEach(function (inventoryObject) {
-                if (!(inventoryObject.isHolding && _this10.movingObject) && inventoryObject.actionLocation >= 0) {
+                if (!(inventoryObject.isHolding && _this11.movingObject) && !inventoryObject.isMouseInObject && inventoryObject.actionLocation >= 0) {
                     var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
                     var drawY = y;
-                    _this10.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+                    _this11.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
+                }
+            });
+            this.inventory.forEach(function (inventoryObject) {
+                if (!(inventoryObject.isHolding && _this11.movingObject) && inventoryObject.isMouseInObject && inventoryObject.actionLocation >= 0) {
+                    var drawX = x + Math.floor(inventoryObject.actionLocation) * drawWidth;
+                    var drawY = y;
+                    _this11.drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight);
                 }
             });
         }
@@ -5792,12 +5968,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var OtherPlayer = function () {
-    function OtherPlayer(hero, Loader, map) {
+    function OtherPlayer(hero, loader, map) {
         _classCallCheck(this, OtherPlayer);
 
         this.x = hero.x;
         this.y = hero.y;
-        this.Loader = Loader;
+        this.loader = loader;
 
         this.imageIndex = 0;
         this.imageState = 0;
@@ -5817,7 +5993,7 @@ var OtherPlayer = function () {
         };
 
         this.action = hero.action;
-        this.image = this.Loader.getImage('otherPlayer');
+        this.image = this.loader.getImage('otherPlayer');
         this.speed = hero.speed;
         this.id = hero.id;
         this.map = map;
@@ -6275,6 +6451,218 @@ exports.default = Map;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 61 */,
+/* 62 */,
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Quest = __webpack_require__(64);
+
+var _Quest2 = _interopRequireDefault(_Quest);
+
+var _Health_bottle_ = __webpack_require__(32);
+
+var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
+
+var _Spear = __webpack_require__(23);
+
+var _Spear2 = _interopRequireDefault(_Spear);
+
+var _Shield_ = __webpack_require__(15);
+
+var _Shield_2 = _interopRequireDefault(_Shield_);
+
+var _Sword_ = __webpack_require__(11);
+
+var _Sword_2 = _interopRequireDefault(_Sword_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var QuestManager = function () {
+    function QuestManager(hero, inventoryManager, loader) {
+        _classCallCheck(this, QuestManager);
+
+        this.hero = hero;
+
+        var i = 0;
+        this.allQuests = [];
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Sheep killer", // Title
+        "Find a sword and kill a sheep with it. \nYou will get 10xp as a reward.", // Description
+        function () {
+            return hero.stats.sheepKills >= 1; // Function returns true when completed
+        }, function () {
+            hero.xp += 10; // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Another empty bottle", // Title
+        "Find at least 10 empty bottles. \nYou will get 10 potions as a reward.", // Description
+        function () {
+            return inventoryManager.countObjectsOfType("empty_bottle_1") + inventoryManager.countObjectsOfType("empty_bottle_2") + inventoryManager.countObjectsOfType("empty_bottle_3") + inventoryManager.countObjectsOfType("empty_bottle_4") >= 10; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Health_bottle_2.default(loader, 10, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "More money", // Title
+        "Get over 1000 coins. \nYou will get a spear as a reward.", // Description
+        function () {
+            return inventoryManager.countObjectsOfType("coin") >= 1000; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Spear2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Level up", // Title
+        "Reach level 3. \nYou will get 100xp as a reward.", // Description
+        function () {
+            return hero.level >= 3; // Function returns true when completed
+        }, function () {
+            hero.xp += 100; // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Hoarder", // Title
+        "Have 200 items in total (coins don't count). \nYou will receive a cool sword.", // Description
+        function () {
+            return inventoryManager.objectsInInventory().count >= 200; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Sword_2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Nothing is safe", // Title
+        "Kill at least 25 sheep, 10 Goblins and 1 Slime. \nYou will receive an awesome shield.", // Description
+        function () {
+            return hero.stats.sheepKills >= 25 && hero.stats.goblinKills >= 10 && hero.stats.slimeKills >= 1; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Shield_2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+    }
+
+    _createClass(QuestManager, [{
+        key: "update",
+        value: function update() {
+            if (this.hero.questsCompleted < this.allQuests.length) {
+                if (this.allQuests[this.hero.questsCompleted].check()) {
+                    this.hero.questsCompleted++;
+                }
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, x, y) {
+            if (this.hero.questsCompleted < this.allQuests.length) {
+                this.allQuests[this.hero.questsCompleted].draw(ctx, x, y);
+            } else {
+                ctx.font = "22px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText("All quests completed.", x + 1, y + 1);
+                ctx.fillStyle = "white";
+                ctx.fillText("All quests completed.", x, y);
+            }
+        }
+    }]);
+
+    return QuestManager;
+}();
+
+exports.default = QuestManager;
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/* Example:
+
+new Quest(1, // id
+    "Sheep killer", // title
+    "Find a sword and kill a sheep with it. You will get 10xp as a reward", // description
+    () => {
+        return this.hero.stats.sheepKills >= 1; // Function returns true when completed
+    },
+    () => {
+        this.hero.xp += 10; // Gives reward
+    })
+
+*/
+
+var Quest = function () {
+    function Quest(id, title, description, checkFunction, rewardFunction) {
+        _classCallCheck(this, Quest);
+
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.descriptionParts = description.split(/[\n]+/);
+        this.checkFunction = checkFunction;
+        this.rewardFunction = rewardFunction;
+        this.completed = false;
+    }
+
+    _createClass(Quest, [{
+        key: "check",
+        value: function check() {
+            if (!this.completed) {
+                if (this.checkFunction()) {
+                    this.rewardFunction();
+                    this.completed = true;
+                    return true;
+                }
+            }
+            return false; // Not completed this time    
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, x, y) {
+            var tx = x + 1,
+                ty = y + 1,
+                dy = 20;
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText(this.title + ":", tx, ty += dy);
+            this.descriptionParts.forEach(function (description) {
+                ctx.fillText(description, tx, ty += dy);
+            });
+            tx = x;
+            ty = y;
+            ctx.fillStyle = "white";
+            ctx.fillText(this.title + ":", tx, ty += dy);
+            this.descriptionParts.forEach(function (description) {
+                ctx.fillText(description, tx, ty += dy);
+            });
+        }
+    }]);
+
+    return Quest;
+}();
+
+exports.default = Quest;
 
 /***/ })
 /******/ ]);
