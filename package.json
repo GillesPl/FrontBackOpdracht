@@ -4,7 +4,8 @@
   "description": "MMORPG game",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --host 0.0.0.0 "
+    "start": "nodemon server.js ",
+    "hostlocal": "nodemon server.js --host 0.0.0.0 "
   },
   "author": "Gilles Platteeuw & William Verhaeghe",
   "license": "ISC",
