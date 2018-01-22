@@ -1,5 +1,5 @@
 export default class Hero {
-    constructor(map, x, y, id, health, tileLevel, xp, level, stats, token, loader) {
+    constructor(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, token, loader) {
         this.map = map;
         this.x = x;
         this.y = y;
@@ -48,6 +48,7 @@ export default class Hero {
         this.id = id;
         this.level = level === undefined || level <= 0 ? 1 : level;
         this.xp = xp === undefined ? 0 : xp;
+        this.questsCompleted = questsCompleted === undefined ? 0 : questsCompleted;
 
         try {
             this.stats = JSON.parse(stats);
@@ -75,6 +76,7 @@ export default class Hero {
         smallObject.speed = this.speed;
         smallObject.xp = this.xp;
         smallObject.level = this.level;
+        smallObject.questsCompleted = this.questsCompleted;
         smallObject.stats = JSON.stringify(this.stats);
         smallObject.width = this.width;
         smallObject.height = this.height;

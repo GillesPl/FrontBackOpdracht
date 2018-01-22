@@ -52,6 +52,7 @@ class Manager {
             health: player.health,
             xp: player.xp,
             level: player.level,
+            questsCompleted: player.questsCompleted,
             items: player.items,
             stats: player.stats,
             position: {

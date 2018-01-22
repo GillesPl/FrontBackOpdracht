@@ -154,6 +154,7 @@ export default class MainGameState {
         this.overwriteHero.token = user.token;
         this.overwriteHero.level = user.level;
         this.overwriteHero.xp = user.xp;
+        this.overwriteHero.questsCompleted = user.questsCompleted;
         this.overwriteHero.stats = user.stats;
         this.overwriteInventory = user.items;
     }
@@ -322,7 +323,8 @@ export default class MainGameState {
             this.keyboard.S
         ], [this.keyboard.I,
             this.keyboard.C,
-            this.keyboard.T
+            this.keyboard.T,
+            this.keyboard.Q
         ]);
 
         this.imageBarEmpty = this.loader.getImage("bar_empty");
@@ -330,7 +332,7 @@ export default class MainGameState {
         this.imageBarRedFill = this.loader.getImage("bar_red_fill");
 
         this.tileAtlas = this.loader.getImage('tiles');
-        this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
+        this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.questsCompleted, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
 
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
         this.loadInventoryObjects();
@@ -764,7 +766,7 @@ export default class MainGameState {
     _drawUI() {
         var tx = 10,
             ty = 20,
-            dy = 40;
+            dy = 20;
 
         //this.ctx.fillStyle = "black";
         //this.ctx.fillRect(tx, ty += dy, 102, 20);
@@ -825,7 +827,7 @@ export default class MainGameState {
 
         this.ctx.font = "22px Arial";
         this.ctx.fillStyle = "white";
-        this.ctx.fillText(this.hero.level, (tx + dy / 2), (ty + dy / 3 * 2));
+        this.ctx.fillText(this.hero.level, (tx + dy), (ty + dy * 1.5));
     }
 
 

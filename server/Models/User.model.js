@@ -31,8 +31,11 @@ var userSchema = new Schema({
         default: Date.now
     },
     position: {
-        type : Object,
-        default : {x: 3200, y:3200}
+        type: Object,
+        default: {
+            x: 3200,
+            y: 3200
+        }
     },
     health: {
         type: Number,
@@ -47,13 +50,16 @@ var userSchema = new Schema({
     },
     level: {
         type: Number,
-        default: 0
+        default: 1
     },
     xp: {
         type: Number,
         default: 0
     },
     stats: {
+        type: String
+    },
+    questsCompleted: {
         type: String
     }
 });

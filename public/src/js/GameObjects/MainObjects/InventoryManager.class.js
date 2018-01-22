@@ -1,4 +1,5 @@
 import InventoryIcon from "./InventoryIcon.class";
+import QuestManager from "../Quests/QuestManager";
 import Arrow_1 from "../Damage/Arrow_1.class";
 import DamageArea_1 from "../Damage/DamageArea_1.class";
 import Empty_bottle_1 from "../InventoryObjects/Empty_bottle_1.class";
@@ -35,9 +36,7 @@ export default class InventoryManager {
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.loader = loader;
-        this.iconBarCols = 4;
         this.iconBarRows = 4;
-        this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
         this.selectedAction = 1;
         this.mousePosition = {
@@ -49,12 +48,14 @@ export default class InventoryManager {
             HIDDEN: 0,
             INVENTORY: 1,
             CHARACTER: 2,
-            STATS: 3
+            STATS: 3,
+            QUESTS: 4
         };
         this.iconBar = [];
         this.iconBar.push(new InventoryIcon(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
         this.iconBar.push(new InventoryIcon(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
         this.iconBar.push(new InventoryIcon(this.STATES.STATS, this.imageIconBar, 3, this.tileIconBarHeight));
+        this.iconBar.push(new InventoryIcon(this.STATES.QUESTS, this.imageIconBar, 4, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (let i = 1; i <= 10; i++) {
@@ -62,6 +63,8 @@ export default class InventoryManager {
             if (this.selectedAction === (i === 10 ? 0 : i))
                 this.actionBarIcons[i === 10 ? 0 : i].isSelected = true;
         }
+
+        this.questManager = new QuestManager(this.hero, this, loader);
 
         this.state = this.STATES.HIDDEN;
     }
@@ -88,6 +91,8 @@ export default class InventoryManager {
             checkState = this.STATES.CHARACTER;
         } else if (keyCode === keyboard.T) {
             checkState = this.STATES.STATS;
+        }else if (keyCode === keyboard.Q) {
+            checkState = this.STATES.QUESTS;
         }
         this.iconBar.forEach(icon => {
             if (icon.state === checkState) {
@@ -146,6 +151,7 @@ export default class InventoryManager {
                 this.hero.armor += inventoryObject.strength;
             }
         });
+        this.questManager.update();
     }
 
     addObject(newObject) {
@@ -528,6 +534,16 @@ export default class InventoryManager {
         };
     }
 
+    countObjectsOfType(typeId) {
+        let inventoryObjectsCount = 0;
+        this.inventory.forEach(item => {
+            if (item.typeId === typeId) {
+                inventoryObjectsCount += item.stackCount;
+            }
+        });
+        return inventoryObjectsCount;
+    }
+
     getSmallObject() {
         let smallObject = [];
         this.inventory.forEach(item => {
@@ -564,6 +580,8 @@ export default class InventoryManager {
                 this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
             } else if (this.state === this.STATES.STATS) {
                 this.drawStats(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, delta, otherPlayers);
+            } else if (this.state === this.STATES.QUESTS) {
+                this.drawQuest(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2);
             }
         }
 
@@ -665,12 +683,17 @@ export default class InventoryManager {
         ctx.fillText("Armor: " + this.hero.armor, tempX, tempY += deltaY);
         ctx.fillText("Level: " + this.hero.level, tempX, tempY += deltaY);
         ctx.fillText("Xp: " + this.hero.xp + "/" + this.hero.level * 100, tempX, tempY += deltaY);
+        ctx.fillText("Quests completed: " + this.hero.questsCompleted + "/6", tempX, tempY += deltaY);
         ctx.fillText("Players connected: " + (otherPlayers.length + 1), tempX, tempY += deltaY);
         ctx.fillText("Objects in inventory: " + objectsData.count + " (without money)", tempX, tempY += deltaY);
         ctx.fillText("Different objects in inventory: " + objectsData.distinctCount + " / 31", tempX, tempY += deltaY);
         ctx.fillText("Sheep killed: " + this.hero.stats.sheepKills, tempX, tempY += deltaY);
         ctx.fillText("Goblins killed: " + this.hero.stats.goblinKills, tempX, tempY += deltaY);
         ctx.fillText("Slimes killed: " + this.hero.stats.slimeKills, tempX, tempY += deltaY);
+    }
+
+    drawQuest(ctx, x, y) {
+        this.questManager.draw(ctx, x, y);
     }
 
     drawItem(ctx, inventoryObject, drawX, drawY, drawWidth, drawHeight) {

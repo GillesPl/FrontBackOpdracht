@@ -3053,6 +3053,7 @@ var MainGameState = function () {
             this.overwriteHero.token = user.token;
             this.overwriteHero.level = user.level;
             this.overwriteHero.xp = user.xp;
+            this.overwriteHero.questsCompleted = user.questsCompleted;
             this.overwriteHero.stats = user.stats;
             this.overwriteInventory = user.items;
         }
@@ -3226,14 +3227,14 @@ var MainGameState = function () {
         key: "init",
         value: function init() {
             this.keyboard = new _Keyboard2.default(this);
-            this.keyboard.listenForEvents([this.keyboard.LEFT, this.keyboard.RIGHT, this.keyboard.UP, this.keyboard.DOWN, this.keyboard.A, this.keyboard.D, this.keyboard.W, this.keyboard.S], [this.keyboard.I, this.keyboard.C, this.keyboard.T]);
+            this.keyboard.listenForEvents([this.keyboard.LEFT, this.keyboard.RIGHT, this.keyboard.UP, this.keyboard.DOWN, this.keyboard.A, this.keyboard.D, this.keyboard.W, this.keyboard.S], [this.keyboard.I, this.keyboard.C, this.keyboard.T, this.keyboard.Q]);
 
             this.imageBarEmpty = this.loader.getImage("bar_empty");
             this.imageBarBlueFill = this.loader.getImage("bar_blue_fill");
             this.imageBarRedFill = this.loader.getImage("bar_red_fill");
 
             this.tileAtlas = this.loader.getImage('tiles');
-            this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
+            this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.questsCompleted, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
 
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
             this.loadInventoryObjects();
@@ -3626,7 +3627,7 @@ var MainGameState = function () {
         value: function _drawUI() {
             var tx = 10,
                 ty = 20,
-                dy = 40;
+                dy = 20;
 
             //this.ctx.fillStyle = "black";
             //this.ctx.fillRect(tx, ty += dy, 102, 20);
@@ -3647,7 +3648,7 @@ var MainGameState = function () {
 
             this.ctx.font = "22px Arial";
             this.ctx.fillStyle = "white";
-            this.ctx.fillText(this.hero.level, tx + dy / 2, ty + dy / 3 * 2);
+            this.ctx.fillText(this.hero.level, tx + dy, ty + dy * 1.5);
         }
     }, {
         key: "_drawLayer",
@@ -3814,6 +3815,7 @@ var Keyboard = function () {
         this.C = 67;
         this.I = 73;
         this.T = 84;
+        this.Q = 81;
         this._nums = [];
         for (var i = 0; i <= 9; i++) {
             this._nums.push({
@@ -4608,7 +4610,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Hero = function () {
-    function Hero(map, x, y, id, health, tileLevel, xp, level, stats, token, loader) {
+    function Hero(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, token, loader) {
         _classCallCheck(this, Hero);
 
         this.map = map;
@@ -4659,6 +4661,7 @@ var Hero = function () {
         this.id = id;
         this.level = level === undefined || level <= 0 ? 1 : level;
         this.xp = xp === undefined ? 0 : xp;
+        this.questsCompleted = questsCompleted === undefined ? 0 : questsCompleted;
 
         try {
             this.stats = JSON.parse(stats);
@@ -4688,6 +4691,7 @@ var Hero = function () {
             smallObject.speed = this.speed;
             smallObject.xp = this.xp;
             smallObject.level = this.level;
+            smallObject.questsCompleted = this.questsCompleted;
             smallObject.stats = JSON.stringify(this.stats);
             smallObject.width = this.width;
             smallObject.height = this.height;
@@ -4986,6 +4990,10 @@ var _InventoryIcon = __webpack_require__(55);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
+var _QuestManager = __webpack_require__(63);
+
+var _QuestManager2 = _interopRequireDefault(_QuestManager);
+
 var _Arrow_ = __webpack_require__(37);
 
 var _Arrow_2 = _interopRequireDefault(_Arrow_);
@@ -5047,9 +5055,7 @@ var InventoryManager = function () {
         this.tileBackWidth = this.imageBack.width / this.backCols;
         this.tileBackHeight = this.imageBack.height / this.backRows;
         this.loader = loader;
-        this.iconBarCols = 4;
         this.iconBarRows = 4;
-        this.tileIconBarWidth = this.imageIconBar.width / this.iconBarCols;
         this.tileIconBarHeight = this.imageIconBar.height / this.iconBarRows;
         this.selectedAction = 1;
         this.mousePosition = {
@@ -5061,18 +5067,22 @@ var InventoryManager = function () {
             HIDDEN: 0,
             INVENTORY: 1,
             CHARACTER: 2,
-            STATS: 3
+            STATS: 3,
+            QUESTS: 4
         };
         this.iconBar = [];
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.INVENTORY, this.imageIconBar, 1, this.tileIconBarHeight));
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.CHARACTER, this.imageIconBar, 2, this.tileIconBarHeight));
         this.iconBar.push(new _InventoryIcon2.default(this.STATES.STATS, this.imageIconBar, 3, this.tileIconBarHeight));
+        this.iconBar.push(new _InventoryIcon2.default(this.STATES.QUESTS, this.imageIconBar, 4, this.tileIconBarHeight));
 
         this.actionBarIcons = [];
         for (var _i = 1; _i <= 10; _i++) {
             this.actionBarIcons[_i === 10 ? 0 : _i] = new _InventoryIcon2.default(_i === 10 ? 0 : _i, this.imageIconBar, 0, this.tileIconBarHeight);
             if (this.selectedAction === (_i === 10 ? 0 : _i)) this.actionBarIcons[_i === 10 ? 0 : _i].isSelected = true;
         }
+
+        this.questManager = new _QuestManager2.default(this.hero, this, loader);
 
         this.state = this.STATES.HIDDEN;
     }
@@ -5106,6 +5116,8 @@ var InventoryManager = function () {
                 checkState = this.STATES.CHARACTER;
             } else if (keyCode === keyboard.T) {
                 checkState = this.STATES.STATS;
+            } else if (keyCode === keyboard.Q) {
+                checkState = this.STATES.QUESTS;
             }
             this.iconBar.forEach(function (icon) {
                 if (icon.state === checkState) {
@@ -5168,6 +5180,7 @@ var InventoryManager = function () {
                     _this4.hero.armor += inventoryObject.strength;
                 }
             });
+            this.questManager.update();
         }
     }, {
         key: "addObject",
@@ -5562,6 +5575,17 @@ var InventoryManager = function () {
             };
         }
     }, {
+        key: "countObjectsOfType",
+        value: function countObjectsOfType(typeId) {
+            var inventoryObjectsCount = 0;
+            this.inventory.forEach(function (item) {
+                if (item.typeId === typeId) {
+                    inventoryObjectsCount += item.stackCount;
+                }
+            });
+            return inventoryObjectsCount;
+        }
+    }, {
         key: "getSmallObject",
         value: function getSmallObject() {
             var smallObject = [];
@@ -5600,6 +5624,8 @@ var InventoryManager = function () {
                     this.drawInventory(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, drawWidth / this.iterations * (this.iterations - 1), drawHeight / this.iterations * (this.iterations - 1), this.iterations);
                 } else if (this.state === this.STATES.STATS) {
                     this.drawStats(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2, delta, otherPlayers);
+                } else if (this.state === this.STATES.QUESTS) {
+                    this.drawQuest(ctx, xIcon + drawWidth / 2, this.yTop + drawHeight / 2);
                 }
             }
 
@@ -5700,12 +5726,18 @@ var InventoryManager = function () {
             ctx.fillText("Armor: " + this.hero.armor, tempX, tempY += deltaY);
             ctx.fillText("Level: " + this.hero.level, tempX, tempY += deltaY);
             ctx.fillText("Xp: " + this.hero.xp + "/" + this.hero.level * 100, tempX, tempY += deltaY);
+            ctx.fillText("Quests completed: " + this.hero.questsCompleted + "/6", tempX, tempY += deltaY);
             ctx.fillText("Players connected: " + (otherPlayers.length + 1), tempX, tempY += deltaY);
             ctx.fillText("Objects in inventory: " + objectsData.count + " (without money)", tempX, tempY += deltaY);
             ctx.fillText("Different objects in inventory: " + objectsData.distinctCount + " / 31", tempX, tempY += deltaY);
             ctx.fillText("Sheep killed: " + this.hero.stats.sheepKills, tempX, tempY += deltaY);
             ctx.fillText("Goblins killed: " + this.hero.stats.goblinKills, tempX, tempY += deltaY);
             ctx.fillText("Slimes killed: " + this.hero.stats.slimeKills, tempX, tempY += deltaY);
+        }
+    }, {
+        key: "drawQuest",
+        value: function drawQuest(ctx, x, y) {
+            this.questManager.draw(ctx, x, y);
         }
     }, {
         key: "drawItem",
@@ -6337,6 +6369,218 @@ exports.default = Map;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 61 */,
+/* 62 */,
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Quest = __webpack_require__(64);
+
+var _Quest2 = _interopRequireDefault(_Quest);
+
+var _Health_bottle_ = __webpack_require__(32);
+
+var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
+
+var _Spear = __webpack_require__(23);
+
+var _Spear2 = _interopRequireDefault(_Spear);
+
+var _Shield_ = __webpack_require__(15);
+
+var _Shield_2 = _interopRequireDefault(_Shield_);
+
+var _Sword_ = __webpack_require__(11);
+
+var _Sword_2 = _interopRequireDefault(_Sword_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var QuestManager = function () {
+    function QuestManager(hero, inventoryManager, loader) {
+        _classCallCheck(this, QuestManager);
+
+        this.hero = hero;
+
+        var i = 0;
+        this.allQuests = [];
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Sheep killer", // Title
+        "Find a sword and kill a sheep with it. \nYou will get 10xp as a reward.", // Description
+        function () {
+            return hero.stats.sheepKills >= 1; // Function returns true when completed
+        }, function () {
+            hero.xp += 10; // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Another empty bottle", // Title
+        "Find at least 10 empty bottles. \nYou will get 10 potions as a reward.", // Description
+        function () {
+            return inventoryManager.countObjectsOfType("empty_bottle_1") + inventoryManager.countObjectsOfType("empty_bottle_2") + inventoryManager.countObjectsOfType("empty_bottle_3") + inventoryManager.countObjectsOfType("empty_bottle_4") >= 10; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Health_bottle_2.default(loader, 10, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "More money", // Title
+        "Get over 1000 coins. \nYou will get a spear as a reward.", // Description
+        function () {
+            return inventoryManager.countObjectsOfType("coin") >= 1000; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Spear2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Level up", // Title
+        "Reach level 3. \nYou will get 100xp as a reward.", // Description
+        function () {
+            return hero.level >= 3; // Function returns true when completed
+        }, function () {
+            hero.xp += 100; // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Hoarder", // Title
+        "Have 200 items in total (coins don't count). \nYou will receive a cool sword.", // Description
+        function () {
+            return inventoryManager.objectsInInventory().count >= 200; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Sword_2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Nothing is safe", // Title
+        "Kill at least 25 sheep, 10 Goblins and 1 Slime. \nYou will receive an awesome shield.", // Description
+        function () {
+            return hero.stats.sheepKills >= 25 && hero.stats.goblinKills >= 10 && hero.stats.slimeKills >= 1; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Shield_2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+    }
+
+    _createClass(QuestManager, [{
+        key: "update",
+        value: function update() {
+            if (this.hero.questsCompleted < this.allQuests.length) {
+                if (this.allQuests[this.hero.questsCompleted].check()) {
+                    this.hero.questsCompleted++;
+                }
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, x, y) {
+            if (this.hero.questsCompleted < this.allQuests.length) {
+                this.allQuests[this.hero.questsCompleted].draw(ctx, x, y);
+            } else {
+                ctx.font = "22px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText("All quests completed.", x + 1, y + 1);
+                ctx.fillStyle = "white";
+                ctx.fillText("All quests completed.", x, y);
+            }
+        }
+    }]);
+
+    return QuestManager;
+}();
+
+exports.default = QuestManager;
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/* Example:
+
+new Quest(1, // id
+    "Sheep killer", // title
+    "Find a sword and kill a sheep with it. You will get 10xp as a reward", // description
+    () => {
+        return this.hero.stats.sheepKills >= 1; // Function returns true when completed
+    },
+    () => {
+        this.hero.xp += 10; // Gives reward
+    })
+
+*/
+
+var Quest = function () {
+    function Quest(id, title, description, checkFunction, rewardFunction) {
+        _classCallCheck(this, Quest);
+
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.descriptionParts = description.split(/[\n]+/);
+        this.checkFunction = checkFunction;
+        this.rewardFunction = rewardFunction;
+        this.completed = false;
+    }
+
+    _createClass(Quest, [{
+        key: "check",
+        value: function check() {
+            if (!this.completed) {
+                if (this.checkFunction()) {
+                    this.rewardFunction();
+                    this.completed = true;
+                    return true;
+                }
+            }
+            return false; // Not completed this time    
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, x, y) {
+            var tx = x + 1,
+                ty = y + 1,
+                dy = 20;
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText(this.title + ":", tx, ty += dy);
+            this.descriptionParts.forEach(function (description) {
+                ctx.fillText(description, tx, ty += dy);
+            });
+            tx = x;
+            ty = y;
+            ctx.fillStyle = "white";
+            ctx.fillText(this.title + ":", tx, ty += dy);
+            this.descriptionParts.forEach(function (description) {
+                ctx.fillText(description, tx, ty += dy);
+            });
+        }
+    }]);
+
+    return Quest;
+}();
+
+exports.default = Quest;
 
 /***/ })
 /******/ ]);
