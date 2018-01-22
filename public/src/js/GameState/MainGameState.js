@@ -81,12 +81,14 @@ export default class MainGameState {
             let sound = this.loader.getSound("ambience");
             this.setSound(sound);
 
+            //if user is on mobile platform check?
             let check = false;
             (function (a) {
                 if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
             })(navigator.userAgent || navigator.vendor || window.opera);
+            this.onMobile = check;
 
-            if (check) {
+            if (this.onMobile) {
                 document.ontouchmove = function (event) {
                     this.onMouseMove(event);
                 }.bind(this);
@@ -110,10 +112,9 @@ export default class MainGameState {
             window.requestAnimationFrame(function (elapsed) {
                 this.draw(elapsed);
             }.bind(this));
-            //window.oncontextmenu = function () {
-            //    this.showCustomMenu();
-            //    return false; // cancel default menu
-            //}.bind(this);
+            window.oncontextmenu = function () {
+                return false; // cancel default menu
+            }.bind(this);
         }.bind(this));
     }
 
@@ -530,25 +531,25 @@ export default class MainGameState {
     update(delta) {
         let dirx = 0;
         let diry = 0;
-        if (this.keyboard.isDown(this.keyboard.LEFT) || this.keyboard.isDown(this.keyboard.A) || this.mobileKeyPressed === this.keyboard.LEFT) {
+        if (this.keyboard.isDown(this.keyboard.LEFT) || this.keyboard.isDown(this.keyboard.A) || (this.onMobile && this.mobileKeyPressed === this.keyboard.LEFT)) {
             if (this.hero.action != this.hero.STATE.RUNNINGWEST) {
                 this.hero.action = this.hero.STATE.RUNNINGWEST;
                 this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             dirx = -1;
-        } else if (this.keyboard.isDown(this.keyboard.RIGHT) || this.keyboard.isDown(this.keyboard.D) || this.mobileKeyPressed === this.keyboard.RIGHT) {
+        } else if (this.keyboard.isDown(this.keyboard.RIGHT) || this.keyboard.isDown(this.keyboard.D) || (this.onMobile && this.mobileKeyPressed === this.keyboard.RIGHT)) {
             if (this.hero.action != this.hero.STATE.RUNNINGEAST) {
                 this.hero.action = this.hero.STATE.RUNNINGEAST;
                 this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             dirx = 1;
-        } else if (this.keyboard.isDown(this.keyboard.UP) || this.keyboard.isDown(this.keyboard.W) || this.mobileKeyPressed === this.keyboard.UP) {
+        } else if (this.keyboard.isDown(this.keyboard.UP) || this.keyboard.isDown(this.keyboard.W) || (this.onMobile && this.mobileKeyPressed === this.keyboard.UP)) {
             if (this.hero.action != this.hero.STATE.RUNNINGNORTH) {
                 this.hero.action = this.hero.STATE.RUNNINGNORTH;
                 this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
             diry = -1;
-        } else if (this.keyboard.isDown(this.keyboard.DOWN) || this.keyboard.isDown(this.keyboard.S) || this.mobileKeyPressed === this.keyboard.DOWN) {
+        } else if (this.keyboard.isDown(this.keyboard.DOWN) || this.keyboard.isDown(this.keyboard.S) || (this.onMobile && this.mobileKeyPressed === this.keyboard.DOWN)) {
             if (this.hero.action != this.hero.STATE.RUNNINGSOUTH) {
                 this.hero.action = this.hero.STATE.RUNNINGSOUTH;
                 this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
@@ -684,40 +685,46 @@ export default class MainGameState {
     }
 
     onMouseDown(event) {
-        this.mobileKeyUp = {
-            x: 80,
-            y: this.ctx.height - 130
-        };
-        this.mobileKeyLeft = {
-            x: 20,
-            y: this.ctx.height - 70
-        };
-        this.mobileKeyRight = {
-            x: 140,
-            y: this.ctx.height - 70
-        };
-        this.mobileKeyDown = {
-            x: 80,
-            y: this.ctx.height - 70
-        };
         let mousePosition = {
             x: (event.type.toLowerCase() === 'mousedown') ?
                 event.pageX : event.touches[0].pageX,
             y: (event.type.toLowerCase() === 'mousedown') ?
                 event.pageY : event.touches[0].pageY
         };
-        if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
-            this.mobileKeyPressed = this.keyboard.UP;
-        } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
-            this.mobileKeyPressed = this.keyboard.RIGHT;
-        } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
-            this.mobileKeyPressed = this.keyboard.LEFT;
-        } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
-            this.mobileKeyPressed = this.keyboard.DOWN;
+        if (this.onMobile) {
+            this.mobileKeyUp = {
+                x: 80,
+                y: this.ctx.height - 130
+            };
+            this.mobileKeyLeft = {
+                x: 20,
+                y: this.ctx.height - 70
+            };
+            this.mobileKeyRight = {
+                x: 140,
+                y: this.ctx.height - 70
+            };
+            this.mobileKeyDown = {
+                x: 80,
+                y: this.ctx.height - 70
+            };
+
+            if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
+                this.mobileKeyPressed = this.keyboard.UP;
+            } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
+                this.mobileKeyPressed = this.keyboard.RIGHT;
+            } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
+                this.mobileKeyPressed = this.keyboard.LEFT;
+            } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
+                this.mobileKeyPressed = this.keyboard.DOWN;
+            } else {
+                this.inventoryManager.onMouseDown(mousePosition);
+            }
         } else {
             this.inventoryManager.onMouseDown(mousePosition);
         }
     }
+
     onMouseUp(event) {
         let mousePosition = {
             x: (event.type.toLowerCase() === 'mouseup') ?
@@ -726,18 +733,21 @@ export default class MainGameState {
                 event.pageY : event.changedTouches[0].pageY
         };
 
-        if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
-            this.mobileKeyPressed = 0;
-        } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
-            this.mobileKeyPressed = 0;
-        } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
-            this.mobileKeyPressed = 0;
-        } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
-            this.mobileKeyPressed = 0;
+        if (this.onMobile) {
+            if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
+                this.mobileKeyPressed = 0;
+            } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
+                this.mobileKeyPressed = 0;
+            } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
+                this.mobileKeyPressed = 0;
+            } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
+                this.mobileKeyPressed = 0;
+            } else {
+                this.inventoryManager.onMouseUp(mousePosition, this);
+            }
         } else {
-            this.inventoryManager.onMouseUp(mousePosition, this)
-        };
-
+            this.inventoryManager.onMouseUp(mousePosition, this);
+        }
     }
 
     onMouseMove(event) {
@@ -747,19 +757,23 @@ export default class MainGameState {
             y: (event.type.toLowerCase() === 'mousemove') ?
                 event.pageY : event.targetTouches[0].pageY
         };
-        if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
-            this.mobileKeyPressed = this.keyboard.UP;
-        } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
-            this.mobileKeyPressed = this.keyboard.RIGHT;
-        } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
-            this.mobileKeyPressed = this.keyboard.LEFT;
-        } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
-            this.mobileKeyPressed = this.keyboard.DOWN;
+
+        if (this.onMobile) {
+            if (mousePosition.x > this.mobileKeyUp.x && mousePosition.x < this.mobileKeyUp.x + 50 && mousePosition.y > this.mobileKeyUp.y && mousePosition.y < this.mobileKeyUp.y + 50) {
+                this.mobileKeyPressed = this.keyboard.UP;
+            } else if (mousePosition.x > this.mobileKeyRight.x && mousePosition.x < this.mobileKeyRight.x + 50 && mousePosition.y > this.mobileKeyRight.y && mousePosition.y < this.mobileKeyRight.y + 50) {
+                this.mobileKeyPressed = this.keyboard.RIGHT;
+            } else if (mousePosition.x > this.mobileKeyLeft.x && mousePosition.x < this.mobileKeyLeft.x + 50 && mousePosition.y > this.mobileKeyLeft.y && mousePosition.y < this.mobileKeyLeft.y + 50) {
+                this.mobileKeyPressed = this.keyboard.LEFT;
+            } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
+                this.mobileKeyPressed = this.keyboard.DOWN;
+            } else {
+                this.mobileKeyPressed = 0;
+                this.inventoryManager.onMouseMove(mousePosition);
+            }
         } else {
-            this.mobileKeyPressed = 0;
             this.inventoryManager.onMouseMove(mousePosition);
         }
-
     }
 
     events() {
@@ -813,22 +827,68 @@ export default class MainGameState {
     }
 
     _drawUI(delta) {
-        let tx = 10, //temporary
-            ty = 0,
-            dy = 40, //deltay
-            dx = 40; //deltax
+        let width = this.ctx.width / 5,
+            height = width / this.imageBarEmpty.width * this.imageBarEmpty.height; // Keep aspect ratio
+        let tx = width / 20, // temporary
+            ty = height / 2;
 
-        this.ctx.fillStyle = "black";
-        this.ctx.fillRect(tx, ty += dy, 102, 20);
-        this.ctx.fillStyle = "red";
-        this.ctx.fillRect(tx + 1, ty + 1, this.hero.health, 18);
-        //if user is on mobile platform check?
-        let check = false;
-        (function (a) {
-            if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
-        })(navigator.userAgent || navigator.vendor || window.opera);
+        this.ctx.drawImage(
+            this.imageBarEmpty,
+            0,
+            0,
+            this.imageBarEmpty.width,
+            this.imageBarEmpty.height,
+            tx,
+            ty,
+            width,
+            height
+        );
 
-        if (check) {
+        this.ctx.drawImage(
+            this.imageBarRedFill,
+            0,
+            0,
+            this.hero.health / 100 * this.imageBarRedFill.width,
+            this.imageBarRedFill.height,
+            tx,
+            ty,
+            this.hero.health / 100 * width,
+            height
+        );
+
+        ty += (1.5 * height);
+
+        this.ctx.drawImage(
+            this.imageBarEmpty,
+            0,
+            0,
+            this.imageBarEmpty.width,
+            this.imageBarEmpty.height,
+            tx,
+            ty,
+            width,
+            height
+        );
+
+        if (this.hero.xp > 0) {
+            this.ctx.drawImage(
+                this.imageBarBlueFill,
+                0,
+                0,
+                this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width,
+                this.imageBarBlueFill.height,
+                tx,
+                ty,
+                this.hero.xp / (this.hero.level * 100) * width,
+                height
+            );
+        }
+
+        this.ctx.font = "22px Arial";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(this.hero.level, (tx + width / 20), (ty + height / 1.5));
+
+        if (this.onMobile) {
             let width = this.ctx.width;
             let height = this.ctx.height;
             //draw mobile movement UI
@@ -849,67 +909,6 @@ export default class MainGameState {
             this.ctx.fillRect(20 + buttonedge + padding, height - 70 - buttonedge - padding, buttonedge, buttonedge);
             this.ctx.globalAlpha = 1;
         }
-
-        tx = 10;
-        ty = 20;
-        dx = 20;
-        dy = 20;
-
-        this.ctx.drawImage(
-            this.imageBarEmpty,
-            0,
-            0,
-            this.imageBarEmpty.width,
-            this.imageBarEmpty.height,
-            tx,
-            ty,
-            this.imageBarEmpty.width,
-            this.imageBarEmpty.height
-        );
-
-        this.ctx.drawImage(
-            this.imageBarRedFill,
-            0,
-            0,
-            this.hero.health / 100 * this.imageBarRedFill.width,
-            this.imageBarRedFill.height,
-            tx,
-            ty,
-            this.hero.health / 100 * this.imageBarRedFill.width,
-            this.imageBarRedFill.height
-        );
-
-        ty += (dy + this.imageBarEmpty.height);
-
-        this.ctx.drawImage(
-            this.imageBarEmpty,
-            0,
-            0,
-            this.imageBarEmpty.width,
-            this.imageBarEmpty.height,
-            tx,
-            ty,
-            this.imageBarEmpty.width,
-            this.imageBarEmpty.height
-        );
-
-        if (this.hero.xp > 0) {
-            this.ctx.drawImage(
-                this.imageBarBlueFill,
-                0,
-                0,
-                this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width,
-                this.imageBarBlueFill.height,
-                tx,
-                ty,
-                this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width,
-                this.imageBarBlueFill.height
-            );
-        }
-
-        this.ctx.font = "22px Arial";
-        this.ctx.fillStyle = "white";
-        this.ctx.fillText(this.hero.level, (tx + dx), (ty + dy * 1.5));
     }
 
 
