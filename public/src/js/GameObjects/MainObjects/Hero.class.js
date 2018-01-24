@@ -1,5 +1,8 @@
-export default class Hero {
-    constructor(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, token, loader) {
+import GameObject from "../_GameObject.base.class";
+
+export default class Hero extends GameObject {
+    constructor(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, pvp, token, loader) {
+        super();
         this.map = map;
         this.x = x;
         this.y = y;
@@ -7,7 +10,6 @@ export default class Hero {
         this.startY = 3200;
         this.loader = loader;
         this.debugging = false;
-        this.topText = [];
         this.token = token;
 
         this.health = health;
@@ -41,7 +43,7 @@ export default class Hero {
         this.respawnTimer = 8;
         this.dead = false;
         this.resurected = false;
-
+        this.pvp = pvp;
         this.deathSound = this.loader.getSound("explosion");
 
         this.speed = 256;
@@ -78,6 +80,8 @@ export default class Hero {
         smallObject.level = this.level;
         smallObject.questsCompleted = this.questsCompleted;
         smallObject.stats = JSON.stringify(this.stats);
+        smallObject.pvp = this.pvp;
+        smallObject.topText = this.topText;
         smallObject.width = this.width;
         smallObject.height = this.height;
         smallObject.resurected = this.resurected;
@@ -94,22 +98,20 @@ export default class Hero {
         };
     }
 
-    /* generateId() {
-         function s4() {
-             return Math.floor((1 + Math.random()) * 0x10000)
-                 .toString(16)
-                 .substring(1);
-         }
-
-         function time() {
-             return Math.floor((1 + (new Date()).getTime()) * 0x10000)
-                 .toString(16)
-                 .substring(1);
-         }
-         return time() + '-' + s4() + '-' + s4() + '-' +
-             s4() + '-' + s4() + s4() + s4();
-     }*/
-
+    isHit(projectiles) {
+        if (this.pvp) {
+            for (let i = 0; i < projectiles.length; i++) {
+                const projectile = projectiles[i];
+                if (projectile.playerId !== this.id && projectile.playerId !== -1) { // -1 means pvp was off
+                    if (this.isNear(projectile.x, projectile.y, projectile.x + projectile.width, projectile.y + projectile.height)) {
+                        this.takeDamage(projectile.doDamage());
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     move(delta, dirx, diry) {
         if (this.dead) return;

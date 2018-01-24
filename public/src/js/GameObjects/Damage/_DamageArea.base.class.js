@@ -1,10 +1,11 @@
 import GameObject from "../_GameObject.base.class";
 
 export default class DamageArea extends GameObject {
-    constructor(id, name, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
+    constructor(id, name, playerId, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
         super();
         this.id = id;
         this.name = name;
+        this.playerId = playerId;
         this.x = x;
         this.y = y;
         this.angleInRadians = angleInRadians;
@@ -21,6 +22,7 @@ export default class DamageArea extends GameObject {
         let smallObject = {};
         smallObject.id = this.id;
         smallObject.name = this.name;
+        smallObject.playerId = this.playerId;
         smallObject.x = this.x;
         smallObject.y = this.y;
         smallObject.angleInRadians = this.angleInRadians;

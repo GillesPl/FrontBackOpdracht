@@ -3,7 +3,6 @@ Try catch rond alle json parse op server
 */
 
 var Map = require('./Map/Map.class'),
-    UserController = require('./Controllers/UserController'),
     Player = require('./GameObjects/Player.class'),
     NonCharacterObject = require('./GameObjects/NonCharacterObject.class'),
     Projectile = require('./GameObjects/Projectile.class'),
@@ -30,17 +29,25 @@ class Manager {
     }
 
     newPlayer(playerJsonString, socket) {
-        this.players.push(new Player.Player(playerJsonString, this.map, socket.id));
-        socket.broadcast.emit("New_connection", playerJsonString);
-        socket.emit("otherPlayers", this.getSendablePlayers());
-        socket.emit("allObjects", this.getSendableNonCharacterObjects());
-        socket.emit("allSpawners", this.getSendableSpawners());
-        this.sockets.forEach(s => {
-            if (s.id === socket.id) {
-                this.sockets.splice(this.sockets.indexOf(s), 1);
-            }
+        let player = JSON.parse(playerJsonString);
+        delete player.token; // Remove the token, noone else should know this value!
+        delete player.items; // Remove the items, noone else should know this value!
+        UserController.getUserFromId(player.id, (user) => {
+            player.username = user.username;
+            playerJsonString = JSON.stringify(player);
+            this.players.push(new Player.Player(playerJsonString, this.map, socket.id));
+
+            socket.broadcast.emit("New_connection", playerJsonString);
+            socket.emit("otherPlayers", this.getSendablePlayers());
+            socket.emit("allObjects", this.getSendableNonCharacterObjects());
+            socket.emit("allSpawners", this.getSendableSpawners());
+            this.sockets.forEach(s => {
+                if (s.id === socket.id) {
+                    this.sockets.splice(this.sockets.indexOf(s), 1);
+                }
+            });
+            this.sockets.push(socket);
         });
-        this.sockets.push(socket);
     }
 
     updatePlayer(playerJsonString, socket) {
@@ -55,6 +62,7 @@ class Manager {
             questsCompleted: player.questsCompleted,
             items: player.items,
             stats: player.stats,
+            pvp: player.pvp,
             position: {
                 x: player.x,
                 y: player.y
@@ -212,8 +220,31 @@ class Manager {
 
     loginUser(user, socket) {
         AuthenticateController.authenticate(user, function (res) {
-            socket.emit("requestLogin", res);
-        });
+            if (res.success === false) {
+                socket.emit("requestLogin", res);
+            } else {
+                if (this.isPlayerLoggedIn(res.user.id)) {
+                    socket.emit("requestLogin", {
+                        success: false,
+                        message: 'Authentication failed. Already logged in.'
+                    });
+                } else {
+                    AuthenticateController.login(res.user, function (res) {
+                        socket.emit("requestLogin", res);
+                    });
+                }
+            }
+        }.bind(this));
+    }
+
+    isPlayerLoggedIn(playerId) {
+        for (let i = 0; i < this.players.length; i++) {
+            const player = this.players[i];
+            if (player.id === playerId) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

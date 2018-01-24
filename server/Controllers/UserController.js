@@ -18,6 +18,14 @@ exports.getUser = function (req, res) {
 };
 
 // Used by server code (not API)
+exports.getUserFromId = function (id, callback) {
+    User.findById(id, '_id username mail items created_date last_played position health token tileLevel', function (err, user) {
+        if (err) return callback(err);
+        callback(user);
+    });
+};
+
+// Used by server code (not API)
 exports.updateUserFromToken = function (req, res) {
     delete req.password; // Just to be safe remove the password field 
     User.findOneAndUpdate({

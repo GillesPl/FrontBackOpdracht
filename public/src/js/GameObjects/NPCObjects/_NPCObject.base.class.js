@@ -1,14 +1,15 @@
 import GameObject from "../_GameObject.base.class";
 
 export default class NPCObject extends GameObject {
-    constructor(type, x, y, width, height, health, damage, attackSpeed, speed, xp, passive, map, bounds) {
+    constructor(type, x, y, width, height, maxHealth, damage, attackSpeed, speed, xp, passive, map, bounds) {
         super();
         this.type = type;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.health = health;
+        this.health = maxHealth;
+        this.maxHealth = maxHealth;
         this.damage = damage;
         this.map = map;
         this.bounds = bounds;

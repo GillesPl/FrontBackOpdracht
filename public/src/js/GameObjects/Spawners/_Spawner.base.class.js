@@ -1,6 +1,7 @@
 import Goblin from "../NPCObjects/Goblin.class";
 import Sheep from "../NPCObjects/Sheep.class";
 import Slime from "../NPCObjects/Slime.class";
+import Dog from "../NPCObjects/Dog.class";
 
 export default class Spawner {
     constructor(bounds, type, loader, count, map, id, units) {
@@ -56,7 +57,6 @@ export default class Spawner {
                             sound.volume = 1;
                             sound.play().then();
                             break;
-
                         case "Slimes":
                             sound = this.loader.getSound("slime");
                             sound.loop = false;
@@ -86,7 +86,6 @@ export default class Spawner {
                             sound.volume = 1;
                             sound.play().then();
                             break;
-
                         case "Slimes":
                             parent.hero.stats.slimeKills++;
                             sound = this.loader.getSound("slime");
@@ -168,6 +167,10 @@ export default class Spawner {
                     unit = new Slime(this.loader, x, y, this.map, this.bounds);
                     break;
 
+                case "Dog":
+                    unit = new Dog(this.loader, x, y, this.map, this.bounds);
+                    break;
+
                 default:
                     console.log('Cannot create unit of type ' + type);
                     return null;
@@ -200,6 +203,10 @@ export default class Spawner {
 
             case "Slimes":
                 newUnit = new Slime(this.loader, unit.x, unit.y, this.map, this.bounds);
+                break;
+
+            case "Dog":
+                newUnit = new Dog(this.loader, unit.x, unit.y, this.map, this.bounds);
                 break;
 
             default:

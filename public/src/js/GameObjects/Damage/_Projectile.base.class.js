@@ -1,8 +1,8 @@
 import DamageArea from "./_DamageArea.base.class";
 
 export default class Projectile extends DamageArea {
-    constructor(id, name, x, y, angleInRadians, strength, width, height, map) {
-        super(id, name, x, y, angleInRadians, strength, width, height, 3, map);
+    constructor(id, name, playerId, x, y, angleInRadians, strength, width, height, map) {
+        super(id, name, playerId, x, y, angleInRadians, strength, width, height, 3, map);
         this.speed = 512;
     }
 

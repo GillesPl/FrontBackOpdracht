@@ -2,7 +2,6 @@ import Camera from "../Loader/Camera";
 import Keyboard from "../Loader/Keyboard.class";
 import Fire from "../GameObjects/NonCharacterObjects/Fire.class";
 import DroppedItem from "../GameObjects/NonCharacterObjects/DroppedItem.class";
-import Goblin from "../GameObjects/NPCObjects/Goblin.class";
 import Spawner from "../GameObjects/Spawners/_Spawner.base.class";
 import Hero from "../GameObjects/MainObjects/Hero.class";
 import InventoryManager from "../GameObjects/MainObjects/InventoryManager.class";
@@ -78,8 +77,6 @@ export default class MainGameState {
 
         Promise.all(this.loadassets).then(function (loaded) {
             this.init();
-            let sound = this.loader.getSound("ambience");
-            this.setSound(sound);
 
             //if user is on mobile platform check?
             let check = false;
@@ -156,6 +153,7 @@ export default class MainGameState {
         this.overwriteHero.xp = user.xp;
         this.overwriteHero.questsCompleted = user.questsCompleted;
         this.overwriteHero.stats = user.stats;
+        this.wasPvpEnabled = user.pvp;
         this.overwriteInventory = user.items;
     }
 
@@ -330,9 +328,25 @@ export default class MainGameState {
         this.imageBarEmpty = this.loader.getImage("bar_empty");
         this.imageBarBlueFill = this.loader.getImage("bar_blue_fill");
         this.imageBarRedFill = this.loader.getImage("bar_red_fill");
-
+        this.imagePvp = this.loader.getImage("pvp");
         this.tileAtlas = this.loader.getImage('tiles');
-        this.hero = new Hero(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.questsCompleted, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
+
+        let sound = this.loader.getSound("ambience");
+        this.setSound(sound);
+
+        this.hero = new Hero(this.map,
+            this.overwriteHero.x,
+            this.overwriteHero.y,
+            this.overwriteHero.id,
+            this.overwriteHero.health,
+            this.overwriteHero.tileLevel,
+            this.overwriteHero.xp,
+            this.overwriteHero.level,
+            this.overwriteHero.questsCompleted,
+            this.overwriteHero.stats,
+            this.wasPvpEnabled,
+            this.overwriteHero.token,
+            this.loader);
 
         this.camera = new Camera(this.map, window.innerWidth, window.innerHeight);
         this.loadInventoryObjects();
@@ -410,6 +424,10 @@ export default class MainGameState {
                     player.x = hero.x;
                     player.y = hero.y;
                     player.tileLevel = hero.tileLevel;
+                    player.health = hero.health;
+                    player.pvp = hero.pvp;
+                    player.topText = hero.topText;
+                    player.level = hero.level;
                     found = true;
                 }
             });
@@ -426,10 +444,10 @@ export default class MainGameState {
             let newProjectile = null;
             switch (projectile.name) {
                 case "Arrow_1":
-                    newProjectile = new Arrow_1(projectile.id, this.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
+                    newProjectile = new Arrow_1(projectile.id, this.loader, projectile.playerId, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
                 case "DamageArea_1":
-                    newProjectile = new DamageArea_1(projectile.id, this.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
+                    newProjectile = new DamageArea_1(projectile.id, this.loader, projectile.playerId, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, this.map);
                     break;
             }
 
@@ -470,12 +488,15 @@ export default class MainGameState {
             this.loader.loadImage('goblin', '../../assets/sprites/goblin.png'),
             this.loader.loadImage('sheep', '../../assets/sprites/sheep.png'),
             this.loader.loadImage('slime', '../../assets/sprites/slime.png'),
+            this.loader.loadImage('dog', '../../assets/sprites/dog.png'),
             this.loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'),
             this.loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'),
             this.loader.loadImage('bar_empty', '../../assets/sprites/bar_empty.png'),
             this.loader.loadImage('bar_red_fill', '../../assets/sprites/bar_red_fill.png'),
             this.loader.loadImage('bar_blue_fill', '../../assets/sprites/bar_blue_fill.png'),
             this.loader.loadImage('levelToLow', '../../assets/sprites/inventory/LevelToLow.png'),
+            this.loader.loadImage('pvp', '../../assets/sprites/pvp.png'),
+            this.loader.loadImage('otherPlayerPVP', '../../assets/sprites/otherPlayerPVP.png'),
 
             // InventoryItems
             this.loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'),
@@ -564,10 +585,14 @@ export default class MainGameState {
         if (this.hero.resurected) {
             this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
         }
-
+        if (this.hero.isHit(this.projectiles)) {
+            this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
+        }
         this.hero.move(delta, dirx, diry);
         this.otherPlayers.forEach((player) => {
+            player.update(delta);
             player.move(delta);
+            player.isHit(this.projectiles)
         });
         this.projectiles.forEach(projectile => {
             projectile.update(delta);
@@ -596,9 +621,13 @@ export default class MainGameState {
                 }
             }
         });
-        //this.NPCObjects.forEach(npc => {
-        //    npc.update(delta);
-        //});
+
+        if (this.wasPvpEnabled !== this.hero.pvp) {
+            this.wasPvpEnabled = this.hero.pvp;
+            this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
+        }
+
+
         this.spawners.forEach(spawner => {
             spawner.update(delta, this.projectiles, this);
         });
@@ -691,6 +720,15 @@ export default class MainGameState {
             y: (event.type.toLowerCase() === 'mousedown') ?
                 event.pageY : event.touches[0].pageY
         };
+        let width = width = this.ctx.width / 5;
+        let height = width / this.imageBarEmpty.width * this.imageBarEmpty.height;
+        this.pvpToggle = {
+            x: width / 20,
+            y: height * 3.5,
+            width: height * 2,
+            height: height * 2
+        };
+
         if (this.onMobile) {
             this.mobileKeyUp = {
                 x: 80,
@@ -717,11 +755,15 @@ export default class MainGameState {
                 this.mobileKeyPressed = this.keyboard.LEFT;
             } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                 this.mobileKeyPressed = this.keyboard.DOWN;
-            } else {
+            } else if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width &&
+                    mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
                 this.inventoryManager.onMouseDown(mousePosition);
             }
         } else {
-            this.inventoryManager.onMouseDown(mousePosition);
+            if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width &&
+                    mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
+                this.inventoryManager.onMouseDown(mousePosition);
+            }
         }
     }
 
@@ -742,11 +784,19 @@ export default class MainGameState {
                 this.mobileKeyPressed = 0;
             } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                 this.mobileKeyPressed = 0;
+            } else if (mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width &&
+                mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height) {
+                this.hero.pvp = !this.hero.pvp;
             } else {
                 this.inventoryManager.onMouseUp(mousePosition, this);
             }
         } else {
-            this.inventoryManager.onMouseUp(mousePosition, this);
+            if (mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width &&
+                mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height) {
+                this.hero.pvp = !this.hero.pvp;
+            } else {
+                this.inventoryManager.onMouseUp(mousePosition, this);
+            }
         }
     }
 
@@ -756,6 +806,14 @@ export default class MainGameState {
                 event.pageX : event.targetTouches[0].pageX,
             y: (event.type.toLowerCase() === 'mousemove') ?
                 event.pageY : event.targetTouches[0].pageY
+        };
+        let width = width = this.ctx.width / 5;
+        let height = width / this.imageBarEmpty.width * this.imageBarEmpty.height;
+        this.pvpToggle = {
+            x: width / 20,
+            y: height * 3.5,
+            width: height * 2,
+            height: height * 2
         };
 
         if (this.onMobile) {
@@ -767,12 +825,16 @@ export default class MainGameState {
                 this.mobileKeyPressed = this.keyboard.LEFT;
             } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                 this.mobileKeyPressed = this.keyboard.DOWN;
-            } else {
+            } else if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width &&
+                    mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
                 this.mobileKeyPressed = 0;
                 this.inventoryManager.onMouseMove(mousePosition);
             }
         } else {
-            this.inventoryManager.onMouseMove(mousePosition);
+            if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width &&
+                    mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
+                this.inventoryManager.onMouseMove(mousePosition);
+            }
         }
     }
 
@@ -834,36 +896,30 @@ export default class MainGameState {
 
         this.ctx.drawImage(
             this.imageBarEmpty,
-            0,
-            0,
-            this.imageBarEmpty.width,
-            this.imageBarEmpty.height,
             tx,
             ty,
             width,
             height
         );
 
-        this.ctx.drawImage(
-            this.imageBarRedFill,
-            0,
-            0,
-            this.hero.health / 100 * this.imageBarRedFill.width,
-            this.imageBarRedFill.height,
-            tx,
-            ty,
-            this.hero.health / 100 * width,
-            height
-        );
+        if (this.hero.health > 0) {
+            this.ctx.drawImage(
+                this.imageBarRedFill,
+                0,
+                0,
+                this.hero.health / this.hero.maxHealth * this.imageBarRedFill.width,
+                this.imageBarRedFill.height,
+                tx,
+                ty,
+                this.hero.health / this.hero.maxHealth * width,
+                height
+            );
+        }
 
         ty += (1.5 * height);
 
         this.ctx.drawImage(
             this.imageBarEmpty,
-            0,
-            0,
-            this.imageBarEmpty.width,
-            this.imageBarEmpty.height,
             tx,
             ty,
             width,
@@ -887,6 +943,26 @@ export default class MainGameState {
         this.ctx.font = "22px Arial";
         this.ctx.fillStyle = "white";
         this.ctx.fillText(this.hero.level, (tx + width / 20), (ty + height / 1.5));
+
+        ty += (1.5 * height);
+
+        this.ctx.drawImage(
+            this.imagePvp,
+            0,
+            this.hero.pvp ? this.imagePvp.height / 2 : 0,
+            this.imagePvp.width,
+            this.imagePvp.height / 2,
+            tx,
+            ty,
+            height * 2, // Square
+            height * 2 // Square
+        );
+
+        this.ctx.font = "22px Arial";
+        this.ctx.fillStyle = "black";
+        this.ctx.fillText("PVP: " + (this.hero.pvp ? "ON" : "OFF"), tx + 1, (ty + height * 2.5) + 1);
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText("PVP: " + (this.hero.pvp ? "ON" : "OFF"), tx, (ty + height * 2.5));
 
         if (this.onMobile) {
             let width = this.ctx.width;

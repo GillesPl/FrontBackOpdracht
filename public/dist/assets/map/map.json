@@ -667,6 +667,25 @@
                  "width":962.000000000001,
                  "x":362.999999999999,
                  "y":1191.50016666667
+                }, 
+                {
+                 "height":1406.77233333333,
+                 "id":36,
+                 "name":"Dog",
+                 "properties":
+                    {
+                     "Count":1
+                    },
+                 "propertytypes":
+                    {
+                     "Count":"int"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1809.37866666667,
+                 "x":3.31066666666669,
+                 "y":188.613833333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -674,7 +693,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":36,
+ "nextobjectid":37,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",

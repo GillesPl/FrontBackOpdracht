@@ -46,9 +46,12 @@ class Spawner {
             case "Slimes":
                 health = 500;
                 break;
+            case "Dog":
+                health = 100000;
+                break;
             default:
                 health = 10;
-                console.log('Did not found ' + type);
+                console.log('Did not found ' + this.type);
                 break;
         }
 

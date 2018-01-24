@@ -90,12 +90,32 @@ export default class GameObject {
                 this.width, // Target width
                 this.height); // Target height
         }
+        this.drawTopText(ctx, screenX, screenY);
+        if (this.health !== undefined) {
+            if (this.health < this.maxHealth) {
+                ctx.fillStyle = "black";
+                ctx.fillRect(screenX, screenY, this.width, 10);
+                if (this.health > 0) {
+                    let percent = this.health / this.maxHealth;
+                    if (percent > 0.8) {
+                        ctx.fillStyle = "green";
+                    } else if (percent > 0.2) {
+                        ctx.fillStyle = "orange";
+                    } else {
+                        ctx.fillStyle = "red";
+                    }
+                    ctx.fillRect(screenX, screenY, percent * this.width, 10);
+                }
+            }
+        }
+    }
 
+    drawTopText(ctx, screenX, screenY) {
         if (this.topText.length > 0) {
             ctx.font = "20px Arial";
             this.topText.forEach(text => {
                 ctx.fillStyle = text.fillStyle;
-                ctx.fillText(text.text, screenX + 15, screenY - this.height * (0.3 + text.time));
+                ctx.fillText(text.text, screenX + 15, screenY - this.height * (0.2 + text.time));
             });
         }
     }

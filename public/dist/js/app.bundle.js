@@ -419,8 +419,6 @@ var GameObject = function () {
     }, {
         key: "draw",
         value: function draw(ctx, screenX, screenY) {
-            var _this2 = this;
-
             if (this.image === null) {
                 ctx.fillText("Object", screenX, screenY);
                 ctx.fillStyle = "purple";
@@ -436,12 +434,35 @@ var GameObject = function () {
                 this.width, // Target width
                 this.height); // Target height
             }
+            this.drawTopText(ctx, screenX, screenY);
+            if (this.health !== undefined) {
+                if (this.health < this.maxHealth) {
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(screenX, screenY, this.width, 10);
+                    if (this.health > 0) {
+                        var percent = this.health / this.maxHealth;
+                        if (percent > 0.8) {
+                            ctx.fillStyle = "green";
+                        } else if (percent > 0.2) {
+                            ctx.fillStyle = "orange";
+                        } else {
+                            ctx.fillStyle = "red";
+                        }
+                        ctx.fillRect(screenX, screenY, percent * this.width, 10);
+                    }
+                }
+            }
+        }
+    }, {
+        key: "drawTopText",
+        value: function drawTopText(ctx, screenX, screenY) {
+            var _this2 = this;
 
             if (this.topText.length > 0) {
                 ctx.font = "20px Arial";
                 this.topText.forEach(function (text) {
                     ctx.fillStyle = text.fillStyle;
-                    ctx.fillText(text.text, screenX + 15, screenY - _this2.height * (0.3 + text.time));
+                    ctx.fillText(text.text, screenX + 15, screenY - _this2.height * (0.2 + text.time));
                 });
             }
         }
@@ -632,6 +653,175 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Sword_3 = function (_InventoryObject) {
+    _inherits(Sword_3, _InventoryObject);
+
+    function Sword_3(loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Sword_3);
+
+        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
+        var _this = _possibleConstructorReturn(this, (Sword_3.__proto__ || Object.getPrototypeOf(Sword_3)).call(this, "sword_3", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(loader.getImage('sword_3'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.25, "DamageArea_1", 3);
+        return _this;
+    }
+
+    return Sword_3;
+}(_InventoryObjectBase2.default);
+
+exports.default = Sword_3;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shield_4 = function (_InventoryObject) {
+    _inherits(Shield_4, _InventoryObject);
+
+    function Shield_4(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
+        _classCallCheck(this, Shield_4);
+
+        var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setEquipable(_this.AREAS.OFF_HAND, 50, isEquipped);
+        _this.setTilesImage(loader.getImage('shield_4'), 4, 4, 16);
+        return _this;
+    }
+
+    return Shield_4;
+}(_InventoryObjectBase2.default);
+
+exports.default = Shield_4;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Spear = function (_InventoryObject) {
+    _inherits(Spear, _InventoryObject);
+
+    function Spear(loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Spear);
+
+        var _this = _possibleConstructorReturn(this, (Spear.__proto__ || Object.getPrototypeOf(Spear)).call(this, "spear", 10, stackCount, inventoryLocation, actionLocation));
+
+        _this.setImage(loader.getImage('spear'));
+        _this.setWeapon(_this.WEAPONTYPES.MELEE, 75, 4, "DamageArea_1", 0);
+        return _this;
+    }
+
+    return Spear;
+}(_InventoryObjectBase2.default);
+
+exports.default = Spear;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _InventoryObjectBase = __webpack_require__(0);
+
+var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
+
+var _Empty_bottle_ = __webpack_require__(2);
+
+var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Health_bottle_1 = function (_InventoryObject) {
+    _inherits(Health_bottle_1, _InventoryObject);
+
+    function Health_bottle_1(loader, stackCount, inventoryLocation, actionLocation) {
+        _classCallCheck(this, Health_bottle_1);
+
+        var _this = _possibleConstructorReturn(this, (Health_bottle_1.__proto__ || Object.getPrototypeOf(Health_bottle_1)).call(this, "health_bottle_1", 50, stackCount, inventoryLocation, actionLocation));
+
+        _this.setUsable(_this.USES.HEALTH, 10, "empty_bottle_1");
+        _this.setImage(loader.getImage('health_bottle_1'));
+        return _this;
+    }
+
+    return Health_bottle_1;
+}(_InventoryObjectBase2.default);
+
+exports.default = Health_bottle_1;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -651,7 +841,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NPCObject = function (_GameObject) {
     _inherits(NPCObject, _GameObject);
 
-    function NPCObject(type, x, y, width, height, health, damage, attackSpeed, speed, xp, passive, map, bounds) {
+    function NPCObject(type, x, y, width, height, maxHealth, damage, attackSpeed, speed, xp, passive, map, bounds) {
         _classCallCheck(this, NPCObject);
 
         var _this = _possibleConstructorReturn(this, (NPCObject.__proto__ || Object.getPrototypeOf(NPCObject)).call(this));
@@ -661,7 +851,8 @@ var NPCObject = function (_GameObject) {
         _this.y = y;
         _this.width = width;
         _this.height = height;
-        _this.health = health;
+        _this.health = maxHealth;
+        _this.maxHealth = maxHealth;
         _this.damage = damage;
         _this.map = map;
         _this.bounds = bounds;
@@ -882,7 +1073,7 @@ var NPCObject = function (_GameObject) {
 exports.default = NPCObject;
 
 /***/ }),
-/* 7 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -892,7 +1083,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _nonCharacterObjectBase = __webpack_require__(8);
+var _nonCharacterObjectBase = __webpack_require__(12);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
 
@@ -922,7 +1113,7 @@ var Fire = function (_NonCharacterObject) {
 exports.default = Fire;
 
 /***/ }),
-/* 8 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1010,7 +1201,7 @@ var NonCharacterObject = function (_GameObject) {
 exports.default = NonCharacterObject;
 
 /***/ }),
-/* 9 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1052,7 +1243,7 @@ var Sword_1 = function (_InventoryObject) {
 exports.default = Sword_1;
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1094,49 +1285,7 @@ var Sword_2 = function (_InventoryObject) {
 exports.default = Sword_2;
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Sword_3 = function (_InventoryObject) {
-    _inherits(Sword_3, _InventoryObject);
-
-    function Sword_3(loader, stackCount, inventoryLocation, actionLocation) {
-        _classCallCheck(this, Sword_3);
-
-        //this.setEquipable(this.AREAS.ONE_HANDED, 10);
-        var _this = _possibleConstructorReturn(this, (Sword_3.__proto__ || Object.getPrototypeOf(Sword_3)).call(this, "sword_3", 10, stackCount, inventoryLocation, actionLocation));
-
-        _this.setImage(loader.getImage('sword_3'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 25, 0.25, "DamageArea_1", 3);
-        return _this;
-    }
-
-    return Sword_3;
-}(_InventoryObjectBase2.default);
-
-exports.default = Sword_3;
-
-/***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1177,7 +1326,7 @@ var Shield_1 = function (_InventoryObject) {
 exports.default = Shield_1;
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1218,7 +1367,7 @@ var Shield_2 = function (_InventoryObject) {
 exports.default = Shield_2;
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1259,48 +1408,7 @@ var Shield_3 = function (_InventoryObject) {
 exports.default = Shield_3;
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Shield_4 = function (_InventoryObject) {
-    _inherits(Shield_4, _InventoryObject);
-
-    function Shield_4(loader, stackCount, inventoryLocation, actionLocation, isEquipped) {
-        _classCallCheck(this, Shield_4);
-
-        var _this = _possibleConstructorReturn(this, (Shield_4.__proto__ || Object.getPrototypeOf(Shield_4)).call(this, "shield_4", 50, stackCount, inventoryLocation, actionLocation));
-
-        _this.setEquipable(_this.AREAS.OFF_HAND, 50, isEquipped);
-        _this.setTilesImage(loader.getImage('shield_4'), 4, 4, 16);
-        return _this;
-    }
-
-    return Shield_4;
-}(_InventoryObjectBase2.default);
-
-exports.default = Shield_4;
-
-/***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1341,7 +1449,7 @@ var Axe_1 = function (_InventoryObject) {
 exports.default = Axe_1;
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1382,7 +1490,7 @@ var Axe_2 = function (_InventoryObject) {
 exports.default = Axe_2;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1423,7 +1531,7 @@ var Axe_3 = function (_InventoryObject) {
 exports.default = Axe_3;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1464,7 +1572,7 @@ var Bow_1 = function (_InventoryObject) {
 exports.default = Bow_1;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1505,7 +1613,7 @@ var Bow_2 = function (_InventoryObject) {
 exports.default = Bow_2;
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1546,7 +1654,7 @@ var Bow_3 = function (_InventoryObject) {
 exports.default = Bow_3;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1587,48 +1695,7 @@ var Mace = function (_InventoryObject) {
 exports.default = Mace;
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Spear = function (_InventoryObject) {
-    _inherits(Spear, _InventoryObject);
-
-    function Spear(loader, stackCount, inventoryLocation, actionLocation) {
-        _classCallCheck(this, Spear);
-
-        var _this = _possibleConstructorReturn(this, (Spear.__proto__ || Object.getPrototypeOf(Spear)).call(this, "spear", 10, stackCount, inventoryLocation, actionLocation));
-
-        _this.setImage(loader.getImage('spear'));
-        _this.setWeapon(_this.WEAPONTYPES.MELEE, 75, 4, "DamageArea_1", 0);
-        return _this;
-    }
-
-    return Spear;
-}(_InventoryObjectBase2.default);
-
-exports.default = Spear;
-
-/***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1669,7 +1736,7 @@ var Armor_1 = function (_InventoryObject) {
 exports.default = Armor_1;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1710,7 +1777,7 @@ var Armor_2 = function (_InventoryObject) {
 exports.default = Armor_2;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1751,7 +1818,7 @@ var Boots_1 = function (_InventoryObject) {
 exports.default = Boots_1;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1792,7 +1859,7 @@ var Boots_2 = function (_InventoryObject) {
 exports.default = Boots_2;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1833,7 +1900,7 @@ var Boots_3 = function (_InventoryObject) {
 exports.default = Boots_3;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1874,7 +1941,7 @@ var Helmet_1 = function (_InventoryObject) {
 exports.default = Helmet_1;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1915,7 +1982,7 @@ var Helmet_2 = function (_InventoryObject) {
 exports.default = Helmet_2;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1954,51 +2021,6 @@ var Coin = function (_InventoryObject) {
 }(_InventoryObjectBase2.default);
 
 exports.default = Coin;
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _InventoryObjectBase = __webpack_require__(0);
-
-var _InventoryObjectBase2 = _interopRequireDefault(_InventoryObjectBase);
-
-var _Empty_bottle_ = __webpack_require__(2);
-
-var _Empty_bottle_2 = _interopRequireDefault(_Empty_bottle_);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Health_bottle_1 = function (_InventoryObject) {
-    _inherits(Health_bottle_1, _InventoryObject);
-
-    function Health_bottle_1(loader, stackCount, inventoryLocation, actionLocation) {
-        _classCallCheck(this, Health_bottle_1);
-
-        var _this = _possibleConstructorReturn(this, (Health_bottle_1.__proto__ || Object.getPrototypeOf(Health_bottle_1)).call(this, "health_bottle_1", 50, stackCount, inventoryLocation, actionLocation));
-
-        _this.setUsable(_this.USES.HEALTH, 10, "empty_bottle_1");
-        _this.setImage(loader.getImage('health_bottle_1'));
-        return _this;
-    }
-
-    return Health_bottle_1;
-}(_InventoryObjectBase2.default);
-
-exports.default = Health_bottle_1;
 
 /***/ }),
 /* 33 */
@@ -2146,7 +2168,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _NPCObjectBase = __webpack_require__(6);
+var _NPCObjectBase = __webpack_require__(10);
 
 var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
@@ -2201,10 +2223,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Arrow_1 = function (_Projectile) {
     _inherits(Arrow_1, _Projectile);
 
-    function Arrow_1(id, loader, x, y, angleInRadians, strength, map) {
+    function Arrow_1(id, loader, playerId, x, y, angleInRadians, strength, map) {
         _classCallCheck(this, Arrow_1);
 
-        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
+        var _this = _possibleConstructorReturn(this, (Arrow_1.__proto__ || Object.getPrototypeOf(Arrow_1)).call(this, id, "Arrow_1", playerId, x, y, angleInRadians, strength, map.drawSize * 0.5, map.drawSize * 0.5, map));
 
         _this.setImage(loader.getImage('arrow_1'));
         return _this;
@@ -2245,10 +2267,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Projectile = function (_DamageArea) {
     _inherits(Projectile, _DamageArea);
 
-    function Projectile(id, name, x, y, angleInRadians, strength, width, height, map) {
+    function Projectile(id, name, playerId, x, y, angleInRadians, strength, width, height, map) {
         _classCallCheck(this, Projectile);
 
-        var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this, id, name, x, y, angleInRadians, strength, width, height, 3, map));
+        var _this = _possibleConstructorReturn(this, (Projectile.__proto__ || Object.getPrototypeOf(Projectile)).call(this, id, name, playerId, x, y, angleInRadians, strength, width, height, 3, map));
 
         _this.speed = 512;
         return _this;
@@ -2321,13 +2343,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DamageArea = function (_GameObject) {
     _inherits(DamageArea, _GameObject);
 
-    function DamageArea(id, name, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
+    function DamageArea(id, name, playerId, x, y, angleInRadians, strength, width, height, totalLifeTime, map) {
         _classCallCheck(this, DamageArea);
 
         var _this = _possibleConstructorReturn(this, (DamageArea.__proto__ || Object.getPrototypeOf(DamageArea)).call(this));
 
         _this.id = id;
         _this.name = name;
+        _this.playerId = playerId;
         _this.x = x;
         _this.y = y;
         _this.angleInRadians = angleInRadians;
@@ -2347,6 +2370,7 @@ var DamageArea = function (_GameObject) {
             var smallObject = {};
             smallObject.id = this.id;
             smallObject.name = this.name;
+            smallObject.playerId = this.playerId;
             smallObject.x = this.x;
             smallObject.y = this.y;
             smallObject.angleInRadians = this.angleInRadians;
@@ -2420,10 +2444,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DamageArea_1 = function (_DamageArea) {
     _inherits(DamageArea_1, _DamageArea);
 
-    function DamageArea_1(id, loader, x, y, angleInRadians, strength, map) {
+    function DamageArea_1(id, loader, playerId, x, y, angleInRadians, strength, map) {
         _classCallCheck(this, DamageArea_1);
 
-        var _this = _possibleConstructorReturn(this, (DamageArea_1.__proto__ || Object.getPrototypeOf(DamageArea_1)).call(this, id, "DamageArea_1", x, y, angleInRadians, strength, map.drawSize * 1, map.drawSize * 1, 0.2, map));
+        var _this = _possibleConstructorReturn(this, (DamageArea_1.__proto__ || Object.getPrototypeOf(DamageArea_1)).call(this, id, "DamageArea_1", playerId, x, y, angleInRadians, strength, map.drawSize * 1, map.drawSize * 1, 0.2, map));
 
         _this.setImage(loader.getImage('damageArea_1'));
         return _this;
@@ -2439,7 +2463,7 @@ exports.default = DamageArea_1;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(42);
-module.exports = __webpack_require__(60);
+module.exports = __webpack_require__(62);
 
 
 /***/ }),
@@ -2461,7 +2485,7 @@ var _MainGameState = __webpack_require__(46);
 
 var _MainGameState2 = _interopRequireDefault(_MainGameState);
 
-var _Map = __webpack_require__(59);
+var _Map = __webpack_require__(61);
 
 var _Map2 = _interopRequireDefault(_Map);
 
@@ -2762,17 +2786,13 @@ var _Keyboard = __webpack_require__(48);
 
 var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
-var _Fire = __webpack_require__(7);
+var _Fire = __webpack_require__(11);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
 var _DroppedItem = __webpack_require__(49);
 
 var _DroppedItem2 = _interopRequireDefault(_DroppedItem);
-
-var _Goblin = __webpack_require__(36);
-
-var _Goblin2 = _interopRequireDefault(_Goblin);
 
 var _SpawnerBase = __webpack_require__(50);
 
@@ -2786,15 +2806,15 @@ var _InventoryManager = __webpack_require__(54);
 
 var _InventoryManager2 = _interopRequireDefault(_InventoryManager);
 
-var _OtherPlayer = __webpack_require__(56);
+var _OtherPlayer = __webpack_require__(58);
 
 var _OtherPlayer2 = _interopRequireDefault(_OtherPlayer);
 
-var _Loader = __webpack_require__(57);
+var _Loader = __webpack_require__(59);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _GameState = __webpack_require__(58);
+var _GameState = __webpack_require__(60);
 
 var _GameState2 = _interopRequireDefault(_GameState);
 
@@ -2810,99 +2830,99 @@ var _DamageArea_ = __webpack_require__(40);
 
 var _DamageArea_2 = _interopRequireDefault(_DamageArea_);
 
-var _Sword_ = __webpack_require__(9);
+var _Sword_ = __webpack_require__(13);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(10);
+var _Sword_3 = __webpack_require__(14);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(11);
+var _Sword_5 = __webpack_require__(6);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(12);
+var _Shield_ = __webpack_require__(15);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(13);
+var _Shield_3 = __webpack_require__(16);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(14);
+var _Shield_5 = __webpack_require__(17);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(15);
+var _Shield_7 = __webpack_require__(7);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(16);
+var _Axe_ = __webpack_require__(18);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(17);
+var _Axe_3 = __webpack_require__(19);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(18);
+var _Axe_5 = __webpack_require__(20);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(19);
+var _Bow_ = __webpack_require__(21);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(20);
+var _Bow_3 = __webpack_require__(22);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(21);
+var _Bow_5 = __webpack_require__(23);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(22);
+var _Mace = __webpack_require__(24);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(23);
+var _Spear = __webpack_require__(8);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(24);
+var _Armor_ = __webpack_require__(25);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(25);
+var _Armor_3 = __webpack_require__(26);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
-var _Boots_ = __webpack_require__(26);
+var _Boots_ = __webpack_require__(27);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(27);
+var _Boots_3 = __webpack_require__(28);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(28);
+var _Boots_5 = __webpack_require__(29);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(29);
+var _Helmet_ = __webpack_require__(30);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(30);
+var _Helmet_3 = __webpack_require__(31);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
-var _Coin = __webpack_require__(31);
+var _Coin = __webpack_require__(32);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(32);
+var _Health_bottle_ = __webpack_require__(9);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
@@ -2974,8 +2994,6 @@ var MainGameState = function () {
 
             Promise.all(this.loadassets).then(function (loaded) {
                 this.init();
-                var sound = this.loader.getSound("ambience");
-                this.setSound(sound);
 
                 //if user is on mobile platform check?
                 var check = false;
@@ -3055,6 +3073,7 @@ var MainGameState = function () {
             this.overwriteHero.xp = user.xp;
             this.overwriteHero.questsCompleted = user.questsCompleted;
             this.overwriteHero.stats = user.stats;
+            this.wasPvpEnabled = user.pvp;
             this.overwriteInventory = user.items;
         }
     }, {
@@ -3232,9 +3251,13 @@ var MainGameState = function () {
             this.imageBarEmpty = this.loader.getImage("bar_empty");
             this.imageBarBlueFill = this.loader.getImage("bar_blue_fill");
             this.imageBarRedFill = this.loader.getImage("bar_red_fill");
-
+            this.imagePvp = this.loader.getImage("pvp");
             this.tileAtlas = this.loader.getImage('tiles');
-            this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.questsCompleted, this.overwriteHero.stats, this.overwriteHero.token, this.loader);
+
+            var sound = this.loader.getSound("ambience");
+            this.setSound(sound);
+
+            this.hero = new _Hero2.default(this.map, this.overwriteHero.x, this.overwriteHero.y, this.overwriteHero.id, this.overwriteHero.health, this.overwriteHero.tileLevel, this.overwriteHero.xp, this.overwriteHero.level, this.overwriteHero.questsCompleted, this.overwriteHero.stats, this.wasPvpEnabled, this.overwriteHero.token, this.loader);
 
             this.camera = new _Camera2.default(this.map, window.innerWidth, window.innerHeight);
             this.loadInventoryObjects();
@@ -3317,6 +3340,10 @@ var MainGameState = function () {
                         player.x = hero.x;
                         player.y = hero.y;
                         player.tileLevel = hero.tileLevel;
+                        player.health = hero.health;
+                        player.pvp = hero.pvp;
+                        player.topText = hero.topText;
+                        player.level = hero.level;
                         found = true;
                     }
                 });
@@ -3333,10 +3360,10 @@ var MainGameState = function () {
                 var newProjectile = null;
                 switch (projectile.name) {
                     case "Arrow_1":
-                        newProjectile = new _Arrow_2.default(projectile.id, _this5.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
+                        newProjectile = new _Arrow_2.default(projectile.id, _this5.loader, projectile.playerId, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                     case "DamageArea_1":
-                        newProjectile = new _DamageArea_2.default(projectile.id, _this5.loader, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
+                        newProjectile = new _DamageArea_2.default(projectile.id, _this5.loader, projectile.playerId, projectile.x, projectile.y, projectile.angleInRadians, projectile.strength, _this5.map);
                         break;
                 }
 
@@ -3368,7 +3395,7 @@ var MainGameState = function () {
     }, {
         key: "load",
         value: function load() {
-            return [this.loader.loadImage('tiles', '../../assets/map/tileset.png'), this.loader.loadImage('hero', '../../assets/sprites/george.png'), this.loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.loader.loadImage('slime', '../../assets/sprites/slime.png'), this.loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'), this.loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'), this.loader.loadImage('bar_empty', '../../assets/sprites/bar_empty.png'), this.loader.loadImage('bar_red_fill', '../../assets/sprites/bar_red_fill.png'), this.loader.loadImage('bar_blue_fill', '../../assets/sprites/bar_blue_fill.png'), this.loader.loadImage('levelToLow', '../../assets/sprites/inventory/LevelToLow.png'),
+            return [this.loader.loadImage('tiles', '../../assets/map/tileset.png'), this.loader.loadImage('hero', '../../assets/sprites/george.png'), this.loader.loadImage('death', '../../assets/sprites/deathAnimation.png'), this.loader.loadImage('otherPlayer', '../../assets/sprites/other.png'), this.loader.loadImage('fire', '../../assets/sprites/CampFire.png'), this.loader.loadImage('inventoryTileSet', '../../assets/sprites/inventoryManager.png'), this.loader.loadImage('iconbar', '../../assets/sprites/iconBar.png'), this.loader.loadImage('characterModel', '../../assets/sprites/characterModel.png'), this.loader.loadImage('goblin', '../../assets/sprites/goblin.png'), this.loader.loadImage('sheep', '../../assets/sprites/sheep.png'), this.loader.loadImage('slime', '../../assets/sprites/slime.png'), this.loader.loadImage('dog', '../../assets/sprites/dog.png'), this.loader.loadImage('arrow_1', '../../assets/sprites/arrow.png'), this.loader.loadImage('damageArea_1', '../../assets/sprites/melee_attack.png'), this.loader.loadImage('bar_empty', '../../assets/sprites/bar_empty.png'), this.loader.loadImage('bar_red_fill', '../../assets/sprites/bar_red_fill.png'), this.loader.loadImage('bar_blue_fill', '../../assets/sprites/bar_blue_fill.png'), this.loader.loadImage('levelToLow', '../../assets/sprites/inventory/LevelToLow.png'), this.loader.loadImage('pvp', '../../assets/sprites/pvp.png'), this.loader.loadImage('otherPlayerPVP', '../../assets/sprites/otherPlayerPVP.png'),
 
             // InventoryItems
             this.loader.loadImage('sword_1', '../../assets/sprites/inventory/W_Dagger002.png'), this.loader.loadImage('sword_2', '../../assets/sprites/inventory/W_Dagger003.png'), this.loader.loadImage('sword_3', '../../assets/sprites/inventory/W_Dagger005.png'), this.loader.loadImage('shield_1', '../../assets/sprites/inventory/E_Wood01.png'), this.loader.loadImage('shield_2', '../../assets/sprites/inventory/E_Wood02.png'), this.loader.loadImage('shield_3', '../../assets/sprites/inventory/E_Wood03.png'), this.loader.loadImage('shield_4', '../../assets/sprites/inventory/E_Metal04.png'), this.loader.loadImage('axe_1', '../../assets/sprites/inventory/W_Axe001.png'), this.loader.loadImage('axe_2', '../../assets/sprites/inventory/W_Axe002.png'), this.loader.loadImage('axe_3', '../../assets/sprites/inventory/W_Axe007.png'), this.loader.loadImage('bow_1', '../../assets/sprites/inventory/W_Bow01.png'), this.loader.loadImage('bow_2', '../../assets/sprites/inventory/W_Bow04.png'), this.loader.loadImage('bow_3', '../../assets/sprites/inventory/W_Bow05.png'), this.loader.loadImage('mace', '../../assets/sprites/inventory/W_Mace005.png'), this.loader.loadImage('spear', '../../assets/sprites/inventory/W_Spear001.png'), this.loader.loadImage('armor_1', '../../assets/sprites/inventory/A_Armor04.png'), this.loader.loadImage('armor_2', '../../assets/sprites/inventory/A_Armour02.png'), this.loader.loadImage('boots_1', '../../assets/sprites/inventory/A_Shoes01.png'), this.loader.loadImage('boots_2', '../../assets/sprites/inventory/A_Shoes03.png'), this.loader.loadImage('boots_3', '../../assets/sprites/inventory/A_Shoes04.png'), this.loader.loadImage('helmet_1', '../../assets/sprites/inventory/C_Elm01.png'), this.loader.loadImage('helmet_2', '../../assets/sprites/inventory/C_Elm03.png'), this.loader.loadImage('health_bottle_1', '../../assets/sprites/inventory/P_Red04.png'), this.loader.loadImage('health_bottle_2', '../../assets/sprites/inventory/P_Red02.png'), this.loader.loadImage('health_bottle_3', '../../assets/sprites/inventory/P_Red03.png'), this.loader.loadImage('health_bottle_4', '../../assets/sprites/inventory/P_Red01.png'), this.loader.loadImage('empty_bottle_1', '../../assets/sprites/inventory/I_Bottle01.png'), this.loader.loadImage('empty_bottle_2', '../../assets/sprites/inventory/I_Bottle02.png'), this.loader.loadImage('empty_bottle_3', '../../assets/sprites/inventory/I_Bottle04.png'), this.loader.loadImage('empty_bottle_4', '../../assets/sprites/inventory/I_Bottle03.png'), this.loader.loadImage('coin', '../../assets/sprites/inventory/I_GoldCoin.png'),
@@ -3421,10 +3448,14 @@ var MainGameState = function () {
             if (this.hero.resurected) {
                 this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
             }
-
+            if (this.hero.isHit(this.projectiles)) {
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
+            }
             this.hero.move(delta, dirx, diry);
             this.otherPlayers.forEach(function (player) {
+                player.update(delta);
                 player.move(delta);
+                player.isHit(_this6.projectiles);
             });
             this.projectiles.forEach(function (projectile) {
                 projectile.update(delta);
@@ -3453,9 +3484,12 @@ var MainGameState = function () {
                     }
                 }
             });
-            //this.NPCObjects.forEach(npc => {
-            //    npc.update(delta);
-            //});
+
+            if (this.wasPvpEnabled !== this.hero.pvp) {
+                this.wasPvpEnabled = this.hero.pvp;
+                this.socket.emit("updatePlayer", this.hero.getSmallObject(this.inventoryManager.getSmallObject()));
+            }
+
             this.spawners.forEach(function (spawner) {
                 spawner.update(delta, _this6.projectiles, _this6);
             });
@@ -3551,6 +3585,15 @@ var MainGameState = function () {
                 x: event.type.toLowerCase() === 'mousedown' ? event.pageX : event.touches[0].pageX,
                 y: event.type.toLowerCase() === 'mousedown' ? event.pageY : event.touches[0].pageY
             };
+            var width = width = this.ctx.width / 5;
+            var height = width / this.imageBarEmpty.width * this.imageBarEmpty.height;
+            this.pvpToggle = {
+                x: width / 20,
+                y: height * 3.5,
+                width: height * 2,
+                height: height * 2
+            };
+
             if (this.onMobile) {
                 this.mobileKeyUp = {
                     x: 80,
@@ -3577,11 +3620,13 @@ var MainGameState = function () {
                     this.mobileKeyPressed = this.keyboard.LEFT;
                 } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                     this.mobileKeyPressed = this.keyboard.DOWN;
-                } else {
+                } else if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width && mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
                     this.inventoryManager.onMouseDown(mousePosition);
                 }
             } else {
-                this.inventoryManager.onMouseDown(mousePosition);
+                if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width && mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
+                    this.inventoryManager.onMouseDown(mousePosition);
+                }
             }
         }
     }, {
@@ -3601,11 +3646,17 @@ var MainGameState = function () {
                     this.mobileKeyPressed = 0;
                 } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                     this.mobileKeyPressed = 0;
+                } else if (mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width && mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height) {
+                    this.hero.pvp = !this.hero.pvp;
                 } else {
                     this.inventoryManager.onMouseUp(mousePosition, this);
                 }
             } else {
-                this.inventoryManager.onMouseUp(mousePosition, this);
+                if (mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width && mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height) {
+                    this.hero.pvp = !this.hero.pvp;
+                } else {
+                    this.inventoryManager.onMouseUp(mousePosition, this);
+                }
             }
         }
     }, {
@@ -3614,6 +3665,14 @@ var MainGameState = function () {
             var mousePosition = {
                 x: event.type.toLowerCase() === 'mousemove' ? event.pageX : event.targetTouches[0].pageX,
                 y: event.type.toLowerCase() === 'mousemove' ? event.pageY : event.targetTouches[0].pageY
+            };
+            var width = width = this.ctx.width / 5;
+            var height = width / this.imageBarEmpty.width * this.imageBarEmpty.height;
+            this.pvpToggle = {
+                x: width / 20,
+                y: height * 3.5,
+                width: height * 2,
+                height: height * 2
             };
 
             if (this.onMobile) {
@@ -3625,12 +3684,14 @@ var MainGameState = function () {
                     this.mobileKeyPressed = this.keyboard.LEFT;
                 } else if (mousePosition.x > this.mobileKeyDown.x && mousePosition.x < this.mobileKeyDown.x + 50 && mousePosition.y > this.mobileKeyDown.y && mousePosition.y < this.mobileKeyDown.y + 50) {
                     this.mobileKeyPressed = this.keyboard.DOWN;
-                } else {
+                } else if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width && mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
                     this.mobileKeyPressed = 0;
                     this.inventoryManager.onMouseMove(mousePosition);
                 }
             } else {
-                this.inventoryManager.onMouseMove(mousePosition);
+                if (!(mousePosition.x > this.pvpToggle.x && mousePosition.x < this.pvpToggle.x + this.pvpToggle.width && mousePosition.y > this.pvpToggle.y && mousePosition.y < this.pvpToggle.y + this.pvpToggle.height)) {
+                    this.inventoryManager.onMouseMove(mousePosition);
+                }
             }
         }
     }, {
@@ -3693,13 +3754,15 @@ var MainGameState = function () {
                 // temporary
             ty = height / 2;
 
-            this.ctx.drawImage(this.imageBarEmpty, 0, 0, this.imageBarEmpty.width, this.imageBarEmpty.height, tx, ty, width, height);
+            this.ctx.drawImage(this.imageBarEmpty, tx, ty, width, height);
 
-            this.ctx.drawImage(this.imageBarRedFill, 0, 0, this.hero.health / 100 * this.imageBarRedFill.width, this.imageBarRedFill.height, tx, ty, this.hero.health / 100 * width, height);
+            if (this.hero.health > 0) {
+                this.ctx.drawImage(this.imageBarRedFill, 0, 0, this.hero.health / this.hero.maxHealth * this.imageBarRedFill.width, this.imageBarRedFill.height, tx, ty, this.hero.health / this.hero.maxHealth * width, height);
+            }
 
             ty += 1.5 * height;
 
-            this.ctx.drawImage(this.imageBarEmpty, 0, 0, this.imageBarEmpty.width, this.imageBarEmpty.height, tx, ty, width, height);
+            this.ctx.drawImage(this.imageBarEmpty, tx, ty, width, height);
 
             if (this.hero.xp > 0) {
                 this.ctx.drawImage(this.imageBarBlueFill, 0, 0, this.hero.xp / (this.hero.level * 100) * this.imageBarBlueFill.width, this.imageBarBlueFill.height, tx, ty, this.hero.xp / (this.hero.level * 100) * width, height);
@@ -3708,6 +3771,18 @@ var MainGameState = function () {
             this.ctx.font = "22px Arial";
             this.ctx.fillStyle = "white";
             this.ctx.fillText(this.hero.level, tx + width / 20, ty + height / 1.5);
+
+            ty += 1.5 * height;
+
+            this.ctx.drawImage(this.imagePvp, 0, this.hero.pvp ? this.imagePvp.height / 2 : 0, this.imagePvp.width, this.imagePvp.height / 2, tx, ty, height * 2, // Square
+            height * 2 // Square
+            );
+
+            this.ctx.font = "22px Arial";
+            this.ctx.fillStyle = "black";
+            this.ctx.fillText("PVP: " + (this.hero.pvp ? "ON" : "OFF"), tx + 1, ty + height * 2.5 + 1);
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText("PVP: " + (this.hero.pvp ? "ON" : "OFF"), tx, ty + height * 2.5);
 
             if (this.onMobile) {
                 var _width = this.ctx.width;
@@ -4000,103 +4075,103 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _nonCharacterObjectBase = __webpack_require__(8);
+var _nonCharacterObjectBase = __webpack_require__(12);
 
 var _nonCharacterObjectBase2 = _interopRequireDefault(_nonCharacterObjectBase);
 
-var _Sword_ = __webpack_require__(9);
+var _Sword_ = __webpack_require__(13);
 
 var _Sword_2 = _interopRequireDefault(_Sword_);
 
-var _Sword_3 = __webpack_require__(10);
+var _Sword_3 = __webpack_require__(14);
 
 var _Sword_4 = _interopRequireDefault(_Sword_3);
 
-var _Sword_5 = __webpack_require__(11);
+var _Sword_5 = __webpack_require__(6);
 
 var _Sword_6 = _interopRequireDefault(_Sword_5);
 
-var _Shield_ = __webpack_require__(12);
+var _Shield_ = __webpack_require__(15);
 
 var _Shield_2 = _interopRequireDefault(_Shield_);
 
-var _Shield_3 = __webpack_require__(13);
+var _Shield_3 = __webpack_require__(16);
 
 var _Shield_4 = _interopRequireDefault(_Shield_3);
 
-var _Shield_5 = __webpack_require__(14);
+var _Shield_5 = __webpack_require__(17);
 
 var _Shield_6 = _interopRequireDefault(_Shield_5);
 
-var _Shield_7 = __webpack_require__(15);
+var _Shield_7 = __webpack_require__(7);
 
 var _Shield_8 = _interopRequireDefault(_Shield_7);
 
-var _Axe_ = __webpack_require__(16);
+var _Axe_ = __webpack_require__(18);
 
 var _Axe_2 = _interopRequireDefault(_Axe_);
 
-var _Axe_3 = __webpack_require__(17);
+var _Axe_3 = __webpack_require__(19);
 
 var _Axe_4 = _interopRequireDefault(_Axe_3);
 
-var _Axe_5 = __webpack_require__(18);
+var _Axe_5 = __webpack_require__(20);
 
 var _Axe_6 = _interopRequireDefault(_Axe_5);
 
-var _Bow_ = __webpack_require__(19);
+var _Bow_ = __webpack_require__(21);
 
 var _Bow_2 = _interopRequireDefault(_Bow_);
 
-var _Bow_3 = __webpack_require__(20);
+var _Bow_3 = __webpack_require__(22);
 
 var _Bow_4 = _interopRequireDefault(_Bow_3);
 
-var _Bow_5 = __webpack_require__(21);
+var _Bow_5 = __webpack_require__(23);
 
 var _Bow_6 = _interopRequireDefault(_Bow_5);
 
-var _Mace = __webpack_require__(22);
+var _Mace = __webpack_require__(24);
 
 var _Mace2 = _interopRequireDefault(_Mace);
 
-var _Spear = __webpack_require__(23);
+var _Spear = __webpack_require__(8);
 
 var _Spear2 = _interopRequireDefault(_Spear);
 
-var _Armor_ = __webpack_require__(24);
+var _Armor_ = __webpack_require__(25);
 
 var _Armor_2 = _interopRequireDefault(_Armor_);
 
-var _Armor_3 = __webpack_require__(25);
+var _Armor_3 = __webpack_require__(26);
 
 var _Armor_4 = _interopRequireDefault(_Armor_3);
 
-var _Boots_ = __webpack_require__(26);
+var _Boots_ = __webpack_require__(27);
 
 var _Boots_2 = _interopRequireDefault(_Boots_);
 
-var _Boots_3 = __webpack_require__(27);
+var _Boots_3 = __webpack_require__(28);
 
 var _Boots_4 = _interopRequireDefault(_Boots_3);
 
-var _Boots_5 = __webpack_require__(28);
+var _Boots_5 = __webpack_require__(29);
 
 var _Boots_6 = _interopRequireDefault(_Boots_5);
 
-var _Helmet_ = __webpack_require__(29);
+var _Helmet_ = __webpack_require__(30);
 
 var _Helmet_2 = _interopRequireDefault(_Helmet_);
 
-var _Helmet_3 = __webpack_require__(30);
+var _Helmet_3 = __webpack_require__(31);
 
 var _Helmet_4 = _interopRequireDefault(_Helmet_3);
 
-var _Coin = __webpack_require__(31);
+var _Coin = __webpack_require__(32);
 
 var _Coin2 = _interopRequireDefault(_Coin);
 
-var _Health_bottle_ = __webpack_require__(32);
+var _Health_bottle_ = __webpack_require__(9);
 
 var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
 
@@ -4353,6 +4428,10 @@ var _Slime = __webpack_require__(52);
 
 var _Slime2 = _interopRequireDefault(_Slime);
 
+var _Dog = __webpack_require__(65);
+
+var _Dog2 = _interopRequireDefault(_Dog);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4417,7 +4496,6 @@ var Spawner = function () {
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
-
                             case "Slimes":
                                 sound = _this2.loader.getSound("slime");
                                 sound.loop = false;
@@ -4447,7 +4525,6 @@ var Spawner = function () {
                                 sound.volume = 1;
                                 sound.play().then();
                                 break;
-
                             case "Slimes":
                                 parent.hero.stats.slimeKills++;
                                 sound = _this2.loader.getSound("slime");
@@ -4534,6 +4611,10 @@ var Spawner = function () {
                         unit = new _Slime2.default(this.loader, x, y, this.map, this.bounds);
                         break;
 
+                    case "Dog":
+                        unit = new _Dog2.default(this.loader, x, y, this.map, this.bounds);
+                        break;
+
                     default:
                         console.log('Cannot create unit of type ' + type);
                         return null;
@@ -4562,6 +4643,10 @@ var Spawner = function () {
 
                 case "Slimes":
                     newUnit = new _Slime2.default(this.loader, unit.x, unit.y, this.map, this.bounds);
+                    break;
+
+                case "Dog":
+                    newUnit = new _Dog2.default(this.loader, unit.x, unit.y, this.map, this.bounds);
                     break;
 
                 default:
@@ -4606,7 +4691,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _NPCObjectBase = __webpack_require__(6);
+var _NPCObjectBase = __webpack_require__(10);
 
 var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
@@ -4646,7 +4731,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _NPCObjectBase = __webpack_require__(6);
+var _NPCObjectBase = __webpack_require__(10);
 
 var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
@@ -4688,36 +4773,49 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _GameObjectBase = __webpack_require__(1);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Hero = function () {
-    function Hero(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, token, loader) {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Hero = function (_GameObject) {
+    _inherits(Hero, _GameObject);
+
+    function Hero(map, x, y, id, health, tileLevel, xp, level, questsCompleted, stats, pvp, token, loader) {
         _classCallCheck(this, Hero);
 
-        this.map = map;
-        this.x = x;
-        this.y = y;
-        this.startX = 3200;
-        this.startY = 3200;
-        this.loader = loader;
-        this.debugging = false;
-        this.topText = [];
-        this.token = token;
+        var _this = _possibleConstructorReturn(this, (Hero.__proto__ || Object.getPrototypeOf(Hero)).call(this));
 
-        this.health = health;
-        this.maxHealth = 100;
-        this.armor = 0;
+        _this.map = map;
+        _this.x = x;
+        _this.y = y;
+        _this.startX = 3200;
+        _this.startY = 3200;
+        _this.loader = loader;
+        _this.debugging = false;
+        _this.token = token;
 
-        this.imageIndex = 0;
-        this.imageState = 0;
-        this.width = map.drawSize;
-        this.height = map.drawSize;
-        this.imageWidth = 48;
-        this.imageHeight = 48;
-        this.maskWidth = map.drawSize * 0.65;
-        this.maskHeight = map.drawSize * 0.8;
-        this.tileLevel = tileLevel; // HeighttileLevel
-        this.STATE = {
+        _this.health = health;
+        _this.maxHealth = 100;
+        _this.armor = 0;
+
+        _this.imageIndex = 0;
+        _this.imageState = 0;
+        _this.width = map.drawSize;
+        _this.height = map.drawSize;
+        _this.imageWidth = 48;
+        _this.imageHeight = 48;
+        _this.maskWidth = map.drawSize * 0.65;
+        _this.maskHeight = map.drawSize * 0.8;
+        _this.tileLevel = tileLevel; // HeighttileLevel
+        _this.STATE = {
             RUNNINGNORTH: 1,
             RUNNINGEAST: 2,
             RUNNINGSOUTH: 3,
@@ -4725,37 +4823,38 @@ var Hero = function () {
             STOP: 5
         };
 
-        this.action = this.STATE.STOP;
-        this.image = this.loader.getImage('hero');
-        this.deathAnimation = this.loader.getImage('death');
-        this.deathAnimationCols = 5;
-        this.deathAnimationRows = 3;
-        this.deadTime = 0;
-        this.totalDeadTime = 1;
-        this.respawnTimer = 8;
-        this.dead = false;
-        this.resurected = false;
+        _this.action = _this.STATE.STOP;
+        _this.image = _this.loader.getImage('hero');
+        _this.deathAnimation = _this.loader.getImage('death');
+        _this.deathAnimationCols = 5;
+        _this.deathAnimationRows = 3;
+        _this.deadTime = 0;
+        _this.totalDeadTime = 1;
+        _this.respawnTimer = 8;
+        _this.dead = false;
+        _this.resurected = false;
+        _this.pvp = pvp;
+        _this.deathSound = _this.loader.getSound("explosion");
 
-        this.deathSound = this.loader.getSound("explosion");
-
-        this.speed = 256;
-        this.id = id;
-        this.level = level === undefined || level <= 0 ? 1 : level;
-        this.xp = xp === undefined ? 0 : xp;
-        this.questsCompleted = questsCompleted === undefined ? 0 : questsCompleted;
+        _this.speed = 256;
+        _this.id = id;
+        _this.level = level === undefined || level <= 0 ? 1 : level;
+        _this.xp = xp === undefined ? 0 : xp;
+        _this.questsCompleted = questsCompleted === undefined ? 0 : questsCompleted;
 
         try {
-            this.stats = JSON.parse(stats);
+            _this.stats = JSON.parse(stats);
         } catch (error) {
-            this.stats = {};
-            this.stats.goblinKills = 0;
-            this.stats.sheepKills = 0;
-            this.stats.slimeKills = 0;
+            _this.stats = {};
+            _this.stats.goblinKills = 0;
+            _this.stats.sheepKills = 0;
+            _this.stats.slimeKills = 0;
         }
 
-        if (this.debugging) {
-            this.speed = 512;
+        if (_this.debugging) {
+            _this.speed = 512;
         }
+        return _this;
     }
 
     _createClass(Hero, [{
@@ -4774,6 +4873,8 @@ var Hero = function () {
             smallObject.level = this.level;
             smallObject.questsCompleted = this.questsCompleted;
             smallObject.stats = JSON.stringify(this.stats);
+            smallObject.pvp = this.pvp;
+            smallObject.topText = this.topText;
             smallObject.width = this.width;
             smallObject.height = this.height;
             smallObject.resurected = this.resurected;
@@ -4790,22 +4891,23 @@ var Hero = function () {
                 yMax: this.y + this.maskHeight / 2
             };
         }
-
-        /* generateId() {
-             function s4() {
-                 return Math.floor((1 + Math.random()) * 0x10000)
-                     .toString(16)
-                     .substring(1);
-             }
-               function time() {
-                 return Math.floor((1 + (new Date()).getTime()) * 0x10000)
-                     .toString(16)
-                     .substring(1);
-             }
-             return time() + '-' + s4() + '-' + s4() + '-' +
-                 s4() + '-' + s4() + s4() + s4();
-         }*/
-
+    }, {
+        key: 'isHit',
+        value: function isHit(projectiles) {
+            if (this.pvp) {
+                for (var i = 0; i < projectiles.length; i++) {
+                    var projectile = projectiles[i];
+                    if (projectile.playerId !== this.id && projectile.playerId !== -1) {
+                        // -1 means pvp was off
+                        if (this.isNear(projectile.x, projectile.y, projectile.x + projectile.width, projectile.y + projectile.height)) {
+                            this.takeDamage(projectile.doDamage());
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }, {
         key: 'move',
         value: function move(delta, dirx, diry) {
@@ -4905,7 +5007,7 @@ var Hero = function () {
     }, {
         key: 'update',
         value: function update(delta) {
-            var _this = this;
+            var _this2 = this;
 
             if (this.dead) {
                 if (this.deadTime >= this.respawnTimer) {
@@ -4931,7 +5033,7 @@ var Hero = function () {
                     this.topText.forEach(function (text) {
                         text.time += delta;
                         if (text.time > 2) {
-                            _this.topText.splice(_this.topText.indexOf(text), 1);
+                            _this2.topText.splice(_this2.topText.indexOf(text), 1);
                         }
                     });
                 }
@@ -4944,7 +5046,7 @@ var Hero = function () {
     }, {
         key: 'draw',
         value: function draw(ctx) {
-            var _this2 = this;
+            var _this3 = this;
 
             if (this.dead) {
                 var width = this.deathAnimation.width / this.deathAnimationCols;
@@ -4973,7 +5075,7 @@ var Hero = function () {
                     ctx.font = "20px Arial";
                     this.topText.forEach(function (text) {
                         ctx.fillStyle = text.fillStyle;
-                        ctx.fillText(text.text, _this2.screenX - 15, _this2.screenY - _this2.height * (0.3 + text.time / 2));
+                        ctx.fillText(text.text, _this3.screenX - 15, _this3.screenY - _this3.height * (0.3 + text.time / 2));
                     });
                 }
             }
@@ -5050,7 +5152,7 @@ var Hero = function () {
     }]);
 
     return Hero;
-}();
+}(_GameObjectBase2.default);
 
 exports.default = Hero;
 
@@ -5071,7 +5173,7 @@ var _InventoryIcon = __webpack_require__(55);
 
 var _InventoryIcon2 = _interopRequireDefault(_InventoryIcon);
 
-var _QuestManager = __webpack_require__(63);
+var _QuestManager = __webpack_require__(56);
 
 var _QuestManager2 = _interopRequireDefault(_QuestManager);
 
@@ -5395,7 +5497,7 @@ var InventoryManager = function () {
                         switch (inventoryObject.createObjectName) {
                             case 'Arrow_1':
                                 var angleInRadians = Math.atan2(mousePosition.y - _this7.hero.screenY, mousePosition.x - _this7.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
-                                var projectile = new _Arrow_2.default(Math.random(), _this7.loader, _this7.hero.x, _this7.hero.y, angleInRadians, inventoryObject.strength, _this7.map);
+                                var projectile = new _Arrow_2.default(Math.random(), _this7.loader, _this7.hero.pvp ? _this7.hero.id : -1, _this7.hero.x, _this7.hero.y, angleInRadians, inventoryObject.strength, _this7.map);
                                 sendNewDamageAreaListener.sendNewDamageArea(projectile);
                                 _this7.damageAreas.push(projectile);
                                 //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
@@ -5416,7 +5518,7 @@ var InventoryManager = function () {
                         switch (inventoryObject.createObjectName) {
                             case 'DamageArea_1':
                                 var _angleInRadians = Math.atan2(mousePosition.y - _this7.hero.screenY, mousePosition.x - _this7.hero.screenX); // https://gist.github.com/conorbuck/2606166
-                                var damageArea = new _DamageArea_2.default(Math.random(), _this7.loader, _this7.hero.x - _this7.hero.width / 2 + _this7.hero.width / 3 * Math.cos(_angleInRadians), _this7.hero.y - _this7.hero.height / 2 + _this7.hero.height / 3 * Math.sin(_angleInRadians), _angleInRadians, inventoryObject.strength, _this7.map);
+                                var damageArea = new _DamageArea_2.default(Math.random(), _this7.loader, _this7.hero.pvp ? _this7.hero.id : -1, _this7.hero.x - _this7.hero.width / 2 + _this7.hero.width / 3 * Math.cos(_angleInRadians), _this7.hero.y - _this7.hero.height / 2 + _this7.hero.height / 3 * Math.sin(_angleInRadians), _angleInRadians, inventoryObject.strength, _this7.map);
                                 sendNewDamageAreaListener.sendNewDamageArea(damageArea);
                                 _this7.damageAreas.push(damageArea);
                                 if (_angleInRadians >= -Math.PI / 4 && _angleInRadians <= Math.PI / 4) {
@@ -5964,38 +6066,267 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Quest = __webpack_require__(57);
+
+var _Quest2 = _interopRequireDefault(_Quest);
+
+var _Health_bottle_ = __webpack_require__(9);
+
+var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
+
+var _Spear = __webpack_require__(8);
+
+var _Spear2 = _interopRequireDefault(_Spear);
+
+var _Shield_ = __webpack_require__(7);
+
+var _Shield_2 = _interopRequireDefault(_Shield_);
+
+var _Sword_ = __webpack_require__(6);
+
+var _Sword_2 = _interopRequireDefault(_Sword_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var OtherPlayer = function () {
+var QuestManager = function () {
+    function QuestManager(hero, inventoryManager, loader) {
+        _classCallCheck(this, QuestManager);
+
+        this.hero = hero;
+
+        var i = 0;
+        this.allQuests = [];
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Sheep killer", // Title
+        "Find a sword and kill a sheep with it. \nYou will get 10xp as a reward.", // Description
+        function () {
+            return hero.stats.sheepKills >= 1; // Function returns true when completed
+        }, function () {
+            hero.xp += 10; // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Another empty bottle", // Title
+        "Find at least 10 empty bottles. \nYou will get 10 potions as a reward.", // Description
+        function () {
+            return inventoryManager.countObjectsOfType("empty_bottle_1") + inventoryManager.countObjectsOfType("empty_bottle_2") + inventoryManager.countObjectsOfType("empty_bottle_3") + inventoryManager.countObjectsOfType("empty_bottle_4") >= 10; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Health_bottle_2.default(loader, 10, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "More money", // Title
+        "Get over 1000 coins. \nYou will get a spear as a reward.", // Description
+        function () {
+            return inventoryManager.countObjectsOfType("coin") >= 1000; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Spear2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Level up", // Title
+        "Reach level 3. \nYou will get 100xp as a reward.", // Description
+        function () {
+            return hero.level >= 3; // Function returns true when completed
+        }, function () {
+            hero.xp += 100; // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Hoarder", // Title
+        "Have 200 items in total (coins don't count). \nYou will receive a cool sword.", // Description
+        function () {
+            return inventoryManager.objectsInInventory().count >= 200; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Sword_2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+
+        this.allQuests.push(new _Quest2.default(i++, // id
+        "Nothing is safe", // Title
+        "Kill at least 25 sheep, 10 Goblins and 1 Slime. \nYou will receive an awesome shield.", // Description
+        function () {
+            return hero.stats.sheepKills >= 25 && hero.stats.goblinKills >= 10 && hero.stats.slimeKills >= 1; // Function returns true when completed
+        }, function () {
+            inventoryManager.addObject(new _Shield_2.default(loader, 1, -2, -1)); // Function gives reward
+        }));
+    }
+
+    _createClass(QuestManager, [{
+        key: "update",
+        value: function update() {
+            if (this.hero.questsCompleted < this.allQuests.length) {
+                if (this.allQuests[this.hero.questsCompleted].check()) {
+                    this.hero.questsCompleted++;
+                }
+            }
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, x, y) {
+            if (this.hero.questsCompleted < this.allQuests.length) {
+                this.allQuests[this.hero.questsCompleted].draw(ctx, x, y);
+            } else {
+                ctx.font = "22px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText("All quests completed.", x + 1, y + 1);
+                ctx.fillStyle = "white";
+                ctx.fillText("All quests completed.", x, y);
+            }
+        }
+    }]);
+
+    return QuestManager;
+}();
+
+exports.default = QuestManager;
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/* Example:
+
+new Quest(1, // id
+    "Sheep killer", // title
+    "Find a sword and kill a sheep with it. You will get 10xp as a reward", // description
+    () => {
+        return this.hero.stats.sheepKills >= 1; // Function returns true when completed
+    },
+    () => {
+        this.hero.xp += 10; // Gives reward
+    })
+
+*/
+
+var Quest = function () {
+    function Quest(id, title, description, checkFunction, rewardFunction) {
+        _classCallCheck(this, Quest);
+
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.descriptionParts = description.split(/[\n]+/);
+        this.checkFunction = checkFunction;
+        this.rewardFunction = rewardFunction;
+        this.completed = false;
+    }
+
+    _createClass(Quest, [{
+        key: "check",
+        value: function check() {
+            if (!this.completed) {
+                if (this.checkFunction()) {
+                    this.rewardFunction();
+                    this.completed = true;
+                    return true;
+                }
+            }
+            return false; // Not completed this time    
+        }
+    }, {
+        key: "draw",
+        value: function draw(ctx, x, y) {
+            var tx = x + 1,
+                ty = y + 1,
+                dy = 20;
+            ctx.font = "22px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText(this.title + ":", tx, ty += dy);
+            this.descriptionParts.forEach(function (description) {
+                ctx.fillText(description, tx, ty += dy);
+            });
+            tx = x;
+            ty = y;
+            ctx.fillStyle = "white";
+            ctx.fillText(this.title + ":", tx, ty += dy);
+            this.descriptionParts.forEach(function (description) {
+                ctx.fillText(description, tx, ty += dy);
+            });
+        }
+    }]);
+
+    return Quest;
+}();
+
+exports.default = Quest;
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _GameObjectBase = __webpack_require__(1);
+
+var _GameObjectBase2 = _interopRequireDefault(_GameObjectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var OtherPlayer = function (_GameObject) {
+    _inherits(OtherPlayer, _GameObject);
+
     function OtherPlayer(hero, loader, map) {
         _classCallCheck(this, OtherPlayer);
 
-        this.x = hero.x;
-        this.y = hero.y;
-        this.loader = loader;
+        var _this = _possibleConstructorReturn(this, (OtherPlayer.__proto__ || Object.getPrototypeOf(OtherPlayer)).call(this));
 
-        this.imageIndex = 0;
-        this.imageState = 0;
-        this.width = map.drawSize;
-        this.height = map.drawSize;
-        this.imageWidth = 48;
-        this.imageHeight = 48;
-        this.maskWidth = map.drawSize * 0.65;
-        this.maskHeight = map.drawSize * 0.8;
-        this.tileLevel = 0; // HeighttileLevel
-        this.STATE = {
+        _this.x = hero.x;
+        _this.y = hero.y;
+        _this.loader = loader;
+        _this.action = hero.action;
+        _this.image = _this.loader.getImage('otherPlayer');
+        _this.imagePvp = _this.loader.getImage('otherPlayerPVP');
+        _this.speed = hero.speed;
+        _this.id = hero.id;
+        _this.map = map;
+        _this.pvp = hero.pvp;
+        _this.health = hero.health;
+        _this.name = hero.username;
+        _this.level = hero.level;
+
+        _this.imageIndex = 0;
+        _this.imageState = 0;
+        _this.width = map.drawSize;
+        _this.height = map.drawSize;
+        _this.imageWidth = 48;
+        _this.imageHeight = 48;
+        _this.maskWidth = map.drawSize * 0.65;
+        _this.maskHeight = map.drawSize * 0.8;
+        _this.tileLevel = 0; // HeighttileLevel
+        _this.STATE = {
             RUNNINGNORTH: 1,
             RUNNINGEAST: 2,
             RUNNINGSOUTH: 3,
             RUNNINGWEST: 4,
             STOP: 5
         };
-
-        this.action = hero.action;
-        this.image = this.loader.getImage('otherPlayer');
-        this.speed = hero.speed;
-        this.id = hero.id;
-        this.map = map;
+        return _this;
     }
 
     _createClass(OtherPlayer, [{
@@ -6039,33 +6370,58 @@ var OtherPlayer = function () {
 
             // check if we walked into a non-walkable tile
             this._collide(dirx, diry);
+        }
+    }, {
+        key: 'update',
+        value: function update(delta) {
+            var _this2 = this;
 
-            // TODO: Ban hackers (collide)
+            if (this.topText.length > 0) {
+                this.topText.forEach(function (text) {
+                    text.time += delta;
+                    if (text.time > 1) {
+                        _this2.topText.splice(_this2.topText.indexOf(text), 1);
+                    }
+                });
+            }
+        }
+    }, {
+        key: 'isHit',
+        value: function isHit(projectiles) {
+            if (this.pvp) {
+                for (var i = 0; i < projectiles.length; i++) {
+                    var projectile = projectiles[i];
+                    if (projectile.playerId !== this.id && projectile.playerId !== -1) {
+                        // -1 means pvp was off
+                        if (this.isNear(projectile.x, projectile.y, projectile.x + projectile.width, projectile.y + projectile.height)) {
+                            projectile.doDamage(); // Remove projectile
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }, {
         key: 'draw',
         value: function draw(ctx, x, y) {
-            //console.log({
-            //    image: this.image, // Image
-            //    sx: (this.getImageIndex() % 4) * this.imageWidth, // Src x
-            //    sy: Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
-            //    sw: this.imageWidth, // Src width
-            //    sh: this.imageHeight, // Src height
-            //    tx: x - this.width / 2, // Target x
-            //    ty: y - this.height / 2, // Target y
-            //    tw: this.width, // Target width
-            //    th: this.height // Target height
-            //});
+            if (this.health > 0) {
+                ctx.drawImage(this.pvp ? this.imagePvp : this.image, // Image
+                this.getImageIndex() % 4 * this.imageWidth, // Src x
+                Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
+                this.imageWidth, // Src width
+                this.imageHeight, // Src height
+                x - this.width / 2, // Target x
+                y - this.height / 2, // Target y
+                this.width, // Target width
+                this.height); // Target height
 
-            ctx.drawImage(this.image, // Image
-            this.getImageIndex() % 4 * this.imageWidth, // Src x
-            Math.floor(this.getImageIndex() / 4) * this.imageHeight, // Src y
-            this.imageWidth, // Src width
-            this.imageHeight, // Src height
-            x - this.width / 2, // Target x
-            y - this.height / 2, // Target y
-            this.width, // Target width
-            this.height); // Target height
+                ctx.font = "20px Arial";
+                ctx.fillStyle = this.pvp ? "red" : "white";
+                ctx.fillText("(lvl: " + this.level + ") - " + this.name, x - this.width / 2, y - 20);
+
+                this.drawTopText(ctx, x - this.width / 2, y - this.height);
+            }
         }
     }, {
         key: '_calculateImageState',
@@ -6128,12 +6484,12 @@ var OtherPlayer = function () {
     }]);
 
     return OtherPlayer;
-}();
+}(_GameObjectBase2.default);
 
 exports.default = OtherPlayer;
 
 /***/ }),
-/* 57 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6204,7 +6560,7 @@ var Loader = function () {
 exports.default = Loader;
 
 /***/ }),
-/* 58 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6249,7 +6605,7 @@ var GameState = function () {
 exports.default = GameState;
 
 /***/ }),
-/* 59 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6261,7 +6617,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Fire = __webpack_require__(7);
+var _Fire = __webpack_require__(11);
 
 var _Fire2 = _interopRequireDefault(_Fire);
 
@@ -6446,15 +6802,15 @@ var Map = function () {
 exports.default = Map;
 
 /***/ }),
-/* 60 */
+/* 62 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 61 */,
-/* 62 */,
-/* 63 */
+/* 63 */,
+/* 64 */,
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6466,202 +6822,46 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Quest = __webpack_require__(64);
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _Quest2 = _interopRequireDefault(_Quest);
+var _NPCObjectBase = __webpack_require__(10);
 
-var _Health_bottle_ = __webpack_require__(32);
-
-var _Health_bottle_2 = _interopRequireDefault(_Health_bottle_);
-
-var _Spear = __webpack_require__(23);
-
-var _Spear2 = _interopRequireDefault(_Spear);
-
-var _Shield_ = __webpack_require__(15);
-
-var _Shield_2 = _interopRequireDefault(_Shield_);
-
-var _Sword_ = __webpack_require__(11);
-
-var _Sword_2 = _interopRequireDefault(_Sword_);
+var _NPCObjectBase2 = _interopRequireDefault(_NPCObjectBase);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var QuestManager = function () {
-    function QuestManager(hero, inventoryManager, loader) {
-        _classCallCheck(this, QuestManager);
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-        this.hero = hero;
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-        var i = 0;
-        this.allQuests = [];
-        this.allQuests.push(new _Quest2.default(i++, // id
-        "Sheep killer", // Title
-        "Find a sword and kill a sheep with it. \nYou will get 10xp as a reward.", // Description
-        function () {
-            return hero.stats.sheepKills >= 1; // Function returns true when completed
-        }, function () {
-            hero.xp += 10; // Function gives reward
-        }));
+var Dog = function (_NPCObject) {
+    _inherits(Dog, _NPCObject);
 
-        this.allQuests.push(new _Quest2.default(i++, // id
-        "Another empty bottle", // Title
-        "Find at least 10 empty bottles. \nYou will get 10 potions as a reward.", // Description
-        function () {
-            return inventoryManager.countObjectsOfType("empty_bottle_1") + inventoryManager.countObjectsOfType("empty_bottle_2") + inventoryManager.countObjectsOfType("empty_bottle_3") + inventoryManager.countObjectsOfType("empty_bottle_4") >= 10; // Function returns true when completed
-        }, function () {
-            inventoryManager.addObject(new _Health_bottle_2.default(loader, 10, -2, -1)); // Function gives reward
-        }));
+    function Dog(loader, x, y, map, bounds) {
+        _classCallCheck(this, Dog);
 
-        this.allQuests.push(new _Quest2.default(i++, // id
-        "More money", // Title
-        "Get over 1000 coins. \nYou will get a spear as a reward.", // Description
-        function () {
-            return inventoryManager.countObjectsOfType("coin") >= 1000; // Function returns true when completed
-        }, function () {
-            inventoryManager.addObject(new _Spear2.default(loader, 1, -2, -1)); // Function gives reward
-        }));
+        var _this = _possibleConstructorReturn(this, (Dog.__proto__ || Object.getPrototypeOf(Dog)).call(this, "Dog", x, y, map.drawSize * 0.8, map.drawSize * 0.8, 100000, 10, 3, 128, 20, true, map, bounds));
 
-        this.allQuests.push(new _Quest2.default(i++, // id
-        "Level up", // Title
-        "Reach level 3. \nYou will get 100xp as a reward.", // Description
-        function () {
-            return hero.level >= 3; // Function returns true when completed
-        }, function () {
-            hero.xp += 100; // Function gives reward
-        }));
-
-        this.allQuests.push(new _Quest2.default(i++, // id
-        "Hoarder", // Title
-        "Have 200 items in total (coins don't count). \nYou will receive a cool sword.", // Description
-        function () {
-            return inventoryManager.objectsInInventory().count >= 200; // Function returns true when completed
-        }, function () {
-            inventoryManager.addObject(new _Sword_2.default(loader, 1, -2, -1)); // Function gives reward
-        }));
-
-        this.allQuests.push(new _Quest2.default(i++, // id
-        "Nothing is safe", // Title
-        "Kill at least 25 sheep, 10 Goblins and 1 Slime. \nYou will receive an awesome shield.", // Description
-        function () {
-            return hero.stats.sheepKills >= 25 && hero.stats.goblinKills >= 10 && hero.stats.slimeKills >= 1; // Function returns true when completed
-        }, function () {
-            inventoryManager.addObject(new _Shield_2.default(loader, 1, -2, -1)); // Function gives reward
-        }));
+        _this.setTilesImage(loader.getImage('dog'), 4, 4, 4);
+        return _this;
     }
 
-    _createClass(QuestManager, [{
-        key: "update",
-        value: function update() {
-            if (this.hero.questsCompleted < this.allQuests.length) {
-                if (this.allQuests[this.hero.questsCompleted].check()) {
-                    this.hero.questsCompleted++;
-                }
-            }
-        }
-    }, {
+    _createClass(Dog, [{
         key: "draw",
-        value: function draw(ctx, x, y) {
-            if (this.hero.questsCompleted < this.allQuests.length) {
-                this.allQuests[this.hero.questsCompleted].draw(ctx, x, y);
-            } else {
-                ctx.font = "22px Arial";
-                ctx.fillStyle = "black";
-                ctx.fillText("All quests completed.", x + 1, y + 1);
-                ctx.fillStyle = "white";
-                ctx.fillText("All quests completed.", x, y);
-            }
-        }
-    }]);
-
-    return QuestManager;
-}();
-
-exports.default = QuestManager;
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* Example:
-
-new Quest(1, // id
-    "Sheep killer", // title
-    "Find a sword and kill a sheep with it. You will get 10xp as a reward", // description
-    () => {
-        return this.hero.stats.sheepKills >= 1; // Function returns true when completed
-    },
-    () => {
-        this.hero.xp += 10; // Gives reward
-    })
-
-*/
-
-var Quest = function () {
-    function Quest(id, title, description, checkFunction, rewardFunction) {
-        _classCallCheck(this, Quest);
-
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.descriptionParts = description.split(/[\n]+/);
-        this.checkFunction = checkFunction;
-        this.rewardFunction = rewardFunction;
-        this.completed = false;
-    }
-
-    _createClass(Quest, [{
-        key: "check",
-        value: function check() {
-            if (!this.completed) {
-                if (this.checkFunction()) {
-                    this.rewardFunction();
-                    this.completed = true;
-                    return true;
-                }
-            }
-            return false; // Not completed this time    
-        }
-    }, {
-        key: "draw",
-        value: function draw(ctx, x, y) {
-            var tx = x + 1,
-                ty = y + 1,
-                dy = 20;
+        value: function draw(ctx, screenX, screenY) {
+            _get(Dog.prototype.__proto__ || Object.getPrototypeOf(Dog.prototype), "draw", this).call(this, ctx, screenX, screenY);
             ctx.font = "22px Arial";
-            ctx.fillStyle = "black";
-            ctx.fillText(this.title + ":", tx, ty += dy);
-            this.descriptionParts.forEach(function (description) {
-                ctx.fillText(description, tx, ty += dy);
-            });
-            tx = x;
-            ty = y;
-            ctx.fillStyle = "white";
-            ctx.fillText(this.title + ":", tx, ty += dy);
-            this.descriptionParts.forEach(function (description) {
-                ctx.fillText(description, tx, ty += dy);
-            });
+            ctx.fillStyle = "blue";
+            ctx.fillText("Pickles", screenX, screenY - 20);
         }
     }]);
 
-    return Quest;
-}();
+    return Dog;
+}(_NPCObjectBase2.default);
 
-exports.default = Quest;
+exports.default = Dog;
 
 /***/ })
 /******/ ]);

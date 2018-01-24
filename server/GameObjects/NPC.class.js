@@ -24,14 +24,17 @@ class NPC {
         this.doingAction = 0;
         switch (this.type) {
             case "Sheep":
-            this.speed = 160;
-            break;
+                this.speed = 160;
+                break;
             case "Goblins":
-            this.speed = 196;
-            break;
+                this.speed = 196;
+                break;
             case "Slimes":
-            this.speed = 80;
-            break;
+                this.speed = 80;
+                break;
+            case "Dog":
+                this.speed = 128;
+                break;
         }
     }
 
@@ -243,6 +246,10 @@ class NPC {
                 this.addDrop("Mace", 1, 1);
                 this.addDrop("Shield_3", 1, 1);
                 this.addDrop("Sword_3", 1, 1);
+                break;
+
+            case "Dog": // Please don't kill the dog
+                this.addDrop("Coin", 1, 1);
                 break;
         }
 

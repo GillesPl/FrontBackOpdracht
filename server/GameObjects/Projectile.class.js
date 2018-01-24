@@ -11,6 +11,7 @@ class Projectile {
         this.width = jsonObject.width;
         this.height = jsonObject.height;
         this.destroyed = jsonObject.destroyed;
+        this.playerId = jsonObject.playerId;
     }
 
     getSmallObject() {
@@ -26,6 +27,7 @@ class Projectile {
         smallObject.width = this.width;
         smallObject.height = this.height;
         smallObject.destroyed = this.destroyed;
+        smallObject.playerId = this.playerId;
         return smallObject;
     }
 }

@@ -59,6 +59,10 @@ var userSchema = new Schema({
     stats: {
         type: String
     },
+    pvp: {
+        type: Boolean,
+        default: false
+    },
     questsCompleted: {
         type: String
     }

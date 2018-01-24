@@ -91,7 +91,7 @@ export default class InventoryManager {
             checkState = this.STATES.CHARACTER;
         } else if (keyCode === keyboard.T) {
             checkState = this.STATES.STATS;
-        }else if (keyCode === keyboard.Q) {
+        } else if (keyCode === keyboard.Q) {
             checkState = this.STATES.QUESTS;
         }
         this.iconBar.forEach(icon => {
@@ -277,7 +277,15 @@ export default class InventoryManager {
                     switch (inventoryObject.createObjectName) {
                         case 'Arrow_1':
                             let angleInRadians = Math.atan2(mousePosition.y - this.hero.screenY, mousePosition.x - this.hero.screenX); // https://gist.github.com/conorbuck/2606166                                       
-                            let projectile = new Arrow_1(Math.random(), this.loader, this.hero.x, this.hero.y, angleInRadians, inventoryObject.strength, this.map);
+                            let projectile = new Arrow_1(
+                                Math.random(),
+                                this.loader,
+                                this.hero.pvp ? this.hero.id : -1,
+                                this.hero.x,
+                                this.hero.y,
+                                angleInRadians,
+                                inventoryObject.strength,
+                                this.map);
                             sendNewDamageAreaListener.sendNewDamageArea(projectile);
                             this.damageAreas.push(projectile);
                             //console.log(angleInRadians + ', ' + -Math.PI / 4 * 5);
@@ -301,6 +309,7 @@ export default class InventoryManager {
                             let damageArea = new DamageArea_1(
                                 Math.random(),
                                 this.loader,
+                                this.hero.pvp ? this.hero.id : -1,
                                 this.hero.x - this.hero.width / 2 + this.hero.width / 3 * (Math.cos(angleInRadians)),
                                 this.hero.y - this.hero.height / 2 + this.hero.height / 3 * (Math.sin(angleInRadians)),
                                 angleInRadians,
