@@ -4,6 +4,6 @@ export default class Mace extends InventoryObject {
     constructor(loader, stackCount, inventoryLocation, actionLocation) {
         super("mace", 10, stackCount, inventoryLocation, actionLocation);
         this.setImage(loader.getImage('mace'));
-        this.setWeapon(this.WEAPONTYPES.MELEE, 250, 2, "DamageArea_1", 5);
+        this.setWeapon(this.WEAPONTYPES.MELEE, 200, 2, "DamageArea_1", 5);
     }
 }
