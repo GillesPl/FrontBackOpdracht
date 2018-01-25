@@ -219,6 +219,7 @@ class Manager {
     }
 
     loginUser(user, socket) {
+        console.log(user,socket);
         AuthenticateController.authenticate(user, function (res) {
             if (res.success === false) {
                 socket.emit("requestLogin", res);

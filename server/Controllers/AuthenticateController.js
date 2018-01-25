@@ -10,7 +10,7 @@ exports.authenticate = function (req, callback) {
     User.findOne({
         mail: req.user.mail
     }, function (err, user) {
-        if (!user) {
+        if (!user) {            
             return callback({
                 success: false,
                 message: 'Authentication failed. mail not found.'
