@@ -60,11 +60,16 @@ const manager = new Manager.Manager();
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
-app.get('/reset', function (req, res) {
+
+app.get('/test', function (req, res) {
+    res.sendFile(__dirname + '/public/dist/test.html');
+});
+
+/*app.get('/reset', function (req, res) {
     manager.reset();
     console.log('--RESET--');
     res.send("resetted");
-});
+});*/
 
 io.sockets.on('connection', function (socket) {
     console.log('New_connection');

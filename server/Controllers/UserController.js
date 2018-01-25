@@ -100,7 +100,10 @@ exports.createUserSocket = function (user, callback,logincallback) {
             let usercopy = JSON.parse(JSON.stringify(newuser));
             newuser.password = hash;
             newuser.save(function (err, user) {
-                if (err) return callback(err.message);
+                if (err) return callback({
+                    success : false,
+                    message : err.message
+                });
                 callback({
                     success: true,
                     message: 'User has been created',
